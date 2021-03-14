@@ -7,7 +7,7 @@
 4. Pushする: `git push origin my-new-feature`
 5. Pull Requestを送る
 ## Issues
-次のIssueを受け付けています。
+次のIssuesを受け付けています。
 - エラーや問題の報告 => [報告はこちらから](https://github.com/Cosgy-Dev/TextToSpeakBot/issues/new?assignees=&labels=&template=bug-report.md&title=%5B%E3%83%90%E3%82%B0%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88%5D+%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%82%92%E5%85%A5%E5%8A%9B)
 - 新機能のリクエスト => [リクエストはこちらから](https://github.com/Cosgy-Dev/TextToSpeakBot/issues/new?assignees=&labels=&template=feature_request.md&title=%5B%E6%A9%9F%E8%83%BD%E8%A6%81%E6%B1%82%5D%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB%E3%82%92%E5%85%A5%E5%8A%9B)
 
