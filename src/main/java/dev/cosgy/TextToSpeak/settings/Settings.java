@@ -1,0 +1,83 @@
+////////////////////////////////////////////////////////////////////////////////
+//  Copyright 2021 Cosgy Dev                                                   /
+//                                                                             /
+//     Licensed under the Apache License, Version 2.0 (the "License");         /
+//     you may not use this file except in compliance with the License.        /
+//     You may obtain a copy of the License at                                 /
+//                                                                             /
+//        http://www.apache.org/licenses/LICENSE-2.0                           /
+//                                                                             /
+//     Unless required by applicable law or agreed to in writing, software     /
+//     distributed under the License is distributed on an "AS IS" BASIS,       /
+//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied./
+//     See the License for the specific language governing permissions and     /
+//     limitations under the License.                                          /
+////////////////////////////////////////////////////////////////////////////////
+
+package dev.cosgy.TextToSpeak.settings;
+
+import com.jagrosh.jdautilities.command.GuildSettingsProvider;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
+
+import java.util.Collection;
+import java.util.Collections;
+
+public class Settings implements GuildSettingsProvider {
+    private final SettingsManager manager;
+    protected long textId;
+    private String prefix;
+    private int volume;
+
+
+    public Settings(SettingsManager manager, String textId, String prefix, int volume) {
+        this.manager = manager;
+        try {
+            this.textId = Long.parseLong(textId);
+        }catch (NumberFormatException e){
+            this.textId = 0;
+        }
+        this.prefix = prefix;
+        this.volume = volume;
+    }
+
+    public Settings(SettingsManager manager, long textId, String prefix, int volume) {
+        this.manager = manager;
+        this.textId = textId;
+        this.prefix = prefix;
+        this.volume = volume;
+    }
+
+
+    public TextChannel getTextChannel(Guild guild) {
+        return guild == null ? null : guild.getTextChannelById(textId);
+    }
+
+    public void setTextChannel(TextChannel tc) {
+        this.textId = tc == null ? 0 : tc.getIdLong();
+        this.manager.writeSettings();
+    }
+
+    public int getVolume() {
+        return volume;
+    }
+
+    public void setVolume(int volume) {
+        this.volume = volume;
+        this.manager.writeSettings();
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+        this.manager.writeSettings();
+    }
+
+    @Override
+    public Collection<String> getPrefixes() {
+        return prefix == null ? Collections.EMPTY_SET : Collections.singleton(prefix);
+    }
+}
