@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -54,6 +56,16 @@ public class VoiceCreation {
     }
 
     public String CreateVoice(User user, String message) {
+        if(!tmpFolderExists()){
+            createTmpFolder();
+            logger.info("tmpフォルダが存在しなかったため作成しました。");
+        }
+
+        if(!wavFolderExists()){
+            createWavFolder();
+            logger.info("wavフォルダが存在しなかったため作成しました。");
+        }
+
         UserSettings settings = bot.getUserSettingsManager().getSettings(user.getIdLong());
         Process p = null;
         UUID fileId = UUID.randomUUID();
@@ -92,5 +104,27 @@ public class VoiceCreation {
 
     public ArrayList<String> getVoices(){
         return voices;
+    }
+
+    public void createTmpFolder() {
+        try {
+            Files.createDirectory(Paths.get("tmp"));
+        } catch (IOException ignore) {
+        }
+    }
+
+    public boolean tmpFolderExists() {
+        return Files.exists(Paths.get("tmp"));
+    }
+
+    public void createWavFolder() {
+        try {
+            Files.createDirectory(Paths.get("wav"));
+        } catch (IOException ignore) {
+        }
+    }
+
+    public boolean wavFolderExists() {
+        return Files.exists(Paths.get("wav"));
     }
 }

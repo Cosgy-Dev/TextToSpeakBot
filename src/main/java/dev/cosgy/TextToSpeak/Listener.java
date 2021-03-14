@@ -16,11 +16,8 @@
 
 package dev.cosgy.TextToSpeak;
 
-import dev.cosgy.TextToSpeak.audio.AudioHandler;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
@@ -32,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Listener extends ListenerAdapter {

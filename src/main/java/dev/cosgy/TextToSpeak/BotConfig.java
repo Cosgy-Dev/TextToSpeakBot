@@ -82,8 +82,6 @@ public class BotConfig {
             // validate bot token
             if (token == null || token.isEmpty() || token.matches("(BOT_TOKEN_HERE|Botトークンをここに貼り付け)")) {
                 token = prompt.prompt("BOTトークンを入力してください。"
-                        + "\nトークンを取得する方法はこちらから:"
-                        + "\nhttps://github.com/jagrosh/MusicBot/wiki/Getting-a-Bot-Token."
                         + "\nBOTトークン: ");
                 if (token == null) {
                     prompt.alert(Prompt.Level.WARNING, CONTEXT, "トークンが入力されていません！終了します。\n\n設定ファイルの場所: " + path.toAbsolutePath().toString());
@@ -98,8 +96,6 @@ public class BotConfig {
                 try {
                     owner = Long.parseLong(prompt.prompt("所有者のユーザーIDが設定されていない、または有効なIDではありません。"
                             + "\nBOTの所有者のユーザーIDを入力してください。"
-                            + "\nユーザーIDの入手方法はこちらから:"
-                            + "\nhttps://github.com/jagrosh/MusicBot/wiki/Finding-Your-User-ID"
                             + "\n所有者のユーザーID: "));
                 } catch (NumberFormatException | NullPointerException ex) {
                     owner = 0;

@@ -41,6 +41,7 @@ public class JoinCmd extends Command {
         GuildVoiceState userState = event.getMember().getVoiceState();
         try {
             event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
+            event.reply(String.format("**%s**に接続しました。", userState.getChannel().getName()));
         } catch (PermissionException ex) {
             event.reply(event.getClient().getError() + String.format("**%s**に接続できません!", userState.getChannel().getName()));
         }
