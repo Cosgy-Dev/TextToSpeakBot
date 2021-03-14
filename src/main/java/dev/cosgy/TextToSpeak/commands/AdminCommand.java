@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.Permission;
 
 public abstract class AdminCommand extends Command {
     public AdminCommand() {
-        this.category = new Category("Admin", event ->
+        this.category = new Category("管理", event ->
         {
             if (event.isOwner() || event.getMember().isOwner())
                 return true;
