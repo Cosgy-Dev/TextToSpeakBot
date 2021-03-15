@@ -16,6 +16,7 @@
 
 package dev.cosgy.TextToSpeak.audio;
 
+import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import net.dv8tion.jda.api.entities.User;
@@ -31,6 +32,7 @@ import java.util.UUID;
 public class VoiceCreation {
     private Bot bot;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("win");
 
     String dic = "/var/lib/mecab/dic/open-jtalk/naist-jdic";
     String vDic = "/usr/share/hts-voice";
@@ -75,6 +77,12 @@ public class VoiceCreation {
         logger.debug("読み込む声データ:"+ file.toString());
 
         String[] Command = {"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, message.replaceAll("[\r\n]", " "))};
+
+        if(IS_WINDOWS){
+            File dir = new File(bot.getConfig().getWinJTalkDir()+ File.separator + "open_jtalk.exe");
+            Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, message.replaceAll("[\r\n]", " "))};
+        }
+
 
         Runtime runtime = Runtime.getRuntime(); // ランタイムオブジェクトを取得する
         try {
