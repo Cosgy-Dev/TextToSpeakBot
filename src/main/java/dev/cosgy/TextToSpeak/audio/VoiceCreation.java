@@ -75,12 +75,12 @@ public class VoiceCreation {
 
         File file = new File(vDic+ File.separator+ settings.getVoice() + ".htsvoice");
         logger.debug("読み込む声データ:"+ file.toString());
-
-        String[] Command = {"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, message.replaceAll("[\r\n]", " "))};
-
+        String[] Command;
         if(IS_WINDOWS){
             File dir = new File(bot.getConfig().getWinJTalkDir()+ File.separator + "open_jtalk.exe");
             Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, message.replaceAll("[\r\n]", " "))};
+        }else{
+            Command = new String[]{"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, message.replaceAll("[\r\n]", " "))};
         }
 
 
@@ -102,7 +102,8 @@ public class VoiceCreation {
 
     private String CreateTmpText(UUID id, String message) {
         String tmp_dir = "tmp" + File.separator + id + ".txt";
-        try (PrintWriter writer = new PrintWriter(tmp_dir, "UTF-8")) {
+        String characterCode = IS_WINDOWS ? "Shift-JIS" : "UTF-8";
+        try (PrintWriter writer = new PrintWriter(tmp_dir, characterCode)) {
             writer.write(message);
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             e.printStackTrace();
