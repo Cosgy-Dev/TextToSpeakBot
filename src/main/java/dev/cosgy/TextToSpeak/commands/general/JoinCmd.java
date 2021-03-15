@@ -39,6 +39,12 @@ public class JoinCmd extends Command {
         bot.getPlayerManager().setUpHandler(event.getGuild());
 
         GuildVoiceState userState = event.getMember().getVoiceState();
+
+        if(!userState.inVoiceChannel()){
+            event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。");
+            return;
+        }
+
         try {
             event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
             event.reply(String.format("**%s**に接続しました。", userState.getChannel().getName()));
