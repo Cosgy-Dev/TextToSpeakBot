@@ -57,8 +57,8 @@ public class SetSpeedCmd extends Command {
             event.reply("数値を設定して下さい。");
             return;
         }
-        if(!(0.0f <= value && value <= 100.0f)){
-            event.reply("有効な数値を設定して下さい。");
+        if(!(0.1f <= value && value <= 100.0f)){
+            event.reply("有効な数値を設定して下さい。0.1~100.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
