@@ -37,7 +37,7 @@ public class BotConfig {
     private final Prompt prompt;
     private Path path = null;
 
-    private String token, prefix, altprefix, dictionary, voiceDirectory;
+    private String token, prefix, altprefix, dictionary, voiceDirectory, winjtalkdir;
     private long owner;
     private OnlineStatus status;
     private Activity game;
@@ -75,6 +75,7 @@ public class BotConfig {
             updatealerts = config.getBoolean("updatealerts");
             dictionary = config.getString("dictionary");
             voiceDirectory = config.getString("voiceDirectory");
+            winjtalkdir = config.getString("winjtalkdir");
 
 
             boolean write = false;
@@ -173,5 +174,9 @@ public class BotConfig {
 
     public String getVoiceDirectory(){
         return voiceDirectory;
+    }
+
+    public String getWinJTalkDir(){
+        return winjtalkdir;
     }
 }
