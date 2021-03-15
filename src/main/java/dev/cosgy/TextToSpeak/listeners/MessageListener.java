@@ -71,6 +71,9 @@ public class MessageListener extends ListenerAdapter {
                 return;
             }
 
+            // URLを置き換え
+            msg = msg.replaceAll("(http://|https://)[\\w.\\-/:]+","ゆーあーるえる");
+
             if(textChannel == settingText){
                 VoiceCreation vc = bot.getVoiceCreation();
                 String file = vc.CreateVoice(author, msg);
