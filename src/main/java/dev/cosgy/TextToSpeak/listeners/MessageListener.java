@@ -65,6 +65,12 @@ public class MessageListener extends ListenerAdapter {
                 return;
             }
 
+            String prefix = bot.getConfig().getPrefix().equals("@mention") ? "@" + event.getJDA().getSelfUser().getName() + " " : bot.getConfig().getPrefix();
+
+            if(msg.startsWith(prefix)){
+                return;
+            }
+
             if(textChannel == settingText){
                 VoiceCreation vc = bot.getVoiceCreation();
                 String file = vc.CreateVoice(author, msg);
