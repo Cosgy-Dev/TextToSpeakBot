@@ -56,7 +56,7 @@ public class SetIntonationCmd extends Command {
             event.reply("数値を設定して下さい。");
             return;
         }
-        if(0.0f >= value){
+        if(0.0f >= value && value <= 100.0f){
             event.reply("有効な数値を設定して下さい。");
             return;
         }
