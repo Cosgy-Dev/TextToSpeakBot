@@ -22,6 +22,7 @@ import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import dev.cosgy.TextToSpeak.commands.admin.SettcCmd;
+import dev.cosgy.TextToSpeak.commands.dictionary.AddWordCmd;
 import dev.cosgy.TextToSpeak.commands.general.*;
 import dev.cosgy.TextToSpeak.entities.Prompt;
 import dev.cosgy.TextToSpeak.gui.GUI;
@@ -128,6 +129,7 @@ public class TextToSpeak {
             add(new SetIntonationCmd(bot));
             add(new SetVoiceQualityA(bot));
             add(new SetVoiceQualityFm(bot));
+            add(new AddWordCmd(bot));
             add(new SettcCmd(bot));
         }};
 
