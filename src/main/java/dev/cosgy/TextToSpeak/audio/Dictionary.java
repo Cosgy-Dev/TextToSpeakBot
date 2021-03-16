@@ -109,6 +109,29 @@ public class Dictionary {
         }
     }
 
+    public boolean DeleteDictionary(Long guildId, String word){
+        HashMap<String, String> words;
+        words = bot.getDictionary().GetWords(guildId);
+        try {
+            words.remove(word);
+        }catch (NullPointerException e){
+            return false;
+        }
+        guildDic.put(guildId, words);
+
+        String sql = "DELETE FROM Dictionary WHERE guild_id = ? AND word = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setLong(1, guildId);
+            ps.setString(2, word);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return true;
+    }
+
     public HashMap<String, String> GetWords(Long guildId){
         return guildDic.get(guildId);
     }

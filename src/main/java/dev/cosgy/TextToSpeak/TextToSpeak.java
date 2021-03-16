@@ -24,6 +24,8 @@ import dev.cosgy.TextToSpeak.audio.Dictionary;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import dev.cosgy.TextToSpeak.commands.admin.SettcCmd;
 import dev.cosgy.TextToSpeak.commands.dictionary.AddWordCmd;
+import dev.cosgy.TextToSpeak.commands.dictionary.DlWordCmd;
+import dev.cosgy.TextToSpeak.commands.dictionary.WordListCmd;
 import dev.cosgy.TextToSpeak.commands.general.*;
 import dev.cosgy.TextToSpeak.entities.Prompt;
 import dev.cosgy.TextToSpeak.gui.GUI;
@@ -132,6 +134,8 @@ public class TextToSpeak {
             add(new SetVoiceQualityA(bot));
             add(new SetVoiceQualityFm(bot));
             add(new AddWordCmd(bot));
+            add(new WordListCmd(bot));
+            add(new DlWordCmd(bot));
             add(new SettcCmd(bot));
         }};
 
