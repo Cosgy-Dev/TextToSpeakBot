@@ -20,6 +20,7 @@ import com.github.lalyos.jfiglet.FigletFont;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import dev.cosgy.TextToSpeak.audio.Dictionary;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import dev.cosgy.TextToSpeak.commands.admin.SettcCmd;
 import dev.cosgy.TextToSpeak.commands.dictionary.AddWordCmd;
@@ -98,7 +99,8 @@ public class TextToSpeak {
         SettingsManager settings = new SettingsManager();
         VoiceCreation voiceCreation = new VoiceCreation();
         UserSettingsManager userSettingsManager = new UserSettingsManager();
-        Bot bot = new Bot(waiter, config, settings, voiceCreation, userSettingsManager);
+        Dictionary dictionary = new Dictionary();
+        Bot bot = new Bot(waiter, config, settings, voiceCreation, userSettingsManager, dictionary);
         Bot.INSTANCE = bot;
 
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
@@ -172,6 +174,7 @@ public class TextToSpeak {
                     .setBulkDeleteSplittingEnabled(true)
                     .build();
             bot.setJDA(jda);
+            bot.getDictionary().Init(bot);
         } catch (LoginException ex) {
             prompt.alert(Prompt.Level.ERROR, bot.GetLang().getString("appName"), ex + "\n" +
                     "正しい設定ファイルを編集していることを確認してください。Botトークンでのログインに失敗しました。" +

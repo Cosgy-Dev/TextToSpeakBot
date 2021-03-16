@@ -16,9 +16,7 @@
 
 package dev.cosgy.TextToSpeak.audio;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.settings.UserSettings;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Guild;
 import org.apache.commons.io.FileUtils;
@@ -33,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Dictionary {
-    private final Bot bot;
+    private Bot bot;
     private Path path = null;
     private boolean create = false;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -45,9 +43,9 @@ public class Dictionary {
      * String 1　元の単語
      * String 2　単語の読み
      */
-    private final HashMap<Long, HashMap<String, String>> guildDic;
+    private HashMap<Long, HashMap<String, String>> guildDic;
 
-    public Dictionary(Bot bot){
+    public void Init(Bot bot){
         this.bot = bot;
         this.guildDic = new HashMap<>();
 
