@@ -19,6 +19,7 @@ package dev.cosgy.TextToSpeak.audio;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public class VoiceCreation {
@@ -57,7 +60,7 @@ public class VoiceCreation {
         logger.debug("声データ："+ voices.toString());
     }
 
-    public String CreateVoice(User user, String message) {
+    public String CreateVoice(Guild guild , User user, String message) {
         if(!tmpFolderExists()){
             createTmpFolder();
             logger.info("tmpフォルダが存在しなかったため作成しました。");
@@ -75,12 +78,20 @@ public class VoiceCreation {
 
         File file = new File(vDic+ File.separator+ settings.getVoice() + ".htsvoice");
         logger.debug("読み込む声データ:"+ file.toString());
+
+        HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
+        String dicMsg =message;
+
+        for(String key : words.keySet()){
+            dicMsg = dicMsg.replaceAll(key, words.get(key));
+        }
+
         String[] Command;
         if(IS_WINDOWS){
             File dir = new File(bot.getConfig().getWinJTalkDir()+ File.separator + "open_jtalk.exe");
-            Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, message.replaceAll("[\r\n]", " "))};
+            Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, dicMsg.replaceAll("[\r\n]", " "))};
         }else{
-            Command = new String[]{"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, message.replaceAll("[\r\n]", " "))};
+            Command = new String[]{"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, dicMsg.replaceAll("[\r\n]", " "))};
         }
 
 
@@ -92,7 +103,7 @@ public class VoiceCreation {
         }
 
         try {
-            p.waitFor();
+            Objects.requireNonNull(p).waitFor();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

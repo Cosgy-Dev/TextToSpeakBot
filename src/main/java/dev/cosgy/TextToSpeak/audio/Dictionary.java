@@ -103,4 +103,8 @@ public class Dictionary {
             throwables.printStackTrace();
         }
     }
+
+    public HashMap<String, String> GetWords(Long guildId){
+        return guildDic.get(guildId);
+    }
 }

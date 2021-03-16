@@ -76,7 +76,7 @@ public class MessageListener extends ListenerAdapter {
 
             if(textChannel == settingText){
                 VoiceCreation vc = bot.getVoiceCreation();
-                String file = vc.CreateVoice(author, msg);
+                String file = vc.CreateVoice(guild,author, msg);
 
                 bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event, false));
 
