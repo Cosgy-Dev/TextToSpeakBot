@@ -22,11 +22,15 @@ import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.TextToSpeak;
 import dev.cosgy.TextToSpeak.audio.Dictionary;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.slf4j.Logger;
 
 import java.awt.*;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class AddWordCmd extends Command {
     private final Bot bot;
+    Logger log = getLogger(this.getClass());
 
     public AddWordCmd(Bot bot){
         this.bot = bot;
@@ -54,6 +58,8 @@ public class AddWordCmd extends Command {
 
         word = parts[0];
         reading = parts[1];
+
+        log.debug("単語追加:"+word +"-"+reading);
 
         Dictionary dic = bot.getDictionary();
         dic.UpdateDictionary(event.getGuild().getIdLong(), word,reading);

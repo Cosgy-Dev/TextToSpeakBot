@@ -86,8 +86,15 @@ public class Dictionary {
     }
 
     public void UpdateDictionary(Long guildId, String word, String reading) {
-        HashMap<String, String> words = guildDic.get(guildId);
-        words.put(word, reading);
+        HashMap<String, String> words;
+        words = bot.getDictionary().GetWords(guildId);
+        try{
+            words.put(word, reading);
+        }catch (NullPointerException e){
+            words = new HashMap<>();
+            words.put(word, reading);
+        }
+
         guildDic.put(guildId, words);
 
         String sql = "REPLACE INTO Dictionary VALUES (?,?,?)";

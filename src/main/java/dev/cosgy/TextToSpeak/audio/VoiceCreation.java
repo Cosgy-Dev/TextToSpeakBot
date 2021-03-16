@@ -19,6 +19,7 @@ package dev.cosgy.TextToSpeak.audio;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
+import jdk.nashorn.internal.runtime.Debug;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
@@ -81,11 +82,13 @@ public class VoiceCreation {
 
         HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
         String dicMsg =message;
-
-        for(String key : words.keySet()){
-            dicMsg = dicMsg.replaceAll(key, words.get(key));
+        try {
+            for (String key : words.keySet()) {
+                dicMsg = dicMsg.replaceAll(key, words.get(key));
+            }
+        }catch (NullPointerException ignored){
+            logger.debug("辞書データがなかったため処理をスキップします。");
         }
-
         String[] Command;
         if(IS_WINDOWS){
             File dir = new File(bot.getConfig().getWinJTalkDir()+ File.separator + "open_jtalk.exe");
