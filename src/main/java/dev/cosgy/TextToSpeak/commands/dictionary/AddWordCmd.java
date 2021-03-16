@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import org.slf4j.Logger;
 
 import java.awt.*;
+import java.util.regex.Pattern;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -59,10 +60,19 @@ public class AddWordCmd extends Command {
         word = parts[0];
         reading = parts[1];
 
+        if(!isFullKana(reading)){
+            event.reply("読み方はすべてカタカナで入力して下さい。");
+            return;
+        }
+
         log.debug("単語追加:"+word +"-"+reading);
 
         Dictionary dic = bot.getDictionary();
         dic.UpdateDictionary(event.getGuild().getIdLong(), word,reading);
         event.reply("これから"+ bot.getJDA().getSelfUser().getName() + "は、`"+ word + "`を`"+ reading +"`と読みます。");
+    }
+
+    public static boolean isFullKana(String str) {
+        return Pattern.matches("^[ァ-ヶー]*$", str);
     }
 }
