@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
@@ -101,8 +102,7 @@ public class TextToSpeak {
         SettingsManager settings = new SettingsManager();
         VoiceCreation voiceCreation = new VoiceCreation();
         UserSettingsManager userSettingsManager = new UserSettingsManager();
-        Dictionary dictionary = new Dictionary();
-        Bot bot = new Bot(waiter, config, settings, voiceCreation, userSettingsManager, dictionary);
+        Bot bot = new Bot(waiter, config, settings, voiceCreation, userSettingsManager);
         Bot.INSTANCE = bot;
 
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
@@ -178,7 +178,6 @@ public class TextToSpeak {
                     .setBulkDeleteSplittingEnabled(true)
                     .build();
             bot.setJDA(jda);
-            bot.getDictionary().Init(bot);
         } catch (LoginException ex) {
             prompt.alert(Prompt.Level.ERROR, bot.GetLang().getString("appName"), ex + "\n" +
                     "正しい設定ファイルを編集していることを確認してください。Botトークンでのログインに失敗しました。" +

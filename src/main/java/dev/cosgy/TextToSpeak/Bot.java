@@ -52,7 +52,7 @@ public class Bot {
     private GUI gui;
 
 
-    public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings, VoiceCreation voiceCreation, UserSettingsManager userSettingsManager, Dictionary dictionary) {
+    public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings, VoiceCreation voiceCreation, UserSettingsManager userSettingsManager) {
         this.waiter = waiter;
         this.lang = ResourceBundle.getBundle("lang.yomiage", Locale.JAPAN);
         this.config = config;
@@ -63,7 +63,7 @@ public class Bot {
         this.voiceCreation = voiceCreation;
         voiceCreation.Init(this);
         this.userSettingsManager = userSettingsManager;
-        this.dictionary = dictionary;
+        this.dictionary = new Dictionary(this);
     }
 
     public JDA getJDA() {

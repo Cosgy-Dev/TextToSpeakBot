@@ -26,6 +26,7 @@ import dev.cosgy.TextToSpeak.audio.QueuedTrack;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -83,6 +84,12 @@ public class MessageListener extends ListenerAdapter {
                 //textChannel.sendMessage(author.getName() + "が、「"+ msg +"」と送信しました。").queue();
             }
         }
+    }
+
+
+    @Override
+    public void onReady(ReadyEvent e){
+        bot.getDictionary().Init();
     }
 
     private class ResultHandler implements AudioLoadResultHandler {

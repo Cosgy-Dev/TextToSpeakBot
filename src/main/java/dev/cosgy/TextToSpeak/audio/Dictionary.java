@@ -45,10 +45,14 @@ public class Dictionary {
      */
     private HashMap<Long, HashMap<String, String>> guildDic;
 
-    public void Init(Bot bot){
+    public Dictionary(Bot bot){
         this.bot = bot;
         this.guildDic = new HashMap<>();
+    }
 
+    public void Init(){
+        int count =0;
+        logger.info("辞書データの読み込みを開始");
         path = OtherUtil.getPath("UserData.sqlite");
         if(!path.toFile().exists()){
             create = true;
@@ -64,31 +68,36 @@ public class Dictionary {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite");
             statement = connection.createStatement();
-            String SQL = "CREATE TABLE IF NOT EXISTS Dictionary(guild_id integer,word text,reading text)";
+            String SQL = "CREATE TABLE IF NOT EXISTS dictionary(guild_id integer,word text,reading)";
             statement.execute(SQL);
 
             List<Guild> guilds = bot.getJDA().getGuilds();
 
+
             for (Guild value : guilds) {
                 long guildId = value.getIdLong();
-                PreparedStatement ps = connection.prepareStatement("select * from Dictionary where guild_id = ?");
+                PreparedStatement ps = connection.prepareStatement("select * from dictionary where guild_id = ?");
                 ps.setLong(1, guildId);
                 ResultSet rs = ps.executeQuery();
                 HashMap<String, String> word = new HashMap<>();
                 while (rs.next()) {
                     word.put(rs.getString(2), rs.getString(3));
+                    count++;
                 }
                 guildDic.put(guildId, word);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        logger.info("辞書データの読み込み完了 単語数:" + count);
     }
 
     public void UpdateDictionary(Long guildId, String word, String reading) {
         HashMap<String, String> words;
         words = bot.getDictionary().GetWords(guildId);
+        boolean NewWord = false;
         try{
+            NewWord = words.containsKey(word);
             words.put(word, reading);
         }catch (NullPointerException e){
             words = new HashMap<>();
@@ -96,16 +105,30 @@ public class Dictionary {
         }
 
         guildDic.put(guildId, words);
-
-        String sql = "REPLACE INTO Dictionary VALUES (?,?,?)";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setLong(1, guildId);
-            ps.setString(2, word);
-            ps.setString(3, reading);
-            ps.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        String sql;
+        PreparedStatement ps;
+        if(NewWord) {
+            sql = "INSERT INTO Dictionary VALUES (?,?,?)";
+            try {
+                ps = connection.prepareStatement(sql);
+                ps.setLong(1, guildId);
+                ps.setString(2, word);
+                ps.setString(3, reading);
+                ps.executeUpdate();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }else{
+            sql = "UPDATE Dictionary SET reading = ? WHERE guild_id = ? AND word = ?";
+            try {
+                ps = connection.prepareStatement(sql);
+                ps.setLong(2, guildId);
+                ps.setString(3, word);
+                ps.setString(1, reading);
+                ps.executeUpdate();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 
