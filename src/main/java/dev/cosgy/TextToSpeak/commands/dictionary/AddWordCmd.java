@@ -35,7 +35,7 @@ public class AddWordCmd extends Command {
 
     public AddWordCmd(Bot bot){
         this.bot = bot;
-        this.name = "addword";
+        this.name = "addwd";
         this.help = "辞書に、単語を追加します。辞書に単語が存在している場合は上書きされます。";
         this.category = new Category("辞書");
     }
