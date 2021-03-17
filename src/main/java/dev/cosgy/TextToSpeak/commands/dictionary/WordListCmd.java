@@ -78,6 +78,12 @@ public class WordListCmd extends Command {
             return;
         }
         String[] wordList = new String[list.size()];
+
+        if(list.size() == 0){
+            event.reply("単語が登録されていません。");
+            return;
+        }
+
         for (int i = 0; i < list.size(); i++) {
             wordList[i] = list.get(i);
         }
