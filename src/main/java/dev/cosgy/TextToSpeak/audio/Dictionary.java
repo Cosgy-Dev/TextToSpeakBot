@@ -68,7 +68,7 @@ public class Dictionary {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite");
             statement = connection.createStatement();
-            String SQL = "CREATE TABLE IF NOT EXISTS dictionary(guild_id integer,word text,reading)";
+            String SQL = "CREATE TABLE IF NOT EXISTS Dictionary(guild_id integer,word text,reading)";
             statement.execute(SQL);
 
             List<Guild> guilds = bot.getJDA().getGuilds();
@@ -76,7 +76,7 @@ public class Dictionary {
 
             for (Guild value : guilds) {
                 long guildId = value.getIdLong();
-                PreparedStatement ps = connection.prepareStatement("select * from dictionary where guild_id = ?");
+                PreparedStatement ps = connection.prepareStatement("select * from Dictionary where guild_id = ?");
                 ps.setLong(1, guildId);
                 ResultSet rs = ps.executeQuery();
                 HashMap<String, String> word = new HashMap<>();
