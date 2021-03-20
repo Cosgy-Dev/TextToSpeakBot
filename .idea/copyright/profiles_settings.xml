@@ -7,6 +7,8 @@
       <option name="block" value="false" />
       <option name="separateBefore" value="true" />
       <option name="separateAfter" value="true" />
+      <option name="lenBefore" value="90" />
+      <option name="lenAfter" value="90" />
       <option name="box" value="true" />
     </LanguageOptions>
   </settings>

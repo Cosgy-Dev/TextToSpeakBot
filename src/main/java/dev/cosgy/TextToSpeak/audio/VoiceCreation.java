@@ -82,17 +82,18 @@ public class VoiceCreation {
 
         HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
         String dicMsg =message;
+
+        if(bot.getSettingsManager().getSettings(guild).isReadName()){
+            dicMsg = user.getName() + dicMsg;
+            dicMsg = dicMsg.replaceAll("Kosugi_kun", "コスギクン");
+        }
+
         try {
             for (String key : words.keySet()) {
                 dicMsg = dicMsg.replaceAll(key, words.get(key));
             }
         }catch (NullPointerException ignored){
             logger.debug("辞書データがなかったため処理をスキップします。");
-        }
-
-        if(bot.getSettingsManager().getSettings(guild).isReadName()){
-            dicMsg = user.getName() + dicMsg;
-            dicMsg = dicMsg.replaceAll("Kosugi_kun", "コスギクン");
         }
         String[] Command;
         if(IS_WINDOWS){
