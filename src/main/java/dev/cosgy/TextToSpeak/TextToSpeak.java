@@ -28,6 +28,7 @@ import dev.cosgy.TextToSpeak.commands.dictionary.AddWordCmd;
 import dev.cosgy.TextToSpeak.commands.dictionary.DlWordCmd;
 import dev.cosgy.TextToSpeak.commands.dictionary.WordListCmd;
 import dev.cosgy.TextToSpeak.commands.general.*;
+import dev.cosgy.TextToSpeak.commands.owner.ShutdownCmd;
 import dev.cosgy.TextToSpeak.entities.Prompt;
 import dev.cosgy.TextToSpeak.gui.GUI;
 import dev.cosgy.TextToSpeak.listeners.CommandAudit;
@@ -139,6 +140,7 @@ public class TextToSpeak {
             add(new DlWordCmd(bot));
             add(new SettcCmd(bot));
             add(new SetReadNameCmd(bot));
+            add(new ShutdownCmd(bot));
         }};
 
         cb.addCommands(commandList.toArray(new Command[0]));
