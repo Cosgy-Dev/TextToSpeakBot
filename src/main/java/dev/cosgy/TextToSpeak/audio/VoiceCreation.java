@@ -89,6 +89,10 @@ public class VoiceCreation {
         }catch (NullPointerException ignored){
             logger.debug("辞書データがなかったため処理をスキップします。");
         }
+
+        if(bot.getSettingsManager().getSettings(guild).isReadName()){
+            dicMsg = user.getName() + dicMsg;
+        }
         String[] Command;
         if(IS_WINDOWS){
             File dir = new File(bot.getConfig().getWinJTalkDir()+ File.separator + "open_jtalk.exe");

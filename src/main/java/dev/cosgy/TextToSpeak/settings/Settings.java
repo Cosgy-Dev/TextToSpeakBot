@@ -28,9 +28,10 @@ public class Settings implements GuildSettingsProvider {
     protected long textId;
     private String prefix;
     private int volume;
+    private boolean readName;
 
 
-    public Settings(SettingsManager manager, String textId, String prefix, int volume) {
+    public Settings(SettingsManager manager, String textId, String prefix, int volume, boolean readName) {
         this.manager = manager;
         try {
             this.textId = Long.parseLong(textId);
@@ -39,13 +40,15 @@ public class Settings implements GuildSettingsProvider {
         }
         this.prefix = prefix;
         this.volume = volume;
+        this.readName = readName;
     }
 
-    public Settings(SettingsManager manager, long textId, String prefix, int volume) {
+    public Settings(SettingsManager manager, long textId, String prefix, int volume, boolean readName) {
         this.manager = manager;
         this.textId = textId;
         this.prefix = prefix;
         this.volume = volume;
+        this.readName = readName;
     }
 
 
@@ -79,5 +82,14 @@ public class Settings implements GuildSettingsProvider {
     @Override
     public Collection<String> getPrefixes() {
         return prefix == null ? Collections.EMPTY_SET : Collections.singleton(prefix);
+    }
+
+    public boolean isReadName(){
+        return  readName;
+    }
+
+    public void setReadName(boolean readName){
+        this.readName = readName;
+        this.manager.writeSettings();
     }
 }
