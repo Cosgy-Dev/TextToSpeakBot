@@ -107,14 +107,14 @@ public class Dictionary {
         guildDic.put(guildId, words);
         String sql;
         PreparedStatement ps;
-        if(NewWord) {
+        if(!NewWord) {
             sql = "INSERT INTO Dictionary VALUES (?,?,?)";
             try {
                 ps = connection.prepareStatement(sql);
                 ps.setLong(1, guildId);
                 ps.setString(2, word);
                 ps.setString(3, reading);
-                ps.executeUpdate();
+                ps.execute();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -125,7 +125,7 @@ public class Dictionary {
                 ps.setLong(2, guildId);
                 ps.setString(3, word);
                 ps.setString(1, reading);
-                ps.executeUpdate();
+                ps.execute();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
