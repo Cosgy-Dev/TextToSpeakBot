@@ -84,7 +84,7 @@ public class VoiceCreation {
         String dicMsg =message;
 
         if(bot.getSettingsManager().getSettings(guild).isReadName()){
-            dicMsg = user.getName() + dicMsg;
+            dicMsg = user.getName() + "  " + dicMsg;
             dicMsg = dicMsg.replaceAll("Kosugi_kun", "コスギクン");
         }
 

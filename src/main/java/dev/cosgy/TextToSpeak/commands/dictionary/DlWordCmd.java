@@ -33,7 +33,7 @@ public class DlWordCmd extends Command {
     public DlWordCmd(Bot bot){
         this.bot = bot;
         this.name = "dlwd";
-        this.help = "辞書に、単語を削除します。";
+        this.help = "辞書の単語を削除します。";
         this.category = new Category("辞書");
     }
 
