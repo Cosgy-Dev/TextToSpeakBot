@@ -18,6 +18,7 @@ package dev.cosgy.TextToSpeak.commands.owner;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
+import dev.cosgy.TextToSpeak.TextToSpeak;
 import dev.cosgy.TextToSpeak.commands.OwnerCommand;
 import org.apache.commons.io.FileUtils;
 

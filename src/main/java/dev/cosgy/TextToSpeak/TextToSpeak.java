@@ -44,10 +44,12 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -193,5 +195,24 @@ public class TextToSpeak {
                     "設定ファイルの場所: " + config.getConfigLocation());
             System.exit(1);
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(TextToSpeak::ShutDown));
+    }
+
+    private static void ShutDown(){
+        Logger log = getLogger("シャットダウン");
+
+        log.info("一時ファイルを削除中...");
+        File tmp = new File("tmp");
+        File wav = new File("wav");
+
+        try {
+            FileUtils.cleanDirectory(tmp);
+            FileUtils.cleanDirectory(wav);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("一時ファイルを削除しました。");
+        //bot.shutdown();
     }
 }

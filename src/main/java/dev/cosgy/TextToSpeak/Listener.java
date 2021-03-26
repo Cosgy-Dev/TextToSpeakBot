@@ -34,12 +34,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class Listener extends ListenerAdapter {
     private final Bot bot;
 
     public Listener(Bot bot) {
         this.bot = bot;
     }
+    Logger log = getLogger(this.getClass());
 
     @Override
     public void onReady(ReadyEvent event) {
@@ -85,6 +88,7 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent event) {
+        log.info("シャットダウンします。");
         bot.shutdown();
     }
 }
