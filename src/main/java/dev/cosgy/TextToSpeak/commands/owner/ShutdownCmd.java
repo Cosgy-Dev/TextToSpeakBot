@@ -48,9 +48,8 @@ public class ShutdownCmd extends OwnerCommand {
                 e.printStackTrace();
             }
             m.editMessage("一時ファイルを削除しました。").queue();
+            event.replyWarning("シャットダウンしています...");
+            bot.shutdown();
         });
-
-        event.replyWarning("シャットダウンしています...");
-        bot.shutdown();
     }
 }
