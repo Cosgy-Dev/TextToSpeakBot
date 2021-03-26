@@ -104,7 +104,7 @@ public class AboutCommand extends Command {
             builder.addField("", event.getJDA().getUsers().size() + " ユーザーのシャード\n" + event.getJDA().getGuilds().size() + " サーバー", true);
             builder.addField("", event.getJDA().getTextChannels().size() + " テキストチャンネル\n" + event.getJDA().getVoiceChannels().size() + " ボイスチャンネル", true);
         }
-        builder.setFooter("再起動が行われた時間：", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg");
+        builder.setFooter("再起動が行われた時間", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg");
         builder.setTimestamp(event.getClient().getStartTime());
         event.reply(builder.build());
     }
