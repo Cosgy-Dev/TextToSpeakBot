@@ -76,6 +76,11 @@ public class MessageListener extends ListenerAdapter {
             msg = msg.replaceAll("(http://|https://)[\\w.\\-/:#?=&;%~+]+","ゆーあーるえる");
 
             if(textChannel == settingText){
+
+                if(bot.getSettingsManager().getSettings(guild).isReadName()){
+                    msg = author.getName() + "  " + msg;
+                }
+
                 VoiceCreation vc = bot.getVoiceCreation();
                 String file = vc.CreateVoice(guild,author, msg);
 

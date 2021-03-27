@@ -29,9 +29,10 @@ public class Settings implements GuildSettingsProvider {
     private String prefix;
     private int volume;
     private boolean readName;
+    private boolean joinAndLeaveRead;
 
 
-    public Settings(SettingsManager manager, String textId, String prefix, int volume, boolean readName) {
+    public Settings(SettingsManager manager, String textId, String prefix, int volume, boolean readName, boolean joinAndLeaveRead) {
         this.manager = manager;
         try {
             this.textId = Long.parseLong(textId);
@@ -41,14 +42,16 @@ public class Settings implements GuildSettingsProvider {
         this.prefix = prefix;
         this.volume = volume;
         this.readName = readName;
+        this.joinAndLeaveRead = joinAndLeaveRead;
     }
 
-    public Settings(SettingsManager manager, long textId, String prefix, int volume, boolean readName) {
+    public Settings(SettingsManager manager, long textId, String prefix, int volume, boolean readName, boolean joinAndLeaveRead) {
         this.manager = manager;
         this.textId = textId;
         this.prefix = prefix;
         this.volume = volume;
         this.readName = readName;
+        this.joinAndLeaveRead = joinAndLeaveRead;
     }
 
 
@@ -90,6 +93,13 @@ public class Settings implements GuildSettingsProvider {
 
     public void setReadName(boolean readName){
         this.readName = readName;
+        this.manager.writeSettings();
+    }
+
+    public boolean isJoinAndLeaveRead(){ return joinAndLeaveRead; }
+
+    public void setJoinAndLeaveRead(boolean joinAndLeaveRead){
+        this.joinAndLeaveRead = joinAndLeaveRead;
         this.manager.writeSettings();
     }
 }

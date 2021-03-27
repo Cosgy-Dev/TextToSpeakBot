@@ -22,6 +22,7 @@ import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import dev.cosgy.TextToSpeak.audio.Dictionary;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
+import dev.cosgy.TextToSpeak.commands.admin.JLReadCmd;
 import dev.cosgy.TextToSpeak.commands.admin.SetReadNameCmd;
 import dev.cosgy.TextToSpeak.commands.admin.SettcCmd;
 import dev.cosgy.TextToSpeak.commands.dictionary.AddWordCmd;
@@ -142,6 +143,7 @@ public class TextToSpeak {
             add(new DlWordCmd(bot));
             add(new SettcCmd(bot));
             add(new SetReadNameCmd(bot));
+            add(new JLReadCmd(bot));
             add(new ShutdownCmd(bot));
         }};
 
@@ -205,7 +207,6 @@ public class TextToSpeak {
         log.info("一時ファイルを削除中...");
         File tmp = new File("tmp");
         File wav = new File("wav");
-
         try {
             FileUtils.cleanDirectory(tmp);
             FileUtils.cleanDirectory(wav);

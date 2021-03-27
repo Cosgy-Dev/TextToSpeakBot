@@ -16,15 +16,24 @@
 
 package dev.cosgy.TextToSpeak;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.cosgy.TextToSpeak.audio.AudioHandler;
+import dev.cosgy.TextToSpeak.audio.QueuedTrack;
+import dev.cosgy.TextToSpeak.listeners.MessageListener;
+import dev.cosgy.TextToSpeak.settings.Settings;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.commons.io.FileUtils;
@@ -34,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -81,6 +91,14 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
         Member botMember = event.getGuild().getSelfMember();
+
+        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
+
+        if(settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelLeft() && event.getChannelLeft().getMembers().size() > 1){
+            String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルから退出しました。");
+            bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.LeaveResultHandler(null, event));
+        }
+
         if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)){
             AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
             handler.getQueue().clear();
@@ -90,12 +108,101 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
+        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
+
+        if(settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelJoined()){
+            String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルに参加しました。");
+            bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.JoinResultHandler(null, event, false));
+        }
     }
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent event) {
         log.info("シャットダウンします。");
         bot.shutdown();
+    }
+
+
+    private class JoinResultHandler implements AudioLoadResultHandler {
+        private final Message m;
+        private final GuildVoiceJoinEvent event;
+        private final boolean ytsearch;
+
+        private JoinResultHandler(Message m, GuildVoiceJoinEvent event, boolean ytsearch) {
+            this.m = m;
+            this.event = event;
+            this.ytsearch = ytsearch;
+        }
+
+        private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
+            AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
+            handler.addTrack(new QueuedTrack(track, event.getMember().getUser()));
+        }
+
+        private int loadPlaylist(AudioPlaylist playlist, AudioTrack exclude) {
+            int[] count = {0};
+            playlist.getTracks().forEach((track) -> {
+                if (!track.equals(exclude)) {
+                    AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
+                    handler.addTrack(new QueuedTrack(track, event.getMember().getUser()));
+                    count[0]++;
+                }
+            });
+            return count[0];
+        }
+
+        @Override
+        public void trackLoaded(AudioTrack track) {
+            loadSingle(track, null);
+        }
+
+        @Override
+        public void playlistLoaded(AudioPlaylist playlist) {
+
+        }
+
+        @Override
+        public void noMatches() {
+        }
+
+        @Override
+        public void loadFailed(FriendlyException throwable) {
+
+        }
+    }
+
+    private class LeaveResultHandler implements AudioLoadResultHandler {
+        private final Message m;
+        private final GuildVoiceLeaveEvent event;
+
+        private LeaveResultHandler(Message m, GuildVoiceLeaveEvent event) {
+            this.m = m;
+            this.event = event;
+        }
+
+        private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
+            AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
+            handler.addTrack(new QueuedTrack(track, event.getMember().getUser()));
+        }
+
+        @Override
+        public void trackLoaded(AudioTrack track) {
+            loadSingle(track, null);
+        }
+
+        @Override
+        public void playlistLoaded(AudioPlaylist playlist) {
+
+        }
+
+        @Override
+        public void noMatches() {
+        }
+
+        @Override
+        public void loadFailed(FriendlyException throwable) {
+
+        }
     }
 }

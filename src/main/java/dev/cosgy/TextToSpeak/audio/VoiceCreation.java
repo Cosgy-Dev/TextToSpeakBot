@@ -68,7 +68,7 @@ public class VoiceCreation {
             createGuildTmpFolder(guild);
             logger.info("tmpフォルダが存在しなかったため作成しました。");
         }else if(!guildTmpFolderExists(guild)){
-            createGuildWavFolder(guild);
+            createGuildTmpFolder(guild);
         }
 
         if(!wavFolderExists()){
@@ -89,11 +89,7 @@ public class VoiceCreation {
 
         HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
         String dicMsg =message;
-
-        if(bot.getSettingsManager().getSettings(guild).isReadName()){
-            dicMsg = user.getName() + "  " + dicMsg;
-            dicMsg = dicMsg.replaceAll("Kosugi_kun", "コスギクン");
-        }
+        dicMsg = dicMsg.replaceAll("Kosugi_kun", "コスギクン");
 
         try {
             for (String key : words.keySet()) {
