@@ -121,4 +121,7 @@
       </item>
     </group>
   </component>
+  <component name="uidesigner-configuration">
+    <option name="USE_DYNAMIC_BUNDLES" value="true" />
+  </component>
 </project>

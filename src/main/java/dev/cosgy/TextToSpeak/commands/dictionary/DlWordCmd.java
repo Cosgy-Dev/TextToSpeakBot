@@ -14,54 +14,59 @@
 //     limitations under the License.                                          /
 ////////////////////////////////////////////////////////////////////////////////
 
-package dev.cosgy.TextToSpeak.commands.general;
+package dev.cosgy.TextToSpeak.commands.dictionary;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.settings.UserSettings;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.slf4j.Logger;
 
-public class SetIntonationCmd extends Command {
-    protected Bot bot;
+import java.util.HashMap;
 
-    public SetIntonationCmd(Bot bot){
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class DlWordCmd extends Command {
+    private final Bot bot;
+    Logger log = getLogger(this.getClass());
+
+    public DlWordCmd(Bot bot){
         this.bot = bot;
-        this.name = "setinto";
-        this.help = "抑揚の設定を変更します。";
-        this.guildOnly = false;
-        this.category = new Category("設定");
+        this.name = "dlwd";
+        this.help = "辞書に登録されている単語を削除します。";
+        this.category = new Category("辞書");
     }
+
     @Override
     protected void execute(CommandEvent event){
         if (event.getArgs().isEmpty() && event.getMessage().getAttachments().isEmpty()) {
             EmbedBuilder ebuilder = new EmbedBuilder()
-                    .setTitle("setintoコマンド")
-                    .addField("使用方法:", name+" <数値(0.0~)>", false)
-                    .addField("説明:","抑揚の設定を変更します。抑揚は、0.0以上の数値で設定して下さい。",false);
+                    .setTitle("dlwordコマンド")
+                    .addField("使用方法:", name+" <単語>", false)
+                    .addField("説明:",help,false);
             event.reply(ebuilder.build());
             return;
         }
+
+        HashMap<String, String> words = bot.getDictionary().GetWords(event.getGuild().getIdLong());
+
         String args = event.getArgs();
-        boolean result;
-        float value = 0.0f;
+
         try {
-            value = Float.parseFloat(args);
-            result = true;
-        }
-        catch (NumberFormatException e) {
-            result = false;
-        }
-        if(!result){
-            event.reply("数値を設定して下さい。");
+            if (!words.containsKey(args)) {
+                event.reply(args + "は、辞書に登録されていません。");
+                return;
+            }
+        }catch (NullPointerException e){
             return;
         }
-        if(!(0.1f <= value && value <= 100.0f)){
-            event.reply("有効な数値を設定して下さい。0.1~100.0");
-            return;
+
+        boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
+
+        if(result){
+            event.reply("単語を削除しました。");
+        }else{
+            event.reply("削除中に問題が発生しました。");
         }
-        UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
-        settings.setIntonation(value);
-        event.reply("抑揚を"+value+"に設定しました。");
     }
 }

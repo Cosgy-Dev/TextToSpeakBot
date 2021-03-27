@@ -40,7 +40,9 @@ public class SettingsManager implements GuildSettingsManager {
                 settings.put(Long.parseLong(id), new Settings(this,
                         o.has("text_channel_id") ? o.getString("text_channel_id") : null,
                         o.has("prefix") ? o.getString("prefix") : null,
-                        o.has("volume") ? o.getInt("volume") : 50
+                        o.has("volume") ? o.getInt("volume") : 50,
+                        o.has("read_name") && o.getBoolean("read_name"),
+                        o.has("join_and_leave_read") && o.getBoolean("join_and_leave_read")
                         ));
             });
         } catch (IOException | JSONException e) {
@@ -62,7 +64,7 @@ public class SettingsManager implements GuildSettingsManager {
      * @return 作成されたデフォルト設定
      */
     private Settings createDefaultSettings() {
-        return new Settings(this, 0, null, 50);
+        return new Settings(this, 0, null, 50, false, false);
     }
 
     /**
@@ -79,6 +81,10 @@ public class SettingsManager implements GuildSettingsManager {
                 o.put("prefix", s.getPrefix());
             if (s.getVolume() != 50)
                 o.put("volume", s.getVolume());
+            if(s.isReadName())
+                o.put("read_name", s.isReadName());
+            if(s.isJoinAndLeaveRead())
+                o.put("join_and_leave_read", s.isJoinAndLeaveRead());
             obj.put(Long.toString(key), o);
         });
         try {

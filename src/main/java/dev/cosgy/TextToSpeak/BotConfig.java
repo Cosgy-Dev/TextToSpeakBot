@@ -37,11 +37,11 @@ public class BotConfig {
     private final Prompt prompt;
     private Path path = null;
 
-    private String token, prefix, altprefix, dictionary, voiceDirectory;
+    private String token, prefix, altprefix, dictionary, voiceDirectory, winjtalkdir;
     private long owner;
     private OnlineStatus status;
     private Activity game;
-    private boolean updatealerts;
+    private boolean updatealerts, dbots;
 
 
     private boolean valid = false;
@@ -75,6 +75,8 @@ public class BotConfig {
             updatealerts = config.getBoolean("updatealerts");
             dictionary = config.getString("dictionary");
             voiceDirectory = config.getString("voiceDirectory");
+            winjtalkdir = config.getString("winjtalkdir");
+            dbots = owner == 334091398263341056L;
 
 
             boolean write = false;
@@ -82,8 +84,6 @@ public class BotConfig {
             // validate bot token
             if (token == null || token.isEmpty() || token.matches("(BOT_TOKEN_HERE|Botトークンをここに貼り付け)")) {
                 token = prompt.prompt("BOTトークンを入力してください。"
-                        + "\nトークンを取得する方法はこちらから:"
-                        + "\nhttps://github.com/jagrosh/MusicBot/wiki/Getting-a-Bot-Token."
                         + "\nBOTトークン: ");
                 if (token == null) {
                     prompt.alert(Prompt.Level.WARNING, CONTEXT, "トークンが入力されていません！終了します。\n\n設定ファイルの場所: " + path.toAbsolutePath().toString());
@@ -98,8 +98,6 @@ public class BotConfig {
                 try {
                     owner = Long.parseLong(prompt.prompt("所有者のユーザーIDが設定されていない、または有効なIDではありません。"
                             + "\nBOTの所有者のユーザーIDを入力してください。"
-                            + "\nユーザーIDの入手方法はこちらから:"
-                            + "\nhttps://github.com/jagrosh/MusicBot/wiki/Finding-Your-User-ID"
                             + "\n所有者のユーザーID: "));
                 } catch (NumberFormatException | NullPointerException ex) {
                     owner = 0;
@@ -177,5 +175,13 @@ public class BotConfig {
 
     public String getVoiceDirectory(){
         return voiceDirectory;
+    }
+
+    public String getWinJTalkDir(){
+        return winjtalkdir;
+    }
+
+    public boolean getDBots() {
+        return dbots;
     }
 }

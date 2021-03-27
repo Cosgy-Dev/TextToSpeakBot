@@ -18,6 +18,7 @@ package dev.cosgy.TextToSpeak;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import dev.cosgy.TextToSpeak.audio.AudioHandler;
+import dev.cosgy.TextToSpeak.audio.Dictionary;
 import dev.cosgy.TextToSpeak.audio.PlayerManager;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import dev.cosgy.TextToSpeak.gui.GUI;
@@ -44,6 +45,7 @@ public class Bot {
     private final PlayerManager players;
     private final VoiceCreation voiceCreation;
     private final UserSettingsManager userSettingsManager;
+    private final Dictionary dictionary;
 
     private boolean shuttingDown = false;
     private JDA jda;
@@ -61,6 +63,7 @@ public class Bot {
         this.voiceCreation = voiceCreation;
         voiceCreation.Init(this);
         this.userSettingsManager = userSettingsManager;
+        this.dictionary = new Dictionary(this);
     }
 
     public JDA getJDA() {
@@ -140,4 +143,6 @@ public class Bot {
     public UserSettingsManager getUserSettingsManager(){
         return userSettingsManager;
     }
+
+    public Dictionary getDictionary(){return dictionary;}
 }

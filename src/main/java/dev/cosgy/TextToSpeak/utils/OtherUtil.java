@@ -39,7 +39,7 @@ public class OtherUtil {
     public final static String NEW_VERSION_AVAILABLE = "利用可能な新しいバージョンがあります!\n"
             + "現在のバージョン: %s\n"
             + "最新のバージョン: %s\n\n"
-            + " https://github.com/Cosgy-Dev/MusicBot-JP-java/releases/latest から最新バージョンをダウンロードして下さい。";
+            + " https://github.com/Cosgy-Dev/TextToSpeakBot/releases/latest から最新バージョンをダウンロードして下さい。";
     private final static String WINDOWS_INVALID_PATH = "c:\\windows\\system32\\";
 
     public static Path getPath(String path) {
@@ -162,7 +162,7 @@ public class OtherUtil {
     public static String getLatestVersion() {
         try {
             Response response = new OkHttpClient.Builder().build()
-                    .newCall(new Request.Builder().get().url("https://api.github.com/repos/Cosgy-Dev/MusicBot-JP-java/releases/latest").build())
+                    .newCall(new Request.Builder().get().url("https://api.github.com/repos/Cosgy-Dev/TextToSpeakBot/releases/latest").build())
                     .execute();
             ResponseBody body = response.body();
             if (body != null) {

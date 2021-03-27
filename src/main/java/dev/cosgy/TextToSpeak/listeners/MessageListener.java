@@ -26,6 +26,7 @@ import dev.cosgy.TextToSpeak.audio.QueuedTrack;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -65,15 +66,35 @@ public class MessageListener extends ListenerAdapter {
                 return;
             }
 
+            String prefix = bot.getConfig().getPrefix().equals("@mention") ? "@" + event.getJDA().getSelfUser().getName() + " " : bot.getConfig().getPrefix();
+
+            if(msg.startsWith(prefix)){
+                return;
+            }
+
+            // URLを置き換え
+            msg = msg.replaceAll("(http://|https://)[\\w.\\-/:#?=&;%~+]+","ゆーあーるえる");
+
             if(textChannel == settingText){
+
+                if(bot.getSettingsManager().getSettings(guild).isReadName()){
+                    msg = author.getName() + "  " + msg;
+                }
+
                 VoiceCreation vc = bot.getVoiceCreation();
-                String file = vc.CreateVoice(author, msg);
+                String file = vc.CreateVoice(guild,author, msg);
 
                 bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event, false));
 
                 //textChannel.sendMessage(author.getName() + "が、「"+ msg +"」と送信しました。").queue();
             }
         }
+    }
+
+
+    @Override
+    public void onReady(ReadyEvent e){
+        bot.getDictionary().Init();
     }
 
     private class ResultHandler implements AudioLoadResultHandler {

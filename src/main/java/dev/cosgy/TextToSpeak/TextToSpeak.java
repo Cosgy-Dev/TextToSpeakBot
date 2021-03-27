@@ -20,9 +20,16 @@ import com.github.lalyos.jfiglet.FigletFont;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import dev.cosgy.TextToSpeak.audio.Dictionary;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
+import dev.cosgy.TextToSpeak.commands.admin.JLReadCmd;
+import dev.cosgy.TextToSpeak.commands.admin.SetReadNameCmd;
 import dev.cosgy.TextToSpeak.commands.admin.SettcCmd;
+import dev.cosgy.TextToSpeak.commands.dictionary.AddWordCmd;
+import dev.cosgy.TextToSpeak.commands.dictionary.DlWordCmd;
+import dev.cosgy.TextToSpeak.commands.dictionary.WordListCmd;
 import dev.cosgy.TextToSpeak.commands.general.*;
+import dev.cosgy.TextToSpeak.commands.owner.ShutdownCmd;
 import dev.cosgy.TextToSpeak.entities.Prompt;
 import dev.cosgy.TextToSpeak.gui.GUI;
 import dev.cosgy.TextToSpeak.listeners.CommandAudit;
@@ -35,12 +42,15 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +63,7 @@ public class TextToSpeak {
             Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI,
             Permission.MANAGE_CHANNEL, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.NICKNAME_CHANGE};
     public final static GatewayIntent[] INTENTS = {GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES};
-    public static boolean CHECK_UPDATE = false;
+    public static boolean CHECK_UPDATE = true;
     public static boolean COMMAND_AUDIT_ENABLED = false;
 
     /**
@@ -128,7 +138,13 @@ public class TextToSpeak {
             add(new SetIntonationCmd(bot));
             add(new SetVoiceQualityA(bot));
             add(new SetVoiceQualityFm(bot));
+            add(new AddWordCmd(bot));
+            add(new WordListCmd(bot));
+            add(new DlWordCmd(bot));
             add(new SettcCmd(bot));
+            add(new SetReadNameCmd(bot));
+            add(new JLReadCmd(bot));
+            add(new ShutdownCmd(bot));
         }};
 
         cb.addCommands(commandList.toArray(new Command[0]));
@@ -181,5 +197,23 @@ public class TextToSpeak {
                     "設定ファイルの場所: " + config.getConfigLocation());
             System.exit(1);
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(TextToSpeak::ShutDown));
+    }
+
+    private static void ShutDown(){
+        Logger log = getLogger("シャットダウン");
+
+        log.info("一時ファイルを削除中...");
+        File tmp = new File("tmp");
+        File wav = new File("wav");
+        try {
+            FileUtils.cleanDirectory(tmp);
+            FileUtils.cleanDirectory(wav);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("一時ファイルを削除しました。");
+        //bot.shutdown();
     }
 }
