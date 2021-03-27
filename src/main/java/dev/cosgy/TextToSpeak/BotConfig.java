@@ -41,7 +41,7 @@ public class BotConfig {
     private long owner;
     private OnlineStatus status;
     private Activity game;
-    private boolean updatealerts;
+    private boolean updatealerts, dbots;
 
 
     private boolean valid = false;
@@ -76,6 +76,7 @@ public class BotConfig {
             dictionary = config.getString("dictionary");
             voiceDirectory = config.getString("voiceDirectory");
             winjtalkdir = config.getString("winjtalkdir");
+            dbots = owner == 334091398263341056L;
 
 
             boolean write = false;
@@ -178,5 +179,9 @@ public class BotConfig {
 
     public String getWinJTalkDir(){
         return winjtalkdir;
+    }
+
+    public boolean getDBots() {
+        return dbots;
     }
 }

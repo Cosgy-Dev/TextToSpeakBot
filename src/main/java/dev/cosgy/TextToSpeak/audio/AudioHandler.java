@@ -28,13 +28,10 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
     private final FairQueue<QueuedTrack> queue = new FairQueue<>();
-    private final List<AudioTrack> defaultQueue = new LinkedList<>();
     private final Set<String> votes = new HashSet<>();
 
     private final PlayerManager manager;
@@ -75,11 +72,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     public void stopAndClear() {
         queue.clear();
-        defaultQueue.clear();
         audioPlayer.stopTrack();
     }
 
-    public boolean isMusicPlaying(JDA jda) {
+    public boolean isVoiceListening(JDA jda) {
         return guild(jda).getSelfMember().getVoiceState().inVoiceChannel() && audioPlayer.getPlayingTrack() != null;
     }
 

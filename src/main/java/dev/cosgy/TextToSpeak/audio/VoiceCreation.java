@@ -22,6 +22,7 @@ import dev.cosgy.TextToSpeak.settings.UserSettings;
 import jdk.nashorn.internal.runtime.Debug;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,18 +65,24 @@ public class VoiceCreation {
     public String CreateVoice(Guild guild , User user, String message) {
         if(!tmpFolderExists()){
             createTmpFolder();
+            createGuildTmpFolder(guild);
             logger.info("tmpフォルダが存在しなかったため作成しました。");
+        }else if(!guildTmpFolderExists(guild)){
+            createGuildWavFolder(guild);
         }
 
         if(!wavFolderExists()){
             createWavFolder();
+            createGuildWavFolder(guild);
             logger.info("wavフォルダが存在しなかったため作成しました。");
+        }else if(!guildWavFolderExists(guild)){
+            createGuildWavFolder(guild);
         }
 
         UserSettings settings = bot.getUserSettingsManager().getSettings(user.getIdLong());
         Process p = null;
         UUID fileId = UUID.randomUUID();
-        String fileName = "wav" + File.separator + fileId + ".wav";
+        String fileName = "wav" + File.separator + guild.getId() + File.separator + fileId + ".wav";
 
         File file = new File(vDic+ File.separator+ settings.getVoice() + ".htsvoice");
         logger.debug("読み込む声データ:"+ file.toString());
@@ -98,9 +105,9 @@ public class VoiceCreation {
         String[] Command;
         if(IS_WINDOWS){
             File dir = new File(bot.getConfig().getWinJTalkDir()+ File.separator + "open_jtalk.exe");
-            Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, dicMsg.replaceAll("[\r\n]", " "))};
+            Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(guild,fileId, dicMsg.replaceAll("[\r\n]", " "))};
         }else{
-            Command = new String[]{"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(fileId, dicMsg.replaceAll("[\r\n]", " "))};
+            Command = new String[]{"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(guild ,fileId, dicMsg.replaceAll("[\r\n]", " "))};
         }
 
 
@@ -120,8 +127,8 @@ public class VoiceCreation {
         return fileName;
     }
 
-    private String CreateTmpText(UUID id, String message) {
-        String tmp_dir = "tmp" + File.separator + id + ".txt";
+    private String CreateTmpText(Guild guild ,UUID id, String message) {
+        String tmp_dir = "tmp" + File.separator+ guild.getId() + File.separator + id + ".txt";
         String characterCode = IS_WINDOWS ? "Shift-JIS" : "UTF-8";
         try (PrintWriter writer = new PrintWriter(tmp_dir, characterCode)) {
             writer.write(message);
@@ -129,6 +136,18 @@ public class VoiceCreation {
             e.printStackTrace();
         }
         return tmp_dir;
+    }
+
+    public void ClearGuildFolder(Guild guild){
+        File tmp = new File("tmp" + File.separator + guild.getId());
+        File wav = new File("wav" + File.separator + guild.getId());
+
+        try {
+            FileUtils.cleanDirectory(tmp);
+            FileUtils.cleanDirectory(wav);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<String> getVoices(){
@@ -155,5 +174,27 @@ public class VoiceCreation {
 
     public boolean wavFolderExists() {
         return Files.exists(Paths.get("wav"));
+    }
+
+    public boolean guildWavFolderExists(Guild guild){
+        return Files.exists(Paths.get("wav"+ File.separator + guild.getId()));
+    }
+
+    public void createGuildWavFolder(Guild guild){
+        try {
+            Files.createDirectory(Paths.get("wav"+File.separator + guild.getId()));
+        } catch (IOException ignore) {
+        }
+    }
+
+    public boolean guildTmpFolderExists(Guild guild){
+        return Files.exists(Paths.get("tmp"+ File.separator + guild.getId()));
+    }
+
+    public void createGuildTmpFolder(Guild guild){
+        try {
+            Files.createDirectory(Paths.get("tmp"+File.separator + guild.getId()));
+        } catch (IOException ignore) {
+        }
     }
 }

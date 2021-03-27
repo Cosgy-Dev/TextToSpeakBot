@@ -16,7 +16,9 @@
 
 package dev.cosgy.TextToSpeak;
 
+import dev.cosgy.TextToSpeak.audio.AudioHandler;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
@@ -78,7 +80,12 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
-
+        Member botMember = event.getGuild().getSelfMember();
+        if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)){
+            AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
+            handler.getQueue().clear();
+            bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
+        }
     }
 
     @Override

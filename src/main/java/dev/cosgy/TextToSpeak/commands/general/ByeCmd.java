@@ -35,6 +35,7 @@ public class ByeCmd extends Command {
     protected void execute(CommandEvent event) {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         handler.stopAndClear();
+        bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
         event.getGuild().getAudioManager().closeAudioConnection();
         event.reply("ボイスチャンネルから切断しました。");
     }
