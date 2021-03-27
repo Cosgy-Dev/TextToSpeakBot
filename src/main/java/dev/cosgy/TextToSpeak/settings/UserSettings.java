@@ -61,7 +61,6 @@ public class UserSettings {
         return voiceQualityFm;
     }
 
-    // TODO: 書き込みの処理を入れてない。DBなのでバッチ処理をした方が良いかもしれない。
     // setter
     public void setVoice(String voice){
         this.voice = voice;

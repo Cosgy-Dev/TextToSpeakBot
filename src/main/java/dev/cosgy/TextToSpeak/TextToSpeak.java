@@ -105,16 +105,14 @@ public class TextToSpeak {
 
         EventWaiter waiter = new EventWaiter();
         SettingsManager settings = new SettingsManager();
-        VoiceCreation voiceCreation = new VoiceCreation();
-        UserSettingsManager userSettingsManager = new UserSettingsManager();
-        Bot bot = new Bot(waiter, config, settings, voiceCreation, userSettingsManager);
+        Bot bot = new Bot(waiter, config, settings);
         Bot.INSTANCE = bot;
 
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
                 bot.GetLang().getString("appName") +"(v" + version + ")",
                 RECOMMENDED_PERMS);
         aboutCommand.setIsAuthor(false);
-        aboutCommand.setReplacementCharacter("\uD83C\uDFB6");
+        aboutCommand.setReplacementCharacter("🎶");
 
 
         CommandClientBuilder cb = new CommandClientBuilder()

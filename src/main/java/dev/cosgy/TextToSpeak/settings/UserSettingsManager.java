@@ -82,7 +82,6 @@ public class UserSettingsManager {
         return new UserSettings(this, userId, "mei_normal", 1.0f,1.0f,0.5f,2.0f);
     }
 
-    // TODO: 設定のセーブを行うクラス。バッチ処理にする予定。最終的には、更新が必要なデータのみ保存するようにする予定
     protected void saveSetting(Long userId){
         String sql = "REPLACE INTO settings VALUES (?,?,?,?,?,?)";
         UserSettings settings = this.settings.get(userId);
