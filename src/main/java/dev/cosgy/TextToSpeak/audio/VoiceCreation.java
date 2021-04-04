@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class VoiceCreation {
     private Bot bot;
@@ -93,7 +94,7 @@ public class VoiceCreation {
 
         try {
             for (String key : words.keySet()) {
-                dicMsg = dicMsg.replaceAll(key, words.get(key));
+                dicMsg = dicMsg.replaceAll(Pattern.quote(key), words.get(key));
             }
         }catch (NullPointerException ignored){
             logger.debug("辞書データがなかったため処理をスキップします。");

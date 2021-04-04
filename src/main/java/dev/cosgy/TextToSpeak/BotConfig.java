@@ -38,7 +38,7 @@ public class BotConfig {
     private Path path = null;
 
     private String token, prefix, altprefix, dictionary, voiceDirectory, winjtalkdir;
-    private long owner;
+    private long owner, aloneTimeUntilStop;
     private OnlineStatus status;
     private Activity game;
     private boolean updatealerts, dbots;
@@ -75,6 +75,7 @@ public class BotConfig {
             updatealerts = config.getBoolean("updatealerts");
             dictionary = config.getString("dictionary");
             voiceDirectory = config.getString("voiceDirectory");
+            aloneTimeUntilStop = config.getLong("alonetimeuntilstop");
             winjtalkdir = config.getString("winjtalkdir");
             dbots = owner == 334091398263341056L;
 
@@ -179,6 +180,11 @@ public class BotConfig {
 
     public String getWinJTalkDir(){
         return winjtalkdir;
+    }
+
+    public long getAloneTimeUntilStop()
+    {
+        return aloneTimeUntilStop;
     }
 
     public boolean getDBots() {

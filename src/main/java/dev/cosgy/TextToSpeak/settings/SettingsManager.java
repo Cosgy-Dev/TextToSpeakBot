@@ -16,7 +16,6 @@
 
 package dev.cosgy.TextToSpeak.settings;
 
-import com.google.gson.Gson;
 import com.jagrosh.jdautilities.command.GuildSettingsManager;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Guild;

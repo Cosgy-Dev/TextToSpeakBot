@@ -86,6 +86,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event)
     {
+        bot.getAloneInVoiceHandler().onVoiceUpdate(event);
     }
 
     @Override

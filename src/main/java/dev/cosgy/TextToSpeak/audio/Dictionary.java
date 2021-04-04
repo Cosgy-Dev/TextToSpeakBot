@@ -45,16 +45,16 @@ public class Dictionary {
      */
     private HashMap<Long, HashMap<String, String>> guildDic;
 
-    public Dictionary(Bot bot){
+    public Dictionary(Bot bot) {
         this.bot = bot;
         this.guildDic = new HashMap<>();
     }
 
-    public void Init(){
-        int count =0;
+    public void Init() {
+        int count = 0;
         logger.info("辞書データの読み込みを開始");
         path = OtherUtil.getPath("UserData.sqlite");
-        if(!path.toFile().exists()){
+        if (!path.toFile().exists()) {
             create = true;
             String original = OtherUtil.loadResource(this, "UserData.sqlite");
             try {
@@ -96,10 +96,10 @@ public class Dictionary {
         HashMap<String, String> words;
         words = bot.getDictionary().GetWords(guildId);
         boolean NewWord = false;
-        try{
+        try {
             NewWord = words.containsKey(word);
             words.put(word, reading);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             words = new HashMap<>();
             words.put(word, reading);
         }
@@ -107,7 +107,7 @@ public class Dictionary {
         guildDic.put(guildId, words);
         String sql;
         PreparedStatement ps;
-        if(!NewWord) {
+        if (!NewWord) {
             sql = "INSERT INTO Dictionary VALUES (?,?,?)";
             try {
                 ps = connection.prepareStatement(sql);
@@ -118,7 +118,7 @@ public class Dictionary {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-        }else{
+        } else {
             sql = "UPDATE Dictionary SET reading = ? WHERE guild_id = ? AND word = ?";
             try {
                 ps = connection.prepareStatement(sql);
@@ -132,12 +132,12 @@ public class Dictionary {
         }
     }
 
-    public boolean DeleteDictionary(Long guildId, String word){
+    public boolean DeleteDictionary(Long guildId, String word) {
         HashMap<String, String> words;
         words = bot.getDictionary().GetWords(guildId);
         try {
             words.remove(word);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return false;
         }
         guildDic.put(guildId, words);
@@ -155,7 +155,20 @@ public class Dictionary {
         return true;
     }
 
-    public HashMap<String, String> GetWords(Long guildId){
+    public HashMap<String, String> GetWords(Long guildId) {
         return guildDic.get(guildId);
+    }
+
+    public boolean DLDictionary(Long guildId, String word) {
+        String sql = "DELETE FROM Dictionary WHERE guild_id = ? AND word = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setLong(1, guildId);
+            ps.setString(2, word);
+            int test = ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return true;
     }
 }
