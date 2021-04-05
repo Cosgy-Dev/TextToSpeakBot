@@ -20,13 +20,12 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.AdminCommand;
 import dev.cosgy.TextToSpeak.settings.Settings;
-import dev.cosgy.TextToSpeak.settings.SettingsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SetReadNameCmd extends AdminCommand {
     Logger log = LoggerFactory.getLogger(this.getClass());
-    private Bot bot;
+    private final Bot bot;
 
     public SetReadNameCmd(Bot bot) {
         this.bot = bot;

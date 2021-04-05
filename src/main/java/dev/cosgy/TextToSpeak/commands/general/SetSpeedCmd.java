@@ -22,6 +22,8 @@ import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import net.dv8tion.jda.api.EmbedBuilder;
 
+import java.math.BigDecimal;
+
 public class SetSpeedCmd extends Command {
     protected Bot bot;
 
@@ -45,9 +47,9 @@ public class SetSpeedCmd extends Command {
         }
         String args = event.getArgs();
         boolean result;
-        float value = 0.0f;
+        BigDecimal bd = null;
         try {
-            value = Float.parseFloat(args);
+            bd = new BigDecimal(args);
             result = true;
         }
         catch (NumberFormatException e) {
@@ -57,12 +59,16 @@ public class SetSpeedCmd extends Command {
             event.reply("数値を設定して下さい。");
             return;
         }
-        if(!(0.1f <= value && value <= 100.0f)){
+
+        BigDecimal min = new BigDecimal("0.0");
+        BigDecimal max = new BigDecimal("100.0");
+
+        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
             event.reply("有効な数値を設定して下さい。0.1~100.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
-        settings.setSpeed(value);
-        event.reply("速度を"+value+"に設定しました。");
+        settings.setSpeed(bd.floatValue());
+        event.reply("速度を"+bd+"に設定しました。");
     }
 }

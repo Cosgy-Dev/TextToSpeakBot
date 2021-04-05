@@ -22,6 +22,8 @@ import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import net.dv8tion.jda.api.EmbedBuilder;
 
+import java.math.BigDecimal;
+
 public class SetVoiceQualityA extends Command {
     protected Bot bot;
     public SetVoiceQualityA(Bot bot){
@@ -45,8 +47,10 @@ public class SetVoiceQualityA extends Command {
         String args = event.getArgs();
         boolean result;
         float value = 0.0f;
+        BigDecimal bd = null;
         try {
-            value = Float.parseFloat(args);
+            //value = Float.parseFloat(args);
+            bd = new BigDecimal(args);
             result = true;
         }
         catch (NumberFormatException e) {
@@ -56,12 +60,17 @@ public class SetVoiceQualityA extends Command {
             event.reply("数値を設定して下さい。");
             return;
         }
-        if(!(0.1f <= value && value <= 1.0f)){
+
+        BigDecimal min = new BigDecimal("0.0");
+        BigDecimal max = new BigDecimal("1.0");
+
+        //if(!(0.1f <= value && value <= 1.0f)){
+        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
             event.reply("有効な数値を設定して下さい。0.1~1.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
-        settings.setVoiceQualityA(value);
-        event.reply("声質aを"+value+"に設定しました。");
+        settings.setVoiceQualityA(bd.floatValue());
+        event.reply("声質aを"+bd+"に設定しました。");
     }
 }

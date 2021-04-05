@@ -50,6 +50,9 @@ public class Dictionary {
         this.guildDic = new HashMap<>();
     }
 
+    /**
+     * クラスを初期化するためのメゾット
+     */
     public void Init() {
         int count = 0;
         logger.info("辞書データの読み込みを開始");
@@ -92,6 +95,12 @@ public class Dictionary {
         logger.info("辞書データの読み込み完了 単語数:" + count);
     }
 
+    /**
+     * データベースとHashMapの内容を更新または新規追加します。
+     * @param guildId サーバーID
+     * @param word 単語
+     * @param reading 読み方
+     */
     public void UpdateDictionary(Long guildId, String word, String reading) {
         HashMap<String, String> words;
         words = bot.getDictionary().GetWords(guildId);
@@ -132,6 +141,12 @@ public class Dictionary {
         }
     }
 
+    /**
+     * データベースに登録されている単語を削除します。
+     * @param guildId サーバーID
+     * @param word 単語
+     * @return 正常に削除できた場合は {@code true}、削除時に問題が発生した場合は{@code false}を返します。
+     */
     public boolean DeleteDictionary(Long guildId, String word) {
         HashMap<String, String> words;
         words = bot.getDictionary().GetWords(guildId);
@@ -155,20 +170,12 @@ public class Dictionary {
         return true;
     }
 
+    /**
+     * サーバーの辞書データを取得します。
+     * @param guildId サーバーID
+     * @return {@code HashMap<String, String>}形式の変数を返します。
+     */
     public HashMap<String, String> GetWords(Long guildId) {
         return guildDic.get(guildId);
-    }
-
-    public boolean DLDictionary(Long guildId, String word) {
-        String sql = "DELETE FROM Dictionary WHERE guild_id = ? AND word = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setLong(1, guildId);
-            ps.setString(2, word);
-            int test = ps.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return true;
     }
 }
