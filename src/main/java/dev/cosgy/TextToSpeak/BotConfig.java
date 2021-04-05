@@ -39,6 +39,7 @@ public class BotConfig {
 
     private String token, prefix, altprefix, dictionary, voiceDirectory, winjtalkdir;
     private long owner, aloneTimeUntilStop;
+    private int maxMessageCount;
     private OnlineStatus status;
     private Activity game;
     private boolean updatealerts, dbots;
@@ -76,6 +77,7 @@ public class BotConfig {
             dictionary = config.getString("dictionary");
             voiceDirectory = config.getString("voiceDirectory");
             aloneTimeUntilStop = config.getLong("alonetimeuntilstop");
+            maxMessageCount = config.getInt("maxmessagecount");
             winjtalkdir = config.getString("winjtalkdir");
             dbots = owner == 334091398263341056L;
 
@@ -185,6 +187,10 @@ public class BotConfig {
     public long getAloneTimeUntilStop()
     {
         return aloneTimeUntilStop;
+    }
+
+    public int getMaxMessageCount() {
+        return maxMessageCount;
     }
 
     public boolean getDBots() {
