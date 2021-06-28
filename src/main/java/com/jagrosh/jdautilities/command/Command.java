@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  * a low level of development.
  * <br>All Commands extending this class can define any number of these fields in a object constructor and then
  * create the command action/response in the abstract
- * {@link Command#execute(com.jagrosh.jdautilities.command.CommandEvent) #execute(CommandEvent)} body:
+ * {@link com.jagrosh.jdautilities.command.Command#execute(com.jagrosh.jdautilities.command.CommandEvent) #execute(CommandEvent)} body:
  *
  * <pre><code> public class ExampleCmd extends Command {
  *
@@ -55,11 +55,11 @@ import java.util.function.Predicate;
  * Execution is with the provision of a MessageReceivedEvent-CommandClient wrapper called a
  * {@link com.jagrosh.jdautilities.command.CommandEvent CommandEvent} and is performed in two steps:
  * <ul>
- *     <li>{@link Command#run(CommandEvent) run} - The command runs
+ *     <li>{@link com.jagrosh.jdautilities.command.Command#run(CommandEvent) run} - The command runs
  *     through a series of conditionals, automatically terminating the command instance if one is not met,
  *     and possibly providing an error response.</li>
  *
- *     <li>{@link Command#execute(CommandEvent) execute} - The command,
+ *     <li>{@link com.jagrosh.jdautilities.command.Command#execute(CommandEvent) execute} - The command,
  *     now being cleared to run, executes and performs whatever lies in the abstract body method.</li>
  * </ul>
  *
@@ -77,7 +77,7 @@ public abstract class Command {
      */
     protected String help = "ヘルプはありません";
     /**
-     * The {@link Category Category} of the command.
+     * The {@link com.jagrosh.jdautilities.command.Command.Category Category} of the command.
      * <br>This can perform any other checks not completed by the default conditional fields.
      */
     protected Category category = null;
@@ -106,18 +106,18 @@ public abstract class Command {
      */
     protected int cooldown = 0;
     /**
-     * Any {@link Permission Permission}s a Member must have to use this command.
+     * Any {@link net.dv8tion.jda.api.Permission Permission}s a Member must have to use this command.
      * <br>These are only checked in a {@link net.dv8tion.jda.api.entities.Guild Guild} environment.
      */
     protected Permission[] userPermissions = new Permission[0];
     /**
-     * Any {@link Permission Permission}s the bot must have to use a command.
+     * Any {@link net.dv8tion.jda.api.Permission Permission}s the bot must have to use a command.
      * <br>These are only checked in a {@link net.dv8tion.jda.api.entities.Guild Guild} environment.
      */
     protected Permission[] botPermissions = new Permission[0];
     /**
      * The aliases of the command, when calling a command these function identically to calling the
-     * {@link Command#name Command.name}.
+     * {@link com.jagrosh.jdautilities.command.Command#name Command.name}.
      */
     protected String[] aliases = new String[0];
     /**
@@ -126,7 +126,7 @@ public abstract class Command {
      */
     protected Command[] children = new Command[0];
     /**
-     * The {@link BiConsumer BiConsumer} for creating a help response to the format
+     * The {@link java.util.function.BiConsumer BiConsumer} for creating a help response to the format
      * {@code [prefix]<command name> help}.
      */
     protected BiConsumer<CommandEvent, Command> helpBiConsumer = null;
@@ -143,16 +143,16 @@ public abstract class Command {
      */
     protected boolean hidden = false;
     /**
-     * The {@link CooldownScope CooldownScope}
+     * The {@link com.jagrosh.jdautilities.command.Command.CooldownScope CooldownScope}
      * of the command. This defines how far of a scope cooldowns have.
-     * <br>Default {@link CooldownScope#USER CooldownScope.USER}.
+     * <br>Default {@link com.jagrosh.jdautilities.command.Command.CooldownScope#USER CooldownScope.USER}.
      */
     protected CooldownScope cooldownScope = CooldownScope.USER;
 
     /**
-     * The main body method of a {@link Command Command}.
+     * The main body method of a {@link com.jagrosh.jdautilities.command.Command Command}.
      * <br>This is the "response" for a successful
-     * {@link Command#run(CommandEvent) #run(CommandEvent)}.
+     * {@link com.jagrosh.jdautilities.command.Command#run(CommandEvent) #run(CommandEvent)}.
      *
      * @param event The {@link com.jagrosh.jdautilities.command.CommandEvent CommandEvent} that
      *              triggered this Command
@@ -160,7 +160,7 @@ public abstract class Command {
     protected abstract void execute(CommandEvent event);
 
     /**
-     * Runs checks for the {@link Command Command} with the
+     * Runs checks for the {@link com.jagrosh.jdautilities.command.Command Command} with the
      * given {@link com.jagrosh.jdautilities.command.CommandEvent CommandEvent} that called it.
      * <br>Will terminate, and possibly respond with a failure message, if any checks fail.
      *
@@ -300,15 +300,15 @@ public abstract class Command {
     }
 
     /**
-     * Checks whether a command is allowed in a {@link TextChannel TextChannel}
+     * Checks whether a command is allowed in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      * by searching the channel topic for topic tags relating to the command.
      *
-     * <p>{-{@link Command#name name}},
-     * {-{@link Category category name}}, or {-{@code all}}
+     * <p>{-{@link com.jagrosh.jdautilities.command.Command#name name}},
+     * {-{@link com.jagrosh.jdautilities.command.Command.Category category name}}, or {-{@code all}}
      * are valid examples of ways that this method would return {@code false} if placed in a channel topic.
      *
      * <p><b>NOTE:</b>Topic tags are <b>case sensitive</b> and proper usage must be in lower case!
-     * <br>Also note that setting {@link Command#usesTopicTags usesTopicTags}
+     * <br>Also note that setting {@link com.jagrosh.jdautilities.command.Command#usesTopicTags usesTopicTags}
      * to {@code false} will cause this method to always return {@code true}, as the feature would not be applicable
      * in the first place.
      *
@@ -341,7 +341,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#name Command.name} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#name Command.name} for the Command.
      *
      * @return The name for the Command
      */
@@ -350,7 +350,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#help Command.help} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#help Command.help} for the Command.
      *
      * @return The help for the Command
      */
@@ -359,7 +359,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#category Command.category} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#category Command.category} for the Command.
      *
      * @return The category for the Command
      */
@@ -368,7 +368,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#arguments Command.arguments} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#arguments Command.arguments} for the Command.
      *
      * @return The arguments for the Command
      */
@@ -387,7 +387,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#requiredRole Command.requiredRole} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#requiredRole Command.requiredRole} for the Command.
      *
      * @return The requiredRole for the Command
      */
@@ -396,7 +396,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#cooldown Command.cooldown} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#cooldown Command.cooldown} for the Command.
      *
      * @return The cooldown for the Command
      */
@@ -405,7 +405,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#userPermissions Command.userPermissions} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#userPermissions Command.userPermissions} for the Command.
      *
      * @return The userPermissions for the Command
      */
@@ -414,7 +414,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#botPermissions Command.botPermissions} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#botPermissions Command.botPermissions} for the Command.
      *
      * @return The botPermissions for the Command
      */
@@ -423,7 +423,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#aliases Command.aliases} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#aliases Command.aliases} for the Command.
      *
      * @return The aliases for the Command
      */
@@ -432,7 +432,7 @@ public abstract class Command {
     }
 
     /**
-     * Gets the {@link Command#children Command.children} for the Command.
+     * Gets the {@link com.jagrosh.jdautilities.command.Command#children Command.children} for the Command.
      *
      * @return The children for the Command
      */
@@ -523,14 +523,14 @@ public abstract class Command {
     }
 
     /**
-     * A series of {@link Enum Enum}s used for defining the scope size for a
-     * {@link Command Command}'s cooldown.
+     * A series of {@link java.lang.Enum Enum}s used for defining the scope size for a
+     * {@link com.jagrosh.jdautilities.command.Command Command}'s cooldown.
      *
      * <p>The purpose for these values is to allow easy, refined, and generally convenient keys
      * for cooldown scopes, allowing a command to remain on cooldown for more than just the user
      * calling it, with no unnecessary abstraction or developer input.
      * <p>
-     * Cooldown keys are generated via {@link Command#getCooldownKey(CommandEvent)
+     * Cooldown keys are generated via {@link com.jagrosh.jdautilities.command.Command#getCooldownKey(CommandEvent)
      * Command#getCooldownKey(CommandEvent)} using 1-2 Snowflake ID's corresponding to the name
      * (IE: {@code USER_CHANNEL} uses the ID's of the User and the Channel from the CommandEvent).
      *
@@ -540,10 +540,10 @@ public abstract class Command {
      * to their "{@code CHANNEL}" counterparts when commands using them are called outside of a
      * {@link net.dv8tion.jda.api.entities.Guild Guild} environment.
      * <ul>
-     *     <li>{@link CooldownScope#GUILD GUILD} defaults to
-     *     {@link CooldownScope#CHANNEL CHANNEL}.</li>
-     *     <li>{@link CooldownScope#USER_GUILD USER_GUILD} defaults to
-     *     {@link CooldownScope#USER_CHANNEL USER_CHANNEL}.</li>
+     *     <li>{@link com.jagrosh.jdautilities.command.Command.CooldownScope#GUILD GUILD} defaults to
+     *     {@link com.jagrosh.jdautilities.command.Command.CooldownScope#CHANNEL CHANNEL}.</li>
+     *     <li>{@link com.jagrosh.jdautilities.command.Command.CooldownScope#USER_GUILD USER_GUILD} defaults to
+     *     {@link com.jagrosh.jdautilities.command.Command.CooldownScope#USER_CHANNEL USER_CHANNEL}.</li>
      * </ul>
      * <p>
      * These are effective across a single instance of JDA, and not multiple
@@ -554,7 +554,7 @@ public abstract class Command {
      * and/or via some external system unrelated to JDA-Utilities.
      *
      * @author Kaidan Gustave
-     * @see Command#cooldownScope Command.cooldownScope
+     * @see com.jagrosh.jdautilities.command.Command#cooldownScope Command.cooldownScope
      * @since 1.3
      */
     public enum CooldownScope {
@@ -599,9 +599,9 @@ public abstract class Command {
          *     {@code <command-name>|G:<guildID>}
          * </ul>
          *
-         * <p><b>NOTE:</b> This will automatically default back to {@link CooldownScope#CHANNEL CooldownScope.CHANNEL}
+         * <p><b>NOTE:</b> This will automatically default back to {@link com.jagrosh.jdautilities.command.Command.CooldownScope#CHANNEL CooldownScope.CHANNEL}
          * when called in a private channel.  This is done in order to prevent internal
-         * {@link NullPointerException NullPointerException}s from being thrown while generating cooldown keys!
+         * {@link java.lang.NullPointerException NullPointerException}s from being thrown while generating cooldown keys!
          */
         GUILD("G:%d", "in this server"),
 
@@ -614,9 +614,9 @@ public abstract class Command {
          *     {@code <command-name>|U:<userID>|G:<guildID>}
          * </ul>
          *
-         * <p><b>NOTE:</b> This will automatically default back to {@link CooldownScope#CHANNEL CooldownScope.CHANNEL}
+         * <p><b>NOTE:</b> This will automatically default back to {@link com.jagrosh.jdautilities.command.Command.CooldownScope#CHANNEL CooldownScope.CHANNEL}
          * when called in a private channel. This is done in order to prevent internal
-         * {@link NullPointerException NullPointerException}s from being thrown while generating cooldown keys!
+         * {@link java.lang.NullPointerException NullPointerException}s from being thrown while generating cooldown keys!
          */
         USER_GUILD("U:%d|G:%d", "in this server"),
 
@@ -628,9 +628,9 @@ public abstract class Command {
          *     {@code <command-name>|S:<shardID>}
          * </ul>
          *
-         * <p><b>NOTE:</b> This will automatically default back to {@link CooldownScope#GLOBAL CooldownScope.GLOBAL}
+         * <p><b>NOTE:</b> This will automatically default back to {@link com.jagrosh.jdautilities.command.Command.CooldownScope#GLOBAL CooldownScope.GLOBAL}
          * when {@link net.dv8tion.jda.api.JDA#getShardInfo() JDA#getShardInfo()} returns {@code null}.
-         * This is done in order to prevent internal {@link NullPointerException NullPointerException}s
+         * This is done in order to prevent internal {@link java.lang.NullPointerException NullPointerException}s
          * from being thrown while generating cooldown keys!
          */
         SHARD("S:%d", "on this shard"),
@@ -644,9 +644,9 @@ public abstract class Command {
          *     {@code <command-name>|U:<userID>|S:<shardID>}
          * </ul>
          *
-         * <p><b>NOTE:</b> This will automatically default back to {@link CooldownScope#USER CooldownScope.USER}
+         * <p><b>NOTE:</b> This will automatically default back to {@link com.jagrosh.jdautilities.command.Command.CooldownScope#USER CooldownScope.USER}
          * when {@link net.dv8tion.jda.api.JDA#getShardInfo() JDA#getShardInfo()} returns {@code null}.
-         * This is done in order to prevent internal {@link NullPointerException NullPointerException}s
+         * This is done in order to prevent internal {@link java.lang.NullPointerException NullPointerException}s
          * from being thrown while generating cooldown keys!
          */
         USER_SHARD("U:%d|S:%d", "on this shard"),
@@ -683,7 +683,7 @@ public abstract class Command {
     }
 
     /**
-     * To be used in {@link Command Command}s as a means of
+     * To be used in {@link com.jagrosh.jdautilities.command.Command Command}s as a means of
      * organizing commands into "Categories" as well as terminate command usage when the calling
      * {@link com.jagrosh.jdautilities.command.CommandEvent CommandEvent} doesn't meet
      * certain requirements.
@@ -707,10 +707,10 @@ public abstract class Command {
         }
 
         /**
-         * A Command Category containing a name and a {@link Predicate}.
+         * A Command Category containing a name and a {@link java.util.function.Predicate}.
          *
          * <p>The command will be terminated if
-         * {@link Category#test(com.jagrosh.jdautilities.command.CommandEvent)}
+         * {@link com.jagrosh.jdautilities.command.Command.Category#test(com.jagrosh.jdautilities.command.CommandEvent)}
          * returns {@code false}.
          *
          * @param name      The name of the Category
@@ -723,11 +723,11 @@ public abstract class Command {
         }
 
         /**
-         * A Command Category containing a name, a {@link Predicate},
+         * A Command Category containing a name, a {@link java.util.function.Predicate},
          * and a failure response.
          *
          * <p>The command will be terminated if
-         * {@link Category#test(com.jagrosh.jdautilities.command.CommandEvent)}
+         * {@link com.jagrosh.jdautilities.command.Command.Category#test(com.jagrosh.jdautilities.command.CommandEvent)}
          * returns {@code false}, and the failure response will be sent.
          *
          * @param name         The name of the Category
@@ -759,7 +759,7 @@ public abstract class Command {
         }
 
         /**
-         * Runs a test of the provided {@link Predicate}.
+         * Runs a test of the provided {@link java.util.function.Predicate}.
          *
          * @param event The {@link com.jagrosh.jdautilities.command.CommandEvent CommandEvent}
          *              that was called when this method is invoked

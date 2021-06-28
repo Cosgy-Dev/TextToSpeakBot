@@ -54,11 +54,11 @@ import java.util.stream.Collectors;
 /**
  * An implementation of {@link com.jagrosh.jdautilities.command.CommandClient CommandClient} to be used by a bot.
  *
- * <p>This is a listener usable with {@link JDA JDA}, as it implements
- * {@link EventListener EventListener} in order to catch and use different kinds of
+ * <p>This is a listener usable with {@link net.dv8tion.jda.api.JDA JDA}, as it implements
+ * {@link net.dv8tion.jda.api.hooks.EventListener EventListener} in order to catch and use different kinds of
  * {@link net.dv8tion.jda.api.events.Event Event}s. The primary usage of this is where the CommandClient implementation
- * takes {@link MessageReceivedEvent MessageReceivedEvent}s, and automatically
- * processes arguments, and provide them to a {@link Command Command} for
+ * takes {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}s, and automatically
+ * processes arguments, and provide them to a {@link com.jagrosh.jdautilities.command.Command Command} for
  * running and execution.
  *
  * @author John Grosh (jagrosh)

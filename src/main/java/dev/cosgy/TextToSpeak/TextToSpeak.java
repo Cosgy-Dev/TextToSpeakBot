@@ -20,8 +20,6 @@ import com.github.lalyos.jfiglet.FigletFont;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import dev.cosgy.TextToSpeak.audio.Dictionary;
-import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import dev.cosgy.TextToSpeak.commands.admin.GuildSettings;
 import dev.cosgy.TextToSpeak.commands.admin.JLReadCmd;
 import dev.cosgy.TextToSpeak.commands.admin.SetReadNameCmd;
@@ -36,14 +34,14 @@ import dev.cosgy.TextToSpeak.gui.GUI;
 import dev.cosgy.TextToSpeak.listeners.CommandAudit;
 import dev.cosgy.TextToSpeak.listeners.MessageListener;
 import dev.cosgy.TextToSpeak.settings.SettingsManager;
-import dev.cosgy.TextToSpeak.settings.UserSettingsManager;
+import dev.cosgy.TextToSpeak.slashCommands.CommandManager;
+import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.commons.io.FileUtils;
@@ -61,7 +59,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class TextToSpeak {
     public final static Permission[] RECOMMENDED_PERMS = {Permission.MESSAGE_READ, Permission.MESSAGE_WRITE, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION,
-            Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI,
+            Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI,Permission.USE_SLASH_COMMANDS,
             Permission.MANAGE_CHANNEL, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.NICKNAME_CHANGE};
     public final static GatewayIntent[] INTENTS = {GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES};
     public static boolean CHECK_UPDATE = true;
@@ -147,6 +145,12 @@ public class TextToSpeak {
             add(new ShutdownCmd(bot));
         }};
 
+        List<SlashCommand> slashCommandList = new ArrayList<SlashCommand>(){{
+           add(new dev.cosgy.TextToSpeak.slashCommands.general.JoinCmd(bot));
+           add(new dev.cosgy.TextToSpeak.slashCommands.general.ByeCmd(bot));
+           add(new dev.cosgy.TextToSpeak.slashCommands.general.SettingsCmd(bot));
+        }};
+
         cb.addCommands(commandList.toArray(new Command[0]));
 
         boolean nogame = false;
@@ -176,15 +180,16 @@ public class TextToSpeak {
         log.info(config.getConfigLocation() + " から設定を読み込みました");
 
         try {
-            JDA jda = JDABuilder.create(config.getToken(), Arrays.asList(INTENTS))
+            JDA jda = JDABuilder.createLight(config.getToken(), Arrays.asList(INTENTS))
                     .enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
                     .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE)
                     .setActivity(nogame ? null : Activity.playing("ロード中..."))
                     .setStatus(config.getStatus() == OnlineStatus.INVISIBLE || config.getStatus() == OnlineStatus.OFFLINE
                             ? OnlineStatus.INVISIBLE : OnlineStatus.DO_NOT_DISTURB)
-                    .addEventListeners(cb.build(), waiter, new Listener(bot), new MessageListener(bot))
+                    .addEventListeners(cb.build(), waiter, new Listener(bot), new MessageListener(bot), new CommandManager(bot, slashCommandList))
                     .setBulkDeleteSplittingEnabled(true)
                     .build();
+
             bot.setJDA(jda);
         } catch (LoginException ex) {
             prompt.alert(Prompt.Level.ERROR, bot.GetLang().getString("appName"), ex + "\n" +

@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
 /**
- * A simple builder used to create a {@link CommandClientImpl CommandClientImpl}.
+ * A simple builder used to create a {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl}.
  *
  * <p>Once built, add the {@link com.jagrosh.jdautilities.command.CommandClient CommandClient} as an EventListener to
  * {@link net.dv8tion.jda.api.JDA JDA} and it will automatically handle commands with ease!
@@ -60,10 +60,10 @@ public class CommandClientBuilder
     private boolean helpToDm;
 
     /**
-     * Builds a {@link CommandClientImpl CommandClientImpl}
+     * Builds a {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl}
      * with the provided settings.
      * <br>Once built, only the {@link com.jagrosh.jdautilities.command.CommandListener CommandListener},
-     * and {@link Command Command}s can be changed.
+     * and {@link com.jagrosh.jdautilities.command.Command Command}s can be changed.
      *
      * @return The CommandClient built.
      */
@@ -145,7 +145,7 @@ public class CommandClientBuilder
      *
      * @param  useHelp
      *         {@code false} to disable the help command builder, otherwise the CommandClient
-     *         will use either the default or one provided via {@link CommandClientBuilder#setHelpConsumer(Consumer)}}.
+     *         will use either the default or one provided via {@link com.jagrosh.jdautilities.command.CommandClientBuilder#setHelpConsumer(Consumer)}}.
      *
      * @return This builder
      */
@@ -157,7 +157,7 @@ public class CommandClientBuilder
 
     /**
      * Sets the consumer to run as the bot's help command.
-     * <br>Setting it to {@code null} or not setting this at all will cause the bot to use 
+     * <br>Setting it to {@code null} or not setting this at all will cause the bot to use
      * the default help builder.
      *
      * @param  helpConsumer
@@ -223,7 +223,7 @@ public class CommandClientBuilder
     }
 
     /**
-     * Sets the {@link Activity Game} to use when the bot is ready.
+     * Sets the {@link net.dv8tion.jda.api.entities.Activity Game} to use when the bot is ready.
      * <br>Can be set to {@code null} for no activity.
      *
      * @param  activity
@@ -238,7 +238,7 @@ public class CommandClientBuilder
     }
 
     /**
-     * Sets the {@link Activity Game} the bot will use as the default:
+     * Sets the {@link net.dv8tion.jda.api.entities.Activity Game} the bot will use as the default:
      * 'Playing <b>Type [prefix]help</b>'
      *
      * @return This builder
@@ -250,7 +250,7 @@ public class CommandClientBuilder
     }
 
     /**
-     * Sets the {@link OnlineStatus OnlineStatus} the bot will use once Ready
+     * Sets the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} the bot will use once Ready
      * This defaults to ONLINE
      *
      * @param  status
@@ -265,8 +265,8 @@ public class CommandClientBuilder
     }
 
     /**
-     * Adds a {@link Command Command} and registers it to the
-     * {@link CommandClientImpl CommandClientImpl} for this session.
+     * Adds a {@link com.jagrosh.jdautilities.command.Command Command} and registers it to the
+     * {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl} for this session.
      *
      * @param  command
      *         The command to add
@@ -280,9 +280,9 @@ public class CommandClientBuilder
     }
 
     /**
-     * Adds and registers multiple {@link Command Command}s to the
-     * {@link CommandClientImpl CommandClientImpl} for this session.
-     * <br>This is the same as calling {@link CommandClientBuilder#addCommand(Command)} multiple times.
+     * Adds and registers multiple {@link com.jagrosh.jdautilities.command.Command Command}s to the
+     * {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl} for this session.
+     * <br>This is the same as calling {@link com.jagrosh.jdautilities.command.CommandClientBuilder#addCommand(Command)} multiple times.
      *
      * @param  commands
      *         The Commands to add
@@ -298,7 +298,7 @@ public class CommandClientBuilder
 
     /**
      * Adds an annotated command module to the
-     * {@link CommandClientImpl CommandClientImpl} for this session.
+     * {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl} for this session.
      *
      * <p>For more information on annotated command modules, see
      * {@link com.jagrosh.jdautilities.command.annotation the annotation package} documentation.
@@ -319,8 +319,8 @@ public class CommandClientBuilder
 
     /**
      * Adds multiple annotated command modules to the
-     * {@link CommandClientImpl CommandClientImpl} for this session.
-     * <br>This is the same as calling {@link CommandClientBuilder#addAnnotatedModule(Object)} multiple times.
+     * {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl} for this session.
+     * <br>This is the same as calling {@link com.jagrosh.jdautilities.command.CommandClientBuilder#addAnnotatedModule(Object)} multiple times.
      *
      * <p>For more information on annotated command modules, see
      * {@link com.jagrosh.jdautilities.command.annotation the annotation package} documentation.
@@ -364,7 +364,7 @@ public class CommandClientBuilder
     /**
      * Sets the <a href="https://www.carbonitex.net/discord/bots">Carbonitex</a> key for this bot's listing.
      *
-     * <p>When set, the {@link CommandClientImpl CommandClientImpl}
+     * <p>When set, the {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl}
      * will automatically update it's Carbonitex listing with relevant information such as server count.
      *
      * @param  key
@@ -381,7 +381,7 @@ public class CommandClientBuilder
     /**
      * Sets the <a href="https://discord.bots.gg/">Discord Bots</a> API key for this bot's listing.
      *
-     * <p>When set, the {@link CommandClientImpl CommandClientImpl}
+     * <p>When set, the {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl}
      * will automatically update it's Discord Bots listing with relevant information such as server count.
      *
      * <p>This will also retrieve the bot's total guild count in the same request, which can be accessed
@@ -417,7 +417,7 @@ public class CommandClientBuilder
 
     /**
      * Sets the {@link com.jagrosh.jdautilities.command.CommandListener CommandListener} for the
-     * {@link CommandClientImpl CommandClientImpl}.
+     * {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl}.
      *
      * @param  listener
      *         The CommandListener for the CommandClientImpl
@@ -431,8 +431,8 @@ public class CommandClientBuilder
     }
 
     /**
-     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} for the
-     * {@link CommandClientImpl CommandClientImpl}.
+     * Sets the {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} for the
+     * {@link com.jagrosh.jdautilities.command.impl.CommandClientImpl CommandClientImpl}.
      *
      * @param  executor
      *         The ScheduledExecutorService for the CommandClientImpl
