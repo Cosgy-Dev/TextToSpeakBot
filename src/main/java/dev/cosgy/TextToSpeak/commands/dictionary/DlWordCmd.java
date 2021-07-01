@@ -20,6 +20,8 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.slf4j.Logger;
 
 import java.util.HashMap;

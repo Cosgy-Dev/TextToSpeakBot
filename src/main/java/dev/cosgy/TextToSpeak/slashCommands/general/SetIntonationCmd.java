@@ -16,35 +16,60 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.general;
 
+import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.awt.*;
+import java.math.BigDecimal;
 
-public class SettingsCmd extends SlashCommand {
+public class SetIntonationCmd extends SlashCommand {
     protected Bot bot;
-    public SettingsCmd(Bot bot){
+
+    public SetIntonationCmd(Bot bot){
         this.bot = bot;
-        this.name = "settings";
-        this.help = "現在の設定を確認します。";
+        this.name = "setinto";
+        this.help = "抑揚の設定を変更します。";
+        this.optionData = new OptionData[]{new OptionData(OptionType.STRING, "数値", "0.0以上の数値で設定して下さい。", true)};
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
+        /*if (event.getArgs().isEmpty() && event.getMessage().getAttachments().isEmpty()) {
+            EmbedBuilder ebuilder = new EmbedBuilder()
+                    .setTitle("setintoコマンド")
+                    .addField("使用方法:", name+" <数値(0.0~)>", false)
+                    .addField("説明:","抑揚の設定を変更します。抑揚は、0.0以上の数値で設定して下さい。",false);
+            event.reply(ebuilder.build());
+            return;
+        }*/
+        String args = event.getOption("数値").getAsString();
+        boolean result;
+        BigDecimal bd = null;
+        try {
+            bd = new BigDecimal(args);
+            result = true;
+        }
+        catch (NumberFormatException e) {
+            result = false;
+        }
+        if(!result){
+            event.reply("数値を設定して下さい。");
+            return;
+        }
+        BigDecimal min = new BigDecimal("0.0");
+        BigDecimal max = new BigDecimal("100.0");
 
+        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
+            event.reply("有効な数値を設定して下さい。0.1~100.0");
+            return;
+        }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
-
-        EmbedBuilder ebuilder = new EmbedBuilder()
-                .setColor(Color.orange)
-                .setTitle(event.getUser().getName()+"の設定")
-                .addField("声：", settings.getVoice(), false)
-                .addField("速度：", String.valueOf(settings.getSpeed()), false)
-                .addField("抑揚：", String.valueOf(settings.getIntonation()), false)
-                .addField("声質a：", String.valueOf(settings.getVoiceQualityA()), false)
-                .addField("声質fm：", String.valueOf(settings.getVoiceQualityFm()), false);
-        event.replyEmbeds(ebuilder.build()).queue();
+        settings.setIntonation(bd.floatValue());
+        event.reply("抑揚を"+bd+"に設定しました。").queue();
     }
 }

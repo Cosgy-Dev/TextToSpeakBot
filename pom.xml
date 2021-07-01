@@ -37,12 +37,6 @@
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
             <version>4.3.0_285</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>club.minnced</groupId>
-                    <artifactId>opus-java</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.sedmelluq</groupId>

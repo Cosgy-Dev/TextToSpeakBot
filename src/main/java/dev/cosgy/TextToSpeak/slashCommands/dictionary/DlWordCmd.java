@@ -14,34 +14,52 @@
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
 
-package dev.cosgy.TextToSpeak.slashCommands.general;
+package dev.cosgy.TextToSpeak.slashCommands.dictionary;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.audio.AudioHandler;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.slf4j.Logger;
 
-public class ByeCmd extends SlashCommand {
-    protected final Bot bot;
+import java.util.HashMap;
 
-    public ByeCmd(Bot bot){
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class DlWordCmd extends SlashCommand {
+    private final Bot bot;
+    Logger log = getLogger(this.getClass());
+
+    public DlWordCmd(Bot bot){
         this.bot = bot;
-        this.name = "bye";
-        this.help = "ボイスチャンネルから退出します。";
+        this.name = "dlwd";
+        this.help = "辞書に登録されている単語を削除します。";
+        this.optionData = new OptionData[]{new OptionData(OptionType.STRING, "単語", "削除する単語", true)};
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        //event.deferReply(true).queue(); // Let the user know we received the command before doing anything else
-        //InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
-        //hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
+        HashMap<String, String> words = bot.getDictionary().GetWords(event.getGuild().getIdLong());
 
-        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-        handler.stopAndClear();
-        bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
-        event.getGuild().getAudioManager().closeAudioConnection();
-        event.reply("ボイスチャンネルから切断しました。").queue();
+        String args = event.getOption("単語").getAsString();
+
+        try {
+            if (!words.containsKey(args)) {
+                event.reply(args + "は、辞書に登録されていません。").queue();
+                return;
+            }
+        }catch (NullPointerException e){
+            return;
+        }
+
+        boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
+
+        if(result){
+            event.reply("単語を削除しました。").queue();
+        }else{
+            event.reply("削除中に問題が発生しました。").queue();
+        }
     }
 }

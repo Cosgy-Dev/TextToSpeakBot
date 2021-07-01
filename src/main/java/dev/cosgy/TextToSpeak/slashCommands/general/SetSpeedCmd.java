@@ -16,32 +16,52 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.general;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.audio.AudioHandler;
+import dev.cosgy.TextToSpeak.settings.UserSettings;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class ByeCmd extends SlashCommand {
-    protected final Bot bot;
+import java.math.BigDecimal;
 
-    public ByeCmd(Bot bot){
+public class SetSpeedCmd extends SlashCommand {
+    protected Bot bot;
+
+    public SetSpeedCmd(Bot bot){
         this.bot = bot;
-        this.name = "bye";
-        this.help = "ボイスチャンネルから退出します。";
+        this.name = "setspeed";
+        this.help = "読み上げ速度の設定を変更します。";
+        this.optionData = new OptionData[]{new OptionData(OptionType.STRING, "数値", "0.0以上の数値で設定して下さい。", true)};
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        //event.deferReply(true).queue(); // Let the user know we received the command before doing anything else
-        //InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
-        //hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
+        String args = event.getOption("数値").getAsString();
+        boolean result;
+        BigDecimal bd = null;
+        try {
+            bd = new BigDecimal(args);
+            result = true;
+        }
+        catch (NumberFormatException e) {
+            result = false;
+        }
+        if(!result){
+            event.reply("数値を設定して下さい。").queue();
+            return;
+        }
 
-        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-        handler.stopAndClear();
-        bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
-        event.getGuild().getAudioManager().closeAudioConnection();
-        event.reply("ボイスチャンネルから切断しました。").queue();
+        BigDecimal min = new BigDecimal("0.0");
+        BigDecimal max = new BigDecimal("100.0");
+
+        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
+            event.reply("有効な数値を設定して下さい。0.1~100.0").queue();
+            return;
+        }
+        UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
+        settings.setSpeed(bd.floatValue());
+        event.reply("速度を"+bd+"に設定しました。").queue();
     }
 }

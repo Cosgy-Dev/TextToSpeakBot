@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import java.util.Collection;
 
@@ -38,6 +40,8 @@ public abstract class SlashCommand {
      * スラッシュコマンドのオプション設定
      */
     protected OptionData[] optionData = new OptionData[0];
+
+    protected SubcommandData[] subCommandData = new SubcommandData[0];
 
     protected abstract void execute(SlashCommandEvent event);
 
@@ -62,5 +66,9 @@ public abstract class SlashCommand {
 
     public OptionData[] getOptionData() {
         return optionData;
+    }
+
+    public SubcommandData[] getSubCommandData() {
+        return subCommandData;
     }
 }

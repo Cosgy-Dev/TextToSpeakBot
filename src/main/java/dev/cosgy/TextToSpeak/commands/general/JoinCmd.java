@@ -37,13 +37,19 @@ public class JoinCmd extends Command {
         //Settings settings = event.getClient().getSettingsFor(event.getGuild());
         //TextChannel channel = settings.getTextChannel(event.getGuild());
         bot.getPlayerManager().setUpHandler(event.getGuild());
+
         GuildVoiceState userState = event.getMember().getVoiceState();
-        if (!event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-            try {
-                event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
-            } catch (PermissionException ex) {
-                event.reply(event.getClient().getError() + String.format("**%s**に接続できません!", userState.getChannel().getName()));
-            }
+
+        if(!userState.inVoiceChannel()){
+            event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。");
+            return;
+        }
+
+        try {
+            event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
+            event.reply(String.format("**%s**に接続しました。", userState.getChannel().getName()));
+        } catch (PermissionException ex) {
+            event.reply(event.getClient().getError() + String.format("**%s**に接続できません!", userState.getChannel().getName()));
         }
     }
 }

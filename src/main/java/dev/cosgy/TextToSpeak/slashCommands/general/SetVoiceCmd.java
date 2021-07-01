@@ -16,32 +16,48 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.general;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.audio.AudioHandler;
+import dev.cosgy.TextToSpeak.settings.UserSettings;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-public class ByeCmd extends SlashCommand {
-    protected final Bot bot;
+import java.util.ArrayList;
+import java.util.List;
 
-    public ByeCmd(Bot bot){
+public class SetVoiceCmd extends SlashCommand {
+    protected Bot bot;
+
+    public SetVoiceCmd(Bot bot){
         this.bot = bot;
-        this.name = "bye";
-        this.help = "ボイスチャンネルから退出します。";
+        this.name = "setvoice";
+        this.help = "声の種類を変更することができます。";
+
+        ArrayList<String> voices = bot.getVoiceCreation().getVoices();
+
+        List<SubcommandData> list = new ArrayList<>();
+
+        for (String voice : voices){
+            list.add(new SubcommandData(voice, "声データ"));
+        }
+
+        this.subCommandData = list.toArray(new SubcommandData[list.size()]);
     }
+
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        //event.deferReply(true).queue(); // Let the user know we received the command before doing anything else
-        //InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
-        //hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
+        ArrayList<String> voices = bot.getVoiceCreation().getVoices();
 
-        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-        handler.stopAndClear();
-        bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
-        event.getGuild().getAudioManager().closeAudioConnection();
-        event.reply("ボイスチャンネルから切断しました。").queue();
+        String args = event.getSubcommandName();
+
+        if(voices.contains(args)){
+            UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
+            settings.setVoice(args);
+            event.reply("声データを`"+ args + "`に設定しました。").queue();
+        }else{
+            event.reply("有効な声データを選択して下さい。").queue();
+        }
     }
 }

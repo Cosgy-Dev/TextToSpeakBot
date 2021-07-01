@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -50,9 +49,12 @@ public class CommandManager extends ListenerAdapter {
         JDA jda = bot.getJDA();
         CommandListUpdateAction update = jda.updateCommands();
         for(SlashCommand cmd : commands){
-            if(cmd.getOptionData().length == 0) {
+            if(cmd.getOptionData().length == 0&& cmd.getSubCommandData().length == 0) {
                 update.addCommands(new CommandData(cmd.getName(), cmd.getHelp())).queue();
-            }else{
+            }else if(cmd.getSubCommandData().length != 0) {
+                update.addCommands(new CommandData(cmd.getName(), cmd.getHelp())
+                        .addSubcommands(cmd.getSubCommandData())).queue();
+            } else{
                 update.addCommands(new CommandData(cmd.getName(), cmd.getHelp())
                 .addOptions(cmd.optionData)).queue();
             }

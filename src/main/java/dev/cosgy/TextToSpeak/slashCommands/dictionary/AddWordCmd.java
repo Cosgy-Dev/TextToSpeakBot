@@ -14,49 +14,52 @@
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
 
-package dev.cosgy.TextToSpeak.slashCommands.general;
+package dev.cosgy.TextToSpeak.slashCommands.dictionary;
 
+import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
+import dev.cosgy.TextToSpeak.audio.Dictionary;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.slf4j.Logger;
 
-public class JoinCmd extends SlashCommand {
-    protected Bot bot;
+import java.util.regex.Pattern;
 
-    public JoinCmd(Bot bot){
-        this.name = "join";
-        this.help = "ボイスチャンネルに参加します。";
-        //this.optionData = new OptionData[]{new OptionData(OptionType.CHANNEL, "ボイスチャンネル", "ボットを参加させるボイスチャンネル", true)};
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class AddWordCmd extends SlashCommand {
+    private final Bot bot;
+    Logger log = getLogger(this.getClass());
+
+    public AddWordCmd(Bot bot){
         this.bot = bot;
+        this.name = "addwd";
+        this.help = "辞書に、単語を追加します。辞書に単語が存在している場合は上書きされます。";
+        this.optionData = new OptionData[]{new OptionData(OptionType.STRING, "単語", "読み方を設定する単語", true),
+                new OptionData(OptionType.STRING, "読み方", "読み方をカタカナで入力してください。", true)};
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
+        String word = event.getOption("単語").getAsString();
+        String reading = event.getOption("読み方").getAsString();
 
-        //event.deferReply(true).queue(); // Let the user know we received the command before doing anything else
-        //InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
-        //hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
-
-
-        bot.getPlayerManager().setUpHandler(event.getGuildChannel().getGuild());
-
-        GuildVoiceState userState = event.getMember().getVoiceState();
-
-        if(!userState.inVoiceChannel()){
-            event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。").queue();
+        if(!isFullKana(reading)){
+            event.reply("読み方はすべてカタカナで入力して下さい。").queue();
             return;
         }
 
-        try {
-            event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
-            event.reply(String.format("**%s**に接続しました。", userState.getChannel().getName())).queue();
-        } catch (PermissionException ex) {
-            event.reply(String.format("**%s**に接続できません!", userState.getChannel().getName())).queue();
-        }
+        log.debug("単語追加:"+word +"-"+reading);
+
+        Dictionary dic = bot.getDictionary();
+        dic.UpdateDictionary(event.getGuild().getIdLong(), word,reading);
+        event.reply("これから"+ bot.getJDA().getSelfUser().getName() + "は、`"+ word + "`を`"+ reading +"`と読みます。").queue();
+
+    }
+
+    public static boolean isFullKana(String str) {
+        return Pattern.matches("^[ァ-ヶー]*$", str);
     }
 }
