@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 public class SetSpeedCmd extends Command {
     protected Bot bot;
 
-    public SetSpeedCmd(Bot bot){
+    public SetSpeedCmd(Bot bot) {
         this.guildOnly = false;
         this.bot = bot;
         this.name = "setspeed";
@@ -36,12 +36,12 @@ public class SetSpeedCmd extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(CommandEvent event) {
         if (event.getArgs().isEmpty() && event.getMessage().getAttachments().isEmpty()) {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("setspeedコマンド")
-                    .addField("使用方法:", name+" <数値(0.0~)>", false)
-                    .addField("説明:","読み上げの速度を設定します。読み上げ速度は、0.0以上の数値で設定して下さい。",false);
+                    .addField("使用方法:", name + " <数値(0.0~)>", false)
+                    .addField("説明:", "読み上げの速度を設定します。読み上げ速度は、0.0以上の数値で設定して下さい。", false);
             event.reply(ebuilder.build());
             return;
         }
@@ -51,11 +51,10 @@ public class SetSpeedCmd extends Command {
         try {
             bd = new BigDecimal(args);
             result = true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             result = false;
         }
-        if(!result){
+        if (!result) {
             event.reply("数値を設定して下さい。");
             return;
         }
@@ -63,12 +62,12 @@ public class SetSpeedCmd extends Command {
         BigDecimal min = new BigDecimal("0.0");
         BigDecimal max = new BigDecimal("100.0");
 
-        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
+        if (!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)) {
             event.reply("有効な数値を設定して下さい。0.1~100.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
         settings.setSpeed(bd.floatValue());
-        event.reply("速度を"+bd+"に設定しました。");
+        event.reply("速度を" + bd + "に設定しました。");
     }
 }

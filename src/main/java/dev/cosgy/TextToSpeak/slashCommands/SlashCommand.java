@@ -18,12 +18,8 @@ package dev.cosgy.TextToSpeak.slashCommands;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-
-import java.util.Collection;
 
 public abstract class SlashCommand {
     /**
@@ -45,22 +41,18 @@ public abstract class SlashCommand {
 
     protected abstract void execute(SlashCommandEvent event);
 
-    public final void run(SlashCommandEvent event)
-    {
+    public final void run(SlashCommandEvent event) {
         // availability check
-        if(event.getChannelType()== ChannelType.TEXT)
-        {
+        if (event.getChannelType() == ChannelType.TEXT) {
 
         }
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getHelp()
-    {
+    public String getHelp() {
         return help;
     }
 

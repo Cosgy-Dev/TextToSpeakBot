@@ -16,7 +16,6 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.dictionary;
 
-import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.audio.Dictionary;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
@@ -33,7 +32,7 @@ public class AddWordCmd extends SlashCommand {
     private final Bot bot;
     Logger log = getLogger(this.getClass());
 
-    public AddWordCmd(Bot bot){
+    public AddWordCmd(Bot bot) {
         this.bot = bot;
         this.name = "addwd";
         this.help = "辞書に、単語を追加します。辞書に単語が存在している場合は上書きされます。";
@@ -41,25 +40,25 @@ public class AddWordCmd extends SlashCommand {
                 new OptionData(OptionType.STRING, "読み方", "読み方をカタカナで入力してください。", true)};
     }
 
+    public static boolean isFullKana(String str) {
+        return Pattern.matches("^[ァ-ヶー]*$", str);
+    }
+
     @Override
     protected void execute(SlashCommandEvent event) {
         String word = event.getOption("単語").getAsString();
         String reading = event.getOption("読み方").getAsString();
 
-        if(!isFullKana(reading)){
+        if (!isFullKana(reading)) {
             event.reply("読み方はすべてカタカナで入力して下さい。").queue();
             return;
         }
 
-        log.debug("単語追加:"+word +"-"+reading);
+        log.debug("単語追加:" + word + "-" + reading);
 
         Dictionary dic = bot.getDictionary();
-        dic.UpdateDictionary(event.getGuild().getIdLong(), word,reading);
-        event.reply("これから"+ bot.getJDA().getSelfUser().getName() + "は、`"+ word + "`を`"+ reading +"`と読みます。").queue();
+        dic.UpdateDictionary(event.getGuild().getIdLong(), word, reading);
+        event.reply("これから" + bot.getJDA().getSelfUser().getName() + "は、`" + word + "`を`" + reading + "`と読みます。").queue();
 
-    }
-
-    public static boolean isFullKana(String str) {
-        return Pattern.matches("^[ァ-ヶー]*$", str);
     }
 }

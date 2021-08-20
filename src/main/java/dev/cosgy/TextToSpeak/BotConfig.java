@@ -16,7 +16,6 @@
 
 package dev.cosgy.TextToSpeak;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -172,20 +171,19 @@ public class BotConfig {
         return updatealerts;
     }
 
-    public String getDictionary(){
+    public String getDictionary() {
         return dictionary;
     }
 
-    public String getVoiceDirectory(){
+    public String getVoiceDirectory() {
         return voiceDirectory;
     }
 
-    public String getWinJTalkDir(){
+    public String getWinJTalkDir() {
         return winjtalkdir;
     }
 
-    public long getAloneTimeUntilStop()
-    {
+    public long getAloneTimeUntilStop() {
         return aloneTimeUntilStop;
     }
 

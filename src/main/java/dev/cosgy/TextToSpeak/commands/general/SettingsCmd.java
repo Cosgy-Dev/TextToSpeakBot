@@ -26,20 +26,22 @@ import java.awt.*;
 
 public class SettingsCmd extends Command {
     protected Bot bot;
-    public SettingsCmd(Bot bot){
+
+    public SettingsCmd(Bot bot) {
         this.bot = bot;
         this.guildOnly = false;
         this.name = "settings";
         this.help = "現在の設定を確認します。";
         this.category = new Category("設定");
     }
+
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(CommandEvent event) {
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
 
         EmbedBuilder ebuilder = new EmbedBuilder()
                 .setColor(Color.orange)
-                .setTitle(event.getAuthor().getName()+"の設定")
+                .setTitle(event.getAuthor().getName() + "の設定")
                 .addField("声：", settings.getVoice(), false)
                 .addField("速度：", String.valueOf(settings.getSpeed()), false)
                 .addField("抑揚：", String.valueOf(settings.getIntonation()), false)

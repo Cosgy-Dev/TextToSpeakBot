@@ -27,20 +27,21 @@ import java.math.BigDecimal;
 public class SetIntonationCmd extends Command {
     protected Bot bot;
 
-    public SetIntonationCmd(Bot bot){
+    public SetIntonationCmd(Bot bot) {
         this.bot = bot;
         this.name = "setinto";
         this.help = "抑揚の設定を変更します。";
         this.guildOnly = false;
         this.category = new Category("設定");
     }
+
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(CommandEvent event) {
         if (event.getArgs().isEmpty() && event.getMessage().getAttachments().isEmpty()) {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("setintoコマンド")
-                    .addField("使用方法:", name+" <数値(0.0~)>", false)
-                    .addField("説明:","抑揚の設定を変更します。抑揚は、0.0以上の数値で設定して下さい。",false);
+                    .addField("使用方法:", name + " <数値(0.0~)>", false)
+                    .addField("説明:", "抑揚の設定を変更します。抑揚は、0.0以上の数値で設定して下さい。", false);
             event.reply(ebuilder.build());
             return;
         }
@@ -50,23 +51,22 @@ public class SetIntonationCmd extends Command {
         try {
             bd = new BigDecimal(args);
             result = true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             result = false;
         }
-        if(!result){
+        if (!result) {
             event.reply("数値を設定して下さい。");
             return;
         }
         BigDecimal min = new BigDecimal("0.0");
         BigDecimal max = new BigDecimal("100.0");
 
-        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
+        if (!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)) {
             event.reply("有効な数値を設定して下さい。0.1~100.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
         settings.setIntonation(bd.floatValue());
-        event.reply("抑揚を"+bd+"に設定しました。");
+        event.reply("抑揚を" + bd + "に設定しました。");
     }
 }

@@ -16,7 +16,6 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.dictionary;
 
-import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -32,7 +31,7 @@ public class DlWordCmd extends SlashCommand {
     private final Bot bot;
     Logger log = getLogger(this.getClass());
 
-    public DlWordCmd(Bot bot){
+    public DlWordCmd(Bot bot) {
         this.bot = bot;
         this.name = "dlwd";
         this.help = "辞書に登録されている単語を削除します。";
@@ -50,15 +49,15 @@ public class DlWordCmd extends SlashCommand {
                 event.reply(args + "は、辞書に登録されていません。").queue();
                 return;
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return;
         }
 
         boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
 
-        if(result){
+        if (result) {
             event.reply("単語を削除しました。").queue();
-        }else{
+        } else {
             event.reply("削除中に問題が発生しました。").queue();
         }
     }

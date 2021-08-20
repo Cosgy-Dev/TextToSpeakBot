@@ -24,7 +24,7 @@ import dev.cosgy.TextToSpeak.audio.AudioHandler;
 public class ByeCmd extends Command {
     protected final Bot bot;
 
-    public ByeCmd(Bot bot){
+    public ByeCmd(Bot bot) {
         this.bot = bot;
         this.name = "bye";
         this.help = "ボイスチャンネルから退出します。";

@@ -33,16 +33,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class WordListCmd extends Command {
     private final Bot bot;
+    private final Paginator.Builder builder;
     Logger log = getLogger(this.getClass());
 
-    private final Paginator.Builder builder;
-
-    public WordListCmd(Bot bot){
+    public WordListCmd(Bot bot) {
         this.bot = bot;
         this.name = "wdls";
         this.help = "辞書に、登録してある単語をリストアップします。";
         this.category = new Category("辞書");
-        this.botPermissions = new Permission[] {Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS};
+        this.botPermissions = new Permission[]{Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS};
         builder = new Paginator.Builder()
                 .setColumns(1)
                 .setFinalAction(m -> {
@@ -61,7 +60,7 @@ public class WordListCmd extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(CommandEvent event) {
         int pagenum = 1;
         try {
             pagenum = Integer.parseInt(event.getArgs());
@@ -74,12 +73,12 @@ public class WordListCmd extends Command {
             for (String key : words.keySet()) {
                 list.add(key + "-" + words.get(key));
             }
-        }catch (NullPointerException ignored){
+        } catch (NullPointerException ignored) {
             return;
         }
         String[] wordList = new String[list.size()];
 
-        if(list.size() == 0){
+        if (list.size() == 0) {
             event.reply("単語が登録されていません。");
             return;
         }

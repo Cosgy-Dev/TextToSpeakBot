@@ -21,14 +21,11 @@ import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class JoinCmd extends SlashCommand {
     protected Bot bot;
 
-    public JoinCmd(Bot bot){
+    public JoinCmd(Bot bot) {
         this.name = "join";
         this.help = "ボイスチャンネルに参加します。";
         //this.optionData = new OptionData[]{new OptionData(OptionType.CHANNEL, "ボイスチャンネル", "ボットを参加させるボイスチャンネル", true)};
@@ -47,7 +44,7 @@ public class JoinCmd extends SlashCommand {
 
         GuildVoiceState userState = event.getMember().getVoiceState();
 
-        if(!userState.inVoiceChannel()){
+        if (!userState.inVoiceChannel()) {
             event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。").queue();
             return;
         }

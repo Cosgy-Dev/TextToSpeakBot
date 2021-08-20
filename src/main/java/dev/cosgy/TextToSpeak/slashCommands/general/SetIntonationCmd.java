@@ -16,11 +16,9 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.general;
 
-import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -30,7 +28,7 @@ import java.math.BigDecimal;
 public class SetIntonationCmd extends SlashCommand {
     protected Bot bot;
 
-    public SetIntonationCmd(Bot bot){
+    public SetIntonationCmd(Bot bot) {
         this.bot = bot;
         this.name = "setinto";
         this.help = "抑揚の設定を変更します。";
@@ -53,23 +51,22 @@ public class SetIntonationCmd extends SlashCommand {
         try {
             bd = new BigDecimal(args);
             result = true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             result = false;
         }
-        if(!result){
+        if (!result) {
             event.reply("数値を設定して下さい。");
             return;
         }
         BigDecimal min = new BigDecimal("0.0");
         BigDecimal max = new BigDecimal("100.0");
 
-        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
+        if (!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)) {
             event.reply("有効な数値を設定して下さい。0.1~100.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
         settings.setIntonation(bd.floatValue());
-        event.reply("抑揚を"+bd+"に設定しました。").queue();
+        event.reply("抑揚を" + bd + "に設定しました。").queue();
     }
 }

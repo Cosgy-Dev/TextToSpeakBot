@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SetReadNameCmd extends AdminCommand {
-    Logger log = LoggerFactory.getLogger(this.getClass());
     private final Bot bot;
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     public SetReadNameCmd(Bot bot) {
         this.bot = bot;
@@ -37,10 +37,10 @@ public class SetReadNameCmd extends AdminCommand {
     protected void execute(CommandEvent event) {
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
-        if(settings.isReadName()){
+        if (settings.isReadName()) {
             settings.setReadName(false);
             event.reply("ユーザー名の読み上げを無効にしました。");
-        }else{
+        } else {
             settings.setReadName(true);
             event.reply("ユーザー名の読み上げを有効にしました。");
         }

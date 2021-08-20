@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.exceptions.PermissionException;
 public class JoinCmd extends Command {
     protected Bot bot;
 
-    public JoinCmd(Bot bot){
+    public JoinCmd(Bot bot) {
         this.bot = bot;
         this.name = "join";
         this.help = "ボイスチャンネルに参加します。";
@@ -33,14 +33,14 @@ public class JoinCmd extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(CommandEvent event) {
         //Settings settings = event.getClient().getSettingsFor(event.getGuild());
         //TextChannel channel = settings.getTextChannel(event.getGuild());
         bot.getPlayerManager().setUpHandler(event.getGuild());
 
         GuildVoiceState userState = event.getMember().getVoiceState();
 
-        if(!userState.inVoiceChannel()){
+        if (!userState.inVoiceChannel()) {
             event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。");
             return;
         }

@@ -36,7 +36,7 @@ public class Settings implements GuildSettingsProvider {
         this.manager = manager;
         try {
             this.textId = Long.parseLong(textId);
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             this.textId = 0;
         }
         this.prefix = prefix;
@@ -87,18 +87,20 @@ public class Settings implements GuildSettingsProvider {
         return prefix == null ? Collections.EMPTY_SET : Collections.singleton(prefix);
     }
 
-    public boolean isReadName(){
-        return  readName;
+    public boolean isReadName() {
+        return readName;
     }
 
-    public void setReadName(boolean readName){
+    public void setReadName(boolean readName) {
         this.readName = readName;
         this.manager.writeSettings();
     }
 
-    public boolean isJoinAndLeaveRead(){ return joinAndLeaveRead; }
+    public boolean isJoinAndLeaveRead() {
+        return joinAndLeaveRead;
+    }
 
-    public void setJoinAndLeaveRead(boolean joinAndLeaveRead){
+    public void setJoinAndLeaveRead(boolean joinAndLeaveRead) {
         this.joinAndLeaveRead = joinAndLeaveRead;
         this.manager.writeSettings();
     }

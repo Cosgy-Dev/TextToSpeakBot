@@ -59,7 +59,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class TextToSpeak {
     public final static Permission[] RECOMMENDED_PERMS = {Permission.MESSAGE_READ, Permission.MESSAGE_WRITE, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION,
-            Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI,Permission.USE_SLASH_COMMANDS,
+            Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI, Permission.USE_SLASH_COMMANDS,
             Permission.MANAGE_CHANNEL, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.NICKNAME_CHANGE};
     public final static GatewayIntent[] INTENTS = {GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES};
     public static boolean CHECK_UPDATE = true;
@@ -71,7 +71,7 @@ public class TextToSpeak {
     public static void main(String[] args) {
         Logger log = getLogger("立ち上げ");
         try {
-            System.out.println(FigletFont.convertOneLine("Yomiage Bot v"+ OtherUtil.getCurrentVersion()) +"\n" + "by Cosgy Dev");
+            System.out.println(FigletFont.convertOneLine("Yomiage Bot v" + OtherUtil.getCurrentVersion()) + "\n" + "by Cosgy Dev");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,7 +108,7 @@ public class TextToSpeak {
         Bot.INSTANCE = bot;
 
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
-                bot.GetLang().getString("appName") +"(v" + version + ")",
+                bot.GetLang().getString("appName") + "(v" + version + ")",
                 RECOMMENDED_PERMS);
         aboutCommand.setIsAuthor(false);
         aboutCommand.setReplacementCharacter("🎶");
@@ -145,18 +145,18 @@ public class TextToSpeak {
             add(new ShutdownCmd(bot));
         }};
 
-        List<SlashCommand> slashCommandList = new ArrayList<SlashCommand>(){{
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.JoinCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.ByeCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.SettingsCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.SetIntonationCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.SetSpeedCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceQualityA(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceQualityFm(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.AddWordCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.DlWordCmd(bot));
-           add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.WordListCmd(bot));
+        List<SlashCommand> slashCommandList = new ArrayList<SlashCommand>() {{
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.JoinCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.ByeCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.SettingsCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetIntonationCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetSpeedCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceQualityA(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceQualityFm(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.AddWordCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.DlWordCmd(bot));
+            add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.WordListCmd(bot));
         }};
 
         cb.addCommands(commandList.toArray(new Command[0]));
@@ -214,7 +214,7 @@ public class TextToSpeak {
         Runtime.getRuntime().addShutdownHook(new Thread(TextToSpeak::ShutDown));
     }
 
-    private static void ShutDown(){
+    private static void ShutDown() {
         Logger log = getLogger("シャットダウン");
 
         log.info("一時ファイルを削除中...");

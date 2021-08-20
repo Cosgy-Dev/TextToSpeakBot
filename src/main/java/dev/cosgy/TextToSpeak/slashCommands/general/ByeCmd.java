@@ -16,17 +16,15 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.general;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.audio.AudioHandler;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 
 public class ByeCmd extends SlashCommand {
     protected final Bot bot;
 
-    public ByeCmd(Bot bot){
+    public ByeCmd(Bot bot) {
         this.bot = bot;
         this.name = "bye";
         this.help = "ボイスチャンネルから退出します。";

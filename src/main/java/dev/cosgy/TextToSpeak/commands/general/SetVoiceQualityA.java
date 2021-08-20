@@ -26,7 +26,8 @@ import java.math.BigDecimal;
 
 public class SetVoiceQualityA extends Command {
     protected Bot bot;
-    public SetVoiceQualityA(Bot bot){
+
+    public SetVoiceQualityA(Bot bot) {
         this.bot = bot;
         this.name = "setqa";
         this.help = "声質aの設定を変更します。";
@@ -35,12 +36,12 @@ public class SetVoiceQualityA extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(CommandEvent event) {
         if (event.getArgs().isEmpty() && event.getMessage().getAttachments().isEmpty()) {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("setqaコマンド")
-                    .addField("使用方法:", name+" <数値(0.0~1.0)>", false)
-                    .addField("説明:","読み上げの速度を設定します。読み上げ速度は、0.0以上1.0以下の数値で設定して下さい。",false);
+                    .addField("使用方法:", name + " <数値(0.0~1.0)>", false)
+                    .addField("説明:", "読み上げの速度を設定します。読み上げ速度は、0.0以上1.0以下の数値で設定して下さい。", false);
             event.reply(ebuilder.build());
             return;
         }
@@ -52,11 +53,10 @@ public class SetVoiceQualityA extends Command {
             //value = Float.parseFloat(args);
             bd = new BigDecimal(args);
             result = true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             result = false;
         }
-        if(!result){
+        if (!result) {
             event.reply("数値を設定して下さい。");
             return;
         }
@@ -65,12 +65,12 @@ public class SetVoiceQualityA extends Command {
         BigDecimal max = new BigDecimal("1.0");
 
         //if(!(0.1f <= value && value <= 1.0f)){
-        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
+        if (!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)) {
             event.reply("有効な数値を設定して下さい。0.1~1.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
         settings.setVoiceQualityA(bd.floatValue());
-        event.reply("声質aを"+bd+"に設定しました。");
+        event.reply("声質aを" + bd + "に設定しました。");
     }
 }

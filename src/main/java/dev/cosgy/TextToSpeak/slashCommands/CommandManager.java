@@ -31,32 +31,30 @@ import java.util.List;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class CommandManager extends ListenerAdapter {
-    HashMap<String, SlashCommand> commandsMap = new HashMap<>();
-
-    protected List<SlashCommand> commands;
     private final Bot bot;
+    protected List<SlashCommand> commands;
+    HashMap<String, SlashCommand> commandsMap = new HashMap<>();
+    Logger log = getLogger(this.getClass());
 
     public CommandManager(Bot bot, List<SlashCommand> commands) {
         this.bot = bot;
         this.commands = commands;
     }
-    Logger log = getLogger(this.getClass());
-
 
     @Override
-    public void onReady(ReadyEvent event){
+    public void onReady(ReadyEvent event) {
         log.info("コマンド作成中");
         JDA jda = bot.getJDA();
         CommandListUpdateAction update = jda.updateCommands();
-        for(SlashCommand cmd : commands){
-            if(cmd.getOptionData().length == 0&& cmd.getSubCommandData().length == 0) {
+        for (SlashCommand cmd : commands) {
+            if (cmd.getOptionData().length == 0 && cmd.getSubCommandData().length == 0) {
                 update.addCommands(new CommandData(cmd.getName(), cmd.getHelp())).queue();
-            }else if(cmd.getSubCommandData().length != 0) {
+            } else if (cmd.getSubCommandData().length != 0) {
                 update.addCommands(new CommandData(cmd.getName(), cmd.getHelp())
                         .addSubcommands(cmd.getSubCommandData())).queue();
-            } else{
+            } else {
                 update.addCommands(new CommandData(cmd.getName(), cmd.getHelp())
-                .addOptions(cmd.optionData)).queue();
+                        .addOptions(cmd.optionData)).queue();
             }
             commandsMap.put(cmd.getName(), cmd);
         }
@@ -68,7 +66,7 @@ public class CommandManager extends ListenerAdapter {
     @Override
     public void onSlashCommand(SlashCommandEvent event) {
         log.debug("コマンド実行");
-        if(!commandsMap.containsKey(event.getName())) return;
+        if (!commandsMap.containsKey(event.getName())) return;
         log.debug("コマンド実行2");
         SlashCommand sc = commandsMap.get(event.getName());
         sc.execute(event);

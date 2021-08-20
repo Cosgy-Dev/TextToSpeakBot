@@ -31,10 +31,10 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Dictionary {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Bot bot;
     private Path path = null;
     private boolean create = false;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Connection connection;
     private Statement statement;
 
@@ -97,8 +97,9 @@ public class Dictionary {
 
     /**
      * データベースとHashMapの内容を更新または新規追加します。
+     *
      * @param guildId サーバーID
-     * @param word 単語
+     * @param word    単語
      * @param reading 読み方
      */
     public void UpdateDictionary(Long guildId, String word, String reading) {
@@ -143,8 +144,9 @@ public class Dictionary {
 
     /**
      * データベースに登録されている単語を削除します。
+     *
      * @param guildId サーバーID
-     * @param word 単語
+     * @param word    単語
      * @return 正常に削除できた場合は {@code true}、削除時に問題が発生した場合は{@code false}を返します。
      */
     public boolean DeleteDictionary(Long guildId, String word) {
@@ -172,6 +174,7 @@ public class Dictionary {
 
     /**
      * サーバーの辞書データを取得します。
+     *
      * @param guildId サーバーID
      * @return {@code HashMap<String, String>}形式の変数を返します。
      */

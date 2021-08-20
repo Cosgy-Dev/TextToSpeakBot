@@ -33,13 +33,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class MessageListener extends ListenerAdapter {
     private final Bot bot;
 
-    public MessageListener(Bot bot){
+    public MessageListener(Bot bot) {
         this.bot = bot;
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
+    public void onMessageReceived(MessageReceivedEvent event) {
         JDA jda = event.getJDA();
         long responseNumber = event.getResponseNumber();//前回の再接続以降にJDAが受信した不一致イベントの量。
 
@@ -56,33 +55,33 @@ public class MessageListener extends ListenerAdapter {
         //if(Arrays.asList(mentionedUsers).contains())
         //メッセージを送信したユーザーがBOTであるかどうかを判断。
 
-        if(event.isFromType(ChannelType.TEXT)){
-            if(isBot) return;
+        if (event.isFromType(ChannelType.TEXT)) {
+            if (isBot) return;
             Guild guild = event.getGuild();
             TextChannel textChannel = event.getTextChannel();
             TextChannel settingText = bot.getSettingsManager().getSettings(guild).getTextChannel(guild);
 
-            if(!guild.getAudioManager().isConnected()){
+            if (!guild.getAudioManager().isConnected()) {
                 return;
             }
 
             String prefix = bot.getConfig().getPrefix().equals("@mention") ? "@" + event.getJDA().getSelfUser().getName() + " " : bot.getConfig().getPrefix();
 
-            if(msg.startsWith(prefix)){
+            if (msg.startsWith(prefix)) {
                 return;
             }
 
             // URLを置き換え
-            msg = msg.replaceAll("(http://|https://)[\\w.\\-/:#?=&;%~+]+","ゆーあーるえる");
+            msg = msg.replaceAll("(http://|https://)[\\w.\\-/:#?=&;%~+]+", "ゆーあーるえる");
 
-            if(textChannel == settingText){
+            if (textChannel == settingText) {
 
-                if(bot.getSettingsManager().getSettings(guild).isReadName()){
+                if (bot.getSettingsManager().getSettings(guild).isReadName()) {
                     msg = author.getName() + "  " + msg;
                 }
 
                 VoiceCreation vc = bot.getVoiceCreation();
-                String file = vc.CreateVoice(guild,author, msg);
+                String file = vc.CreateVoice(guild, author, msg);
 
                 bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event, false));
 
@@ -93,7 +92,7 @@ public class MessageListener extends ListenerAdapter {
 
 
     @Override
-    public void onReady(ReadyEvent e){
+    public void onReady(ReadyEvent e) {
         bot.getDictionary().Init();
     }
 

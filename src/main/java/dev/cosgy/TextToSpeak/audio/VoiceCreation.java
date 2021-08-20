@@ -16,10 +16,8 @@
 
 package dev.cosgy.TextToSpeak.audio;
 
-import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
-import jdk.nashorn.internal.runtime.Debug;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import org.apache.commons.io.FileUtils;
@@ -36,16 +34,15 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class VoiceCreation {
-    private Bot bot;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("win");
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     String dic = "/var/lib/mecab/dic/open-jtalk/naist-jdic";
     String vDic = "/usr/share/hts-voice";
     ArrayList<String> voices = new ArrayList<>();
     String testVoice = "/usr/share/hts-voice/mei_normal.htsvoice";
+    private Bot bot;
 
-    public void Init(Bot bot){
+    public void Init(Bot bot) {
         this.bot = bot;
         FilenameFilter filter = (file, str) -> {
             // 拡張子を指定する
@@ -60,23 +57,23 @@ public class VoiceCreation {
             voices.add(file.getName().replace(".htsvoice", ""));
         }
 
-        logger.debug("声データ："+ voices.toString());
+        logger.debug("声データ：" + voices.toString());
     }
 
-    public String CreateVoice(Guild guild , User user, String message) {
-        if(!tmpFolderExists()){
+    public String CreateVoice(Guild guild, User user, String message) {
+        if (!tmpFolderExists()) {
             createTmpFolder();
             createGuildTmpFolder(guild);
             logger.info("tmpフォルダが存在しなかったため作成しました。");
-        }else if(!guildTmpFolderExists(guild)){
+        } else if (!guildTmpFolderExists(guild)) {
             createGuildTmpFolder(guild);
         }
 
-        if(!wavFolderExists()){
+        if (!wavFolderExists()) {
             createWavFolder();
             createGuildWavFolder(guild);
             logger.info("wavフォルダが存在しなかったため作成しました。");
-        }else if(!guildWavFolderExists(guild)){
+        } else if (!guildWavFolderExists(guild)) {
             createGuildWavFolder(guild);
         }
 
@@ -85,31 +82,31 @@ public class VoiceCreation {
         UUID fileId = UUID.randomUUID();
         String fileName = "wav" + File.separator + guild.getId() + File.separator + fileId + ".wav";
 
-        File file = new File(vDic+ File.separator+ settings.getVoice() + ".htsvoice");
-        logger.debug("読み込む声データ:"+ file);
+        File file = new File(vDic + File.separator + settings.getVoice() + ".htsvoice");
+        logger.debug("読み込む声データ:" + file);
 
         HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
-        String dicMsg =message;
+        String dicMsg = message;
         dicMsg = dicMsg.replaceAll("Kosugi_kun", "コスギクン");
 
         try {
             for (String key : words.keySet()) {
                 dicMsg = dicMsg.replaceAll(Pattern.quote(key), words.get(key));
             }
-        }catch (NullPointerException ignored){
+        } catch (NullPointerException ignored) {
             logger.debug("辞書データがなかったため処理をスキップします。");
         }
 
-        if(bot.getConfig().getMaxMessageCount() != 0 && !user.isBot() && dicMsg.length() >= bot.getConfig().getMaxMessageCount()){
+        if (bot.getConfig().getMaxMessageCount() != 0 && !user.isBot() && dicMsg.length() >= bot.getConfig().getMaxMessageCount()) {
             dicMsg = dicMsg.substring(0, bot.getConfig().getMaxMessageCount()) + "   以下略";
         }
 
         String[] Command;
-        if(IS_WINDOWS){
-            File dir = new File(bot.getConfig().getWinJTalkDir()+ File.separator + "open_jtalk.exe");
-            Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(guild,fileId, dicMsg.replaceAll("[\r\n]", " "))};
-        }else{
-            Command = new String[]{"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(guild ,fileId, dicMsg.replaceAll("[\r\n]", " "))};
+        if (IS_WINDOWS) {
+            File dir = new File(bot.getConfig().getWinJTalkDir() + File.separator + "open_jtalk.exe");
+            Command = new String[]{dir.toString(), "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(guild, fileId, dicMsg.replaceAll("[\r\n]", " "))};
+        } else {
+            Command = new String[]{"open_jtalk", "-x", dic, "-m", file.toString(), "-ow", fileName, "-r", String.valueOf(settings.getSpeed()), "-jf", String.valueOf(settings.getIntonation()), "-a", String.valueOf(settings.getVoiceQualityA()), "-fm", String.valueOf(settings.getVoiceQualityFm()), CreateTmpText(guild, fileId, dicMsg.replaceAll("[\r\n]", " "))};
         }
 
 
@@ -129,8 +126,8 @@ public class VoiceCreation {
         return fileName;
     }
 
-    private String CreateTmpText(Guild guild ,UUID id, String message) {
-        String tmp_dir = "tmp" + File.separator+ guild.getId() + File.separator + id + ".txt";
+    private String CreateTmpText(Guild guild, UUID id, String message) {
+        String tmp_dir = "tmp" + File.separator + guild.getId() + File.separator + id + ".txt";
         String characterCode = IS_WINDOWS ? "Shift-JIS" : "UTF-8";
         try (PrintWriter writer = new PrintWriter(tmp_dir, characterCode)) {
             writer.write(message);
@@ -140,7 +137,7 @@ public class VoiceCreation {
         return tmp_dir;
     }
 
-    public void ClearGuildFolder(Guild guild){
+    public void ClearGuildFolder(Guild guild) {
         File tmp = new File("tmp" + File.separator + guild.getId());
         File wav = new File("wav" + File.separator + guild.getId());
 
@@ -152,7 +149,7 @@ public class VoiceCreation {
         }
     }
 
-    public ArrayList<String> getVoices(){
+    public ArrayList<String> getVoices() {
         return voices;
     }
 
@@ -178,24 +175,24 @@ public class VoiceCreation {
         return Files.exists(Paths.get("wav"));
     }
 
-    public boolean guildWavFolderExists(Guild guild){
-        return Files.exists(Paths.get("wav"+ File.separator + guild.getId()));
+    public boolean guildWavFolderExists(Guild guild) {
+        return Files.exists(Paths.get("wav" + File.separator + guild.getId()));
     }
 
-    public void createGuildWavFolder(Guild guild){
+    public void createGuildWavFolder(Guild guild) {
         try {
-            Files.createDirectory(Paths.get("wav"+File.separator + guild.getId()));
+            Files.createDirectory(Paths.get("wav" + File.separator + guild.getId()));
         } catch (IOException ignore) {
         }
     }
 
-    public boolean guildTmpFolderExists(Guild guild){
-        return Files.exists(Paths.get("tmp"+ File.separator + guild.getId()));
+    public boolean guildTmpFolderExists(Guild guild) {
+        return Files.exists(Paths.get("tmp" + File.separator + guild.getId()));
     }
 
-    public void createGuildTmpFolder(Guild guild){
+    public void createGuildTmpFolder(Guild guild) {
         try {
-            Files.createDirectory(Paths.get("tmp"+File.separator + guild.getId()));
+            Files.createDirectory(Paths.get("tmp" + File.separator + guild.getId()));
         } catch (IOException ignore) {
         }
     }

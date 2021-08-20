@@ -7,10 +7,13 @@
 ![Jenkins](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.cosgy.dev%2Fjob%2FTextToSpeakBot_Dev%2F&label=%E9%96%8B%E7%99%BA%E3%83%93%E3%83%AB%E3%83%89)
 ![Jenkins](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.cosgy.dev%2Fjob%2FTextToSpeakBot%2F&label=%E5%AE%89%E5%AE%9A%E3%83%93%E3%83%AB%E3%83%89)
 [![CodeFactor](https://www.codefactor.io/repository/github/cosgy-dev/texttospeakbot/badge)](https://www.codefactor.io/repository/github/cosgy-dev/texttospeakbot)
+
 # 読み上げボット(TextToSpeakBot)
 
 読み上げボットは、Open JTalkを使用したシンプルで操作性の良いボットです。
+
 # 機能
+
 - 辞書機能
 - テキストを送信したユーザー名を読み上げ
 - ボイスチャンネルに参加、退出したユーザーの名前を読み上げ

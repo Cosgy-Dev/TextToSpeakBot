@@ -21,7 +21,6 @@ import dev.cosgy.TextToSpeak.Bot;
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ResourceBundle;
 
 /**
  * @author Kosugi_kun

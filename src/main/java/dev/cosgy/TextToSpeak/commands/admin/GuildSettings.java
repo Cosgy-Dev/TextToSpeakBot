@@ -28,8 +28,8 @@ import java.awt.*;
 import java.util.Objects;
 
 public class GuildSettings extends AdminCommand {
-    Logger log = LoggerFactory.getLogger(this.getClass());
     private final Bot bot;
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     public GuildSettings(Bot bot) {
         this.bot = bot;
@@ -42,7 +42,7 @@ public class GuildSettings extends AdminCommand {
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
         EmbedBuilder ebuilder = new EmbedBuilder()
                 .setColor(Color.orange)
-                .setTitle(event.getGuild().getName()+"の設定")
+                .setTitle(event.getGuild().getName() + "の設定")
                 .addField("ユーザー名読み上げ：", String.valueOf(Objects.requireNonNull(settings).isReadName()), false)
                 .addField("参加、退出時の読み上げ：", String.valueOf(settings.isJoinAndLeaveRead()), false)
                 //.addField("接頭語：", settings.getPrefix(), false)

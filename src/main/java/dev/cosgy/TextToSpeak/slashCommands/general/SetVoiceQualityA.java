@@ -16,7 +16,6 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.general;
 
-import com.jagrosh.jdautilities.command.Command;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
@@ -28,7 +27,8 @@ import java.math.BigDecimal;
 
 public class SetVoiceQualityA extends SlashCommand {
     protected Bot bot;
-    public SetVoiceQualityA(Bot bot){
+
+    public SetVoiceQualityA(Bot bot) {
         this.bot = bot;
         this.name = "setqa";
         this.help = "声質aの設定を変更します。";
@@ -46,11 +46,10 @@ public class SetVoiceQualityA extends SlashCommand {
             //value = Float.parseFloat(args);
             bd = new BigDecimal(args);
             result = true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             result = false;
         }
-        if(!result){
+        if (!result) {
             event.reply("数値を設定して下さい。").queue();
             return;
         }
@@ -59,12 +58,12 @@ public class SetVoiceQualityA extends SlashCommand {
         BigDecimal max = new BigDecimal("1.0");
 
         //if(!(0.1f <= value && value <= 1.0f)){
-        if(!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)){
+        if (!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)) {
             event.reply("有効な数値を設定して下さい。0.1~1.0");
             return;
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
         settings.setVoiceQualityA(bd.floatValue());
-        event.reply("声質aを"+bd+"に設定しました。").queue();
+        event.reply("声質aを" + bd + "に設定しました。").queue();
     }
 }

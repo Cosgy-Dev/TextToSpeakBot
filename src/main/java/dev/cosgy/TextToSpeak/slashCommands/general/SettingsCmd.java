@@ -26,7 +26,8 @@ import java.awt.*;
 
 public class SettingsCmd extends SlashCommand {
     protected Bot bot;
-    public SettingsCmd(Bot bot){
+
+    public SettingsCmd(Bot bot) {
         this.bot = bot;
         this.name = "settings";
         this.help = "現在の設定を確認します。";
@@ -39,7 +40,7 @@ public class SettingsCmd extends SlashCommand {
 
         EmbedBuilder ebuilder = new EmbedBuilder()
                 .setColor(Color.orange)
-                .setTitle(event.getUser().getName()+"の設定")
+                .setTitle(event.getUser().getName() + "の設定")
                 .addField("声：", settings.getVoice(), false)
                 .addField("速度：", String.valueOf(settings.getSpeed()), false)
                 .addField("抑揚：", String.valueOf(settings.getIntonation()), false)

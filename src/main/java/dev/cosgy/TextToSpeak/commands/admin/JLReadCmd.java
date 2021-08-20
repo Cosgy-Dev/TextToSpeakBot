@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JLReadCmd extends AdminCommand {
-    Logger log = LoggerFactory.getLogger(this.getClass());
     private final Bot bot;
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     public JLReadCmd(Bot bot) {
         this.bot = bot;
@@ -37,10 +37,10 @@ public class JLReadCmd extends AdminCommand {
     protected void execute(CommandEvent event) {
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
-        if(settings.isJoinAndLeaveRead()){
+        if (settings.isJoinAndLeaveRead()) {
             settings.setJoinAndLeaveRead(false);
             event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを無効にしました。");
-        }else{
+        } else {
             settings.setJoinAndLeaveRead(true);
             event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを有効にしました。");
         }

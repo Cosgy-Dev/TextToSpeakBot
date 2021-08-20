@@ -20,8 +20,6 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -32,7 +30,7 @@ public class DlWordCmd extends Command {
     private final Bot bot;
     Logger log = getLogger(this.getClass());
 
-    public DlWordCmd(Bot bot){
+    public DlWordCmd(Bot bot) {
         this.bot = bot;
         this.name = "dlwd";
         this.help = "辞書に登録されている単語を削除します。";
@@ -40,12 +38,12 @@ public class DlWordCmd extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(CommandEvent event) {
         if (event.getArgs().isEmpty() && event.getMessage().getAttachments().isEmpty()) {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("dlwordコマンド")
-                    .addField("使用方法:", name+" <単語>", false)
-                    .addField("説明:",help,false);
+                    .addField("使用方法:", name + " <単語>", false)
+                    .addField("説明:", help, false);
             event.reply(ebuilder.build());
             return;
         }
@@ -59,15 +57,15 @@ public class DlWordCmd extends Command {
                 event.reply(args + "は、辞書に登録されていません。");
                 return;
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return;
         }
 
         boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
 
-        if(result){
+        if (result) {
             event.reply("単語を削除しました。");
-        }else{
+        } else {
             event.reply("削除中に問題が発生しました。");
         }
     }

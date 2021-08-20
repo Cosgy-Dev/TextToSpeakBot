@@ -112,7 +112,7 @@ public class Bot {
         this.gui = gui;
     }
 
-    public ResourceBundle GetLang(){
+    public ResourceBundle GetLang() {
         return lang;
     }
 
@@ -136,18 +136,19 @@ public class Bot {
         return threadpool;
     }
 
-    public VoiceCreation getVoiceCreation(){
+    public VoiceCreation getVoiceCreation() {
         return voiceCreation;
     }
 
-    public UserSettingsManager getUserSettingsManager(){
+    public UserSettingsManager getUserSettingsManager() {
         return userSettingsManager;
     }
 
-    public Dictionary getDictionary(){return dictionary;}
+    public Dictionary getDictionary() {
+        return dictionary;
+    }
 
-    public AloneInVoiceHandler getAloneInVoiceHandler()
-    {
+    public AloneInVoiceHandler getAloneInVoiceHandler() {
         return aloneInVoiceHandler;
     }
 }

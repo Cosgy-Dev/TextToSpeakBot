@@ -16,11 +16,9 @@
 
 package dev.cosgy.TextToSpeak.slashCommands.dictionary;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.menu.Paginator;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -36,11 +34,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class WordListCmd extends SlashCommand {
     private final Bot bot;
+    private final Paginator.Builder builder;
     Logger log = getLogger(this.getClass());
 
-    private final Paginator.Builder builder;
-
-    public WordListCmd(Bot bot){
+    public WordListCmd(Bot bot) {
         this.bot = bot;
         this.name = "wdls";
         this.help = "辞書に、登録してある単語をリストアップします。";
@@ -77,12 +74,12 @@ public class WordListCmd extends SlashCommand {
             for (String key : words.keySet()) {
                 list.add(key + "-" + words.get(key));
             }
-        }catch (NullPointerException ignored){
+        } catch (NullPointerException ignored) {
             return;
         }
         String[] wordList = new String[list.size()];
 
-        if(list.size() == 0){
+        if (list.size() == 0) {
             event.reply("単語が登録されていません。");
             return;
         }

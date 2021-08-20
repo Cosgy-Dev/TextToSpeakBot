@@ -30,6 +30,7 @@ import java.util.List;
 
 public class SettcCmd extends AdminCommand {
     Logger log = LoggerFactory.getLogger(this.getClass());
+
     public SettcCmd(Bot bot) {
         this.name = "settc";
         this.help = "読み上げをするチャンネルを設定します。設定をしていない場合は読み上げを行いません。";
