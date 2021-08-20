@@ -86,7 +86,7 @@ public class VoiceCreation {
         String fileName = "wav" + File.separator + guild.getId() + File.separator + fileId + ".wav";
 
         File file = new File(vDic+ File.separator+ settings.getVoice() + ".htsvoice");
-        logger.debug("読み込む声データ:"+ file.toString());
+        logger.debug("読み込む声データ:"+ file);
 
         HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
         String dicMsg =message;
@@ -100,8 +100,8 @@ public class VoiceCreation {
             logger.debug("辞書データがなかったため処理をスキップします。");
         }
 
-        if(bot.getConfig().getMaxMessageCount() != 0 && !user.isBot()){
-            dicMsg = dicMsg.substring(0, bot.getConfig().getMaxMessageCount()*2) + "   以下略";
+        if(bot.getConfig().getMaxMessageCount() != 0 && !user.isBot() && dicMsg.length() >= bot.getConfig().getMaxMessageCount()){
+            dicMsg = dicMsg.substring(0, bot.getConfig().getMaxMessageCount()) + "   以下略";
         }
 
         String[] Command;
