@@ -20,6 +20,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.AdminCommand;
 import dev.cosgy.TextToSpeak.settings.Settings;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,19 @@ public class JLReadCmd extends AdminCommand {
         this.bot = bot;
         this.name = "jlread";
         this.help = "ボイスチャンネルにユーザーが参加または退出した時にユーザー名を読み上げるか否かを設定します。";
+    }
+
+    @Override
+    protected void execute(SlashCommandEvent event) {
+        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
+
+        if (settings.isJoinAndLeaveRead()) {
+            settings.setJoinAndLeaveRead(false);
+            event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを無効にしました。").queue();
+        } else {
+            settings.setJoinAndLeaveRead(true);
+            event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを有効にしました。").queue();
+        }
     }
 
     @Override

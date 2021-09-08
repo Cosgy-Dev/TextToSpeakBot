@@ -19,6 +19,7 @@ package dev.cosgy.TextToSpeak;
 import com.github.lalyos.jfiglet.FigletFont;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import dev.cosgy.TextToSpeak.commands.admin.GuildSettings;
 import dev.cosgy.TextToSpeak.commands.admin.JLReadCmd;
@@ -34,8 +35,6 @@ import dev.cosgy.TextToSpeak.gui.GUI;
 import dev.cosgy.TextToSpeak.listeners.CommandAudit;
 import dev.cosgy.TextToSpeak.listeners.MessageListener;
 import dev.cosgy.TextToSpeak.settings.SettingsManager;
-import dev.cosgy.TextToSpeak.slashCommands.CommandManager;
-import dev.cosgy.TextToSpeak.slashCommands.SlashCommand;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -122,8 +121,7 @@ public class TextToSpeak {
                 .setHelpWord("help")
                 .setLinkedCacheSize(200)
                 .setGuildSettingsManager(settings)
-                .setListener(new CommandAudit())
-                .setHelpToDm(false);
+                .setListener(new CommandAudit());
 
         List<Command> commandList = new ArrayList<Command>() {{
             add(aboutCommand);
@@ -144,22 +142,28 @@ public class TextToSpeak {
             add(new GuildSettings(bot));
             add(new ShutdownCmd(bot));
         }};
+        cb.addCommands(commandList.toArray(new Command[0]));
 
         List<SlashCommand> slashCommandList = new ArrayList<SlashCommand>() {{
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.JoinCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.ByeCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.SettingsCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetIntonationCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetSpeedCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceQualityA(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.general.SetVoiceQualityFm(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.AddWordCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.DlWordCmd(bot));
-            add(new dev.cosgy.TextToSpeak.slashCommands.dictionary.WordListCmd(bot));
+            //add(aboutCommand);
+            add(new JoinCmd(bot));
+            add(new ByeCmd(bot));
+            add(new SettingsCmd(bot));
+            add(new SetVoiceCmd(bot));
+            add(new SetSpeedCmd(bot));
+            add(new SetIntonationCmd(bot));
+            add(new SetVoiceQualityA(bot));
+            add(new SetVoiceQualityFm(bot));
+            add(new AddWordCmd(bot));
+            add(new WordListCmd(bot));
+            add(new DlWordCmd(bot));
+            add(new SettcCmd(bot));
+            add(new SetReadNameCmd(bot));
+            add(new JLReadCmd(bot));
+            add(new GuildSettings(bot));
+            add(new ShutdownCmd(bot));
         }};
-
-        cb.addCommands(commandList.toArray(new Command[0]));
+        cb.addSlashCommands(slashCommandList.toArray(new SlashCommand[0]));
 
         boolean nogame = false;
         if (config.getStatus() != OnlineStatus.UNKNOWN)
@@ -194,7 +198,7 @@ public class TextToSpeak {
                     .setActivity(nogame ? null : Activity.playing("準備中..."))
                     .setStatus(config.getStatus() == OnlineStatus.INVISIBLE || config.getStatus() == OnlineStatus.OFFLINE
                             ? OnlineStatus.INVISIBLE : OnlineStatus.DO_NOT_DISTURB)
-                    .addEventListeners(cb.build(), waiter, new Listener(bot), new MessageListener(bot), new CommandManager(bot, slashCommandList))
+                    .addEventListeners(cb.build(), waiter, new Listener(bot), new MessageListener(bot))
                     .setBulkDeleteSplittingEnabled(true)
                     .build();
 

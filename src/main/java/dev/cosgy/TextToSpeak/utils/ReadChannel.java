@@ -14,53 +14,18 @@
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
 
-package dev.cosgy.TextToSpeak.slashCommands;
+package dev.cosgy.TextToSpeak.utils;
 
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import java.util.HashMap;
 
-public abstract class SlashCommand {
-    /**
-     * {@code /<コマンド名>} 形式でコマンドを使用します。
-     */
-    protected String name = "null";
+public class ReadChannel {
+    private static HashMap<Long, Long> chat = new HashMap<>();
 
-    /**
-     * スラッシュコマンド画面とヘルプコマンドのコマンド説明欄に表示されるテキスト
-     */
-    protected String help = "no help available";
-
-    /**
-     * スラッシュコマンドのオプション設定
-     */
-    protected OptionData[] optionData = new OptionData[0];
-
-    protected SubcommandData[] subCommandData = new SubcommandData[0];
-
-    protected abstract void execute(SlashCommandEvent event);
-
-    public final void run(SlashCommandEvent event) {
-        // availability check
-        if (event.getChannelType() == ChannelType.TEXT) {
-
-        }
+    public static void setChannel(Long guild, Long textChannel) {
+        chat.put(guild, textChannel);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getHelp() {
-        return help;
-    }
-
-    public OptionData[] getOptionData() {
-        return optionData;
-    }
-
-    public SubcommandData[] getSubCommandData() {
-        return subCommandData;
+    public static Long getChannel(Long guild) {
+        return chat.get(guild);
     }
 }

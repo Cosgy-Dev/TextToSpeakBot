@@ -21,6 +21,7 @@ import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.AdminCommand;
 import dev.cosgy.TextToSpeak.settings.Settings;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,20 @@ public class GuildSettings extends AdminCommand {
         this.bot = bot;
         this.name = "gsettings";
         this.help = "ギルドの現在の設定を確認できます。";
+    }
+
+    @Override
+    protected void execute(SlashCommandEvent event) {
+        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
+        EmbedBuilder ebuilder = new EmbedBuilder()
+                .setColor(Color.orange)
+                .setTitle(event.getGuild().getName() + "の設定")
+                .addField("ユーザー名読み上げ：", String.valueOf(Objects.requireNonNull(settings).isReadName()), false)
+                .addField("参加、退出時の読み上げ：", String.valueOf(settings.isJoinAndLeaveRead()), false)
+                //.addField("接頭語：", settings.getPrefix(), false)
+                .addField("読み上げるチャンネル：", settings.getTextChannel(event.getGuild()).getName(), false)
+                .addField("読み上げの主音量：", String.valueOf(settings.getVolume()), false);
+        event.replyEmbeds(ebuilder.build()).queue();
     }
 
     @Override

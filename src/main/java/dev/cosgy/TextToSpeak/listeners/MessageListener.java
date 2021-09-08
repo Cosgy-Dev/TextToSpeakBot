@@ -24,6 +24,7 @@ import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.audio.AudioHandler;
 import dev.cosgy.TextToSpeak.audio.QueuedTrack;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
+import dev.cosgy.TextToSpeak.utils.ReadChannel;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -40,7 +41,7 @@ public class MessageListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         JDA jda = event.getJDA();
-        long responseNumber = event.getResponseNumber();//前回の再接続以降にJDAが受信した不一致イベントの量。
+        long responseNumber = event.getResponseNumber();
 
         //イベント固有の情報
         User author = event.getAuthor();                //メッセージを送信したユーザー
@@ -59,7 +60,7 @@ public class MessageListener extends ListenerAdapter {
             if (isBot) return;
             Guild guild = event.getGuild();
             TextChannel textChannel = event.getTextChannel();
-            TextChannel settingText = bot.getSettingsManager().getSettings(guild).getTextChannel(guild);
+            TextChannel settingText = bot.getSettingsManager().getSettings(event.getGuild()).getTextChannel(event.getGuild());
 
             if (!guild.getAudioManager().isConnected()) {
                 return;
@@ -69,6 +70,12 @@ public class MessageListener extends ListenerAdapter {
 
             if (msg.startsWith(prefix)) {
                 return;
+            }
+
+            if(textChannel != settingText){
+                if(settingText == null){
+                    settingText = event.getGuild().getTextChannelById(ReadChannel.getChannel(event.getGuild().getIdLong()));
+                }
             }
 
             // URLを置き換え

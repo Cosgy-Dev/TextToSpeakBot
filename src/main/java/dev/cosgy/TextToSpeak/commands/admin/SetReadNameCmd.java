@@ -20,6 +20,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.AdminCommand;
 import dev.cosgy.TextToSpeak.settings.Settings;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,19 @@ public class SetReadNameCmd extends AdminCommand {
         this.bot = bot;
         this.name = "setreadname";
         this.help = "テキストを読み上げる際にユーザー名も読み上げるかを設定します。";
+    }
+
+    @Override
+    protected void execute(SlashCommandEvent event) {
+        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
+
+        if (settings.isReadName()) {
+            settings.setReadName(false);
+            event.reply("ユーザー名の読み上げを無効にしました。").queue();
+        } else {
+            settings.setReadName(true);
+            event.reply("ユーザー名の読み上げを有効にしました。").queue();
+        }
     }
 
     @Override

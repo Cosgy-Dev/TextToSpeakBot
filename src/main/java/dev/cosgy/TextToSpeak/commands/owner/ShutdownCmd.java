@@ -19,6 +19,7 @@ package dev.cosgy.TextToSpeak.commands.owner;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.OwnerCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -32,6 +33,24 @@ public class ShutdownCmd extends OwnerCommand {
         this.name = "shutdown";
         this.help = "一時ファイルを削除してボットを停止します。";
         this.guildOnly = false;
+    }
+
+    @Override
+    protected void execute(SlashCommandEvent event) {
+        event.reply("一時ファイルを削除しています。").queue(m -> {
+            File tmp = new File("tmp");
+            File wav = new File("wav");
+
+            try {
+                FileUtils.cleanDirectory(tmp);
+                FileUtils.cleanDirectory(wav);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            m.editOriginal("一時ファイルを削除しました。").queue();
+            event.reply(client.getWarning() + "シャットダウンしています...").queue();
+            bot.shutdown();
+        });
     }
 
     @Override

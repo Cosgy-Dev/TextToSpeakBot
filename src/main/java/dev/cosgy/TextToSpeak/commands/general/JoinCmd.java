@@ -16,13 +16,17 @@
 
 package dev.cosgy.TextToSpeak.commands.general;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import dev.cosgy.TextToSpeak.Bot;
+import dev.cosgy.TextToSpeak.settings.Settings;
+import dev.cosgy.TextToSpeak.utils.ReadChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
-public class JoinCmd extends Command {
+public class JoinCmd extends SlashCommand {
     protected Bot bot;
 
     public JoinCmd(Bot bot) {
@@ -33,9 +37,37 @@ public class JoinCmd extends Command {
     }
 
     @Override
+    protected void execute(SlashCommandEvent event) {
+        Settings settings = client.getSettingsFor(event.getGuild());
+        TextChannel channel = settings.getTextChannel(event.getGuild());
+        bot.getPlayerManager().setUpHandler(event.getGuild());
+
+        GuildVoiceState userState = event.getMember().getVoiceState();
+
+        if (!userState.inVoiceChannel()) {
+            event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。").queue();
+            return;
+        }
+
+        try {
+            event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
+            event.reply(String.format("**%s**に接続しました。", userState.getChannel().getName())).queue();
+            ReadChannel.setChannel(event.getGuild().getIdLong(), event.getTextChannel().getIdLong());
+        } catch (PermissionException ex) {
+            event.reply(client.getError() + String.format("**%s**に接続できません!", userState.getChannel().getName())).queue();
+        }
+
+        if (channel == null) {
+            event.getChannel().sendMessage(event.getChannel().getName() + "を読み上げます。").queue();
+        } else {
+            event.getChannel().sendMessage(channel.getName() + "を読み上げます。").queue();
+        }
+    }
+
+    @Override
     protected void execute(CommandEvent event) {
-        //Settings settings = event.getClient().getSettingsFor(event.getGuild());
-        //TextChannel channel = settings.getTextChannel(event.getGuild());
+        Settings settings = event.getClient().getSettingsFor(event.getGuild());
+        TextChannel channel = settings.getTextChannel(event.getGuild());
         bot.getPlayerManager().setUpHandler(event.getGuild());
 
         GuildVoiceState userState = event.getMember().getVoiceState();
@@ -44,10 +76,15 @@ public class JoinCmd extends Command {
             event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。");
             return;
         }
-
+        if (channel == null) {
+            event.reply(event.getChannel().getName() + "を読み上げます。");
+        } else {
+            event.reply(channel.getName() + "を読み上げます。");
+        }
         try {
             event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
             event.reply(String.format("**%s**に接続しました。", userState.getChannel().getName()));
+            ReadChannel.setChannel(event.getGuild().getIdLong(), event.getTextChannel().getIdLong());
         } catch (PermissionException ex) {
             event.reply(event.getClient().getError() + String.format("**%s**に接続できません!", userState.getChannel().getName()));
         }

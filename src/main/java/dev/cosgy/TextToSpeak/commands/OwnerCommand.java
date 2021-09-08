@@ -16,9 +16,9 @@
 
 package dev.cosgy.TextToSpeak.commands;
 
-import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.SlashCommand;
 
-public abstract class OwnerCommand extends Command {
+public abstract class OwnerCommand extends SlashCommand {
     public OwnerCommand() {
         this.category = new Category("Owner");
         this.ownerCommand = true;

@@ -16,19 +16,24 @@
 
 package dev.cosgy.TextToSpeak.commands.dictionary;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.audio.Dictionary;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.slf4j.Logger;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class AddWordCmd extends Command {
+public class AddWordCmd extends SlashCommand {
     private final Bot bot;
     Logger log = getLogger(this.getClass());
 
@@ -37,10 +42,33 @@ public class AddWordCmd extends Command {
         this.name = "addwd";
         this.help = "辞書に、単語を追加します。辞書に単語が存在している場合は上書きされます。";
         this.category = new Category("辞書");
+
+        List<OptionData> options = new ArrayList<>();
+        options.add(new OptionData(OptionType.STRING, "word", "単語", true));
+        options.add(new OptionData(OptionType.STRING, "read", "読み方（カタカナ）", true));
+
+        this.options = options;
     }
 
     public static boolean isFullKana(String str) {
         return Pattern.matches("^[ァ-ヶー]*$", str);
+    }
+
+    @Override
+    protected void execute(SlashCommandEvent event) {
+        String word = event.getOption("word").getAsString();
+        String reading = event.getOption("read").getAsString();
+
+        if (!isFullKana(reading)) {
+            event.reply("読み方はすべてカタカナで入力して下さい。").queue();
+            return;
+        }
+
+        log.debug("単語追加:" + word + "-" + reading);
+
+        Dictionary dic = bot.getDictionary();
+        dic.UpdateDictionary(event.getGuild().getIdLong(), word, reading);
+        event.reply("これから" + bot.getJDA().getSelfUser().getName() + "は、`" + word + "`を`" + reading + "`と読みます。").queue();
     }
 
     @Override

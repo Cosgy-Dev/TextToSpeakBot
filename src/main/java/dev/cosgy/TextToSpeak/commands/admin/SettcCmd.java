@@ -17,15 +17,21 @@
 package dev.cosgy.TextToSpeak.commands.admin;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.AdminCommand;
 import dev.cosgy.TextToSpeak.settings.Settings;
 import dev.cosgy.TextToSpeak.utils.FormatUtil;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SettcCmd extends AdminCommand {
@@ -35,6 +41,12 @@ public class SettcCmd extends AdminCommand {
         this.name = "settc";
         this.help = "読み上げをするチャンネルを設定します。設定をしていない場合は読み上げを行いません。";
         this.arguments = "<チャンネル名|NONE|なし>";
+
+        this.children = new SlashCommand[]{new Set(), new None()};
+    }
+
+    @Override
+    protected void execute(SlashCommandEvent event) {
     }
 
     @Override
@@ -58,6 +70,56 @@ public class SettcCmd extends AdminCommand {
                 log.info("読み上げを行うチャンネルを設定しました。");
                 event.reply(event.getClient().getSuccess() + "読み上げるチャンネルを<#" + list.get(0).getId() + ">に設定しました。");
             }
+        }
+    }
+
+    private static class Set extends AdminCommand {
+        public Set() {
+            this.name = "set";
+            this.help = "読み上げるチャンネルを設定";
+
+            List<OptionData> options = new ArrayList<>();
+            options.add(new OptionData(OptionType.CHANNEL, "channel", "テキストチャンネル", true));
+
+            this.options = options;
+        }
+
+        @Override
+        protected void execute(SlashCommandEvent event) {
+            Settings s = client.getSettingsFor(event.getGuild());
+
+
+            if (event.getOption("channel").getChannelType() != ChannelType.TEXT) {
+                event.reply(client.getError() + "テキストチャンネルを設定して下さい。").queue();
+                return;
+            }
+            Long channelId = event.getOption("channel").getAsLong();
+            TextChannel tc = event.getGuild().getTextChannelById(channelId);
+
+            s.setTextChannel(tc);
+            event.reply(client.getSuccess() + "読み上げるチャンネルを<#" + tc.getId() + ">に設定しました。").queue();
+
+        }
+    }
+
+    private static class None extends AdminCommand {
+        public None() {
+            this.name = "none";
+            this.help = "読み上げるチャンネル設定をリセットします。";
+        }
+
+        @Override
+        protected void execute(SlashCommandEvent event) {
+            Settings s = client.getSettingsFor(event.getGuild());
+            s.setTextChannel(null);
+            event.reply(client.getSuccess() + "読み上げるチャンネル設定をリセットしました。").queue();
+        }
+
+        @Override
+        protected void execute(CommandEvent event) {
+            Settings s = event.getClient().getSettingsFor(event.getGuild());
+            s.setTextChannel(null);
+            event.reply(event.getClient().getSuccess() + "読み上げるチャンネル設定をリセットしました。");
         }
     }
 
