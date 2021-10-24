@@ -18,7 +18,7 @@ package dev.cosgy.TextToSpeak.settings;
 
 public class UserSettings {
     private final UserSettingsManager manager;
-    private Long userId;
+    private final Long userId;
     private String voice;
     private float speed;
     private float intonation;

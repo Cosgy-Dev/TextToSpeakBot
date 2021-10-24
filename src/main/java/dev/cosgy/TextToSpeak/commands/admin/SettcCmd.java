@@ -39,7 +39,7 @@ public class SettcCmd extends AdminCommand {
 
     public SettcCmd(Bot bot) {
         this.name = "settc";
-        this.help = "読み上げをするチャンネルを設定します。設定をしていない場合は読み上げを行いません。";
+        this.help = "読み上げをするチャンネルを設定します。読み上げするチャンネルを設定していない場合は、joinコマンドを最後に実行したチャンネルが読み上げ対象になります。";
         this.arguments = "<チャンネル名|NONE|なし>";
 
         this.children = new SlashCommand[]{new Set(), new None()};
@@ -110,6 +110,10 @@ public class SettcCmd extends AdminCommand {
 
         @Override
         protected void execute(SlashCommandEvent event) {
+            if(!checkAdminPermission(client, event)){
+                event.reply(client.getWarning()+"権限がないため実行できません。").queue();
+                return;
+            }
             Settings s = client.getSettingsFor(event.getGuild());
             s.setTextChannel(null);
             event.reply(client.getSuccess() + "読み上げるチャンネル設定をリセットしました。").queue();

@@ -103,15 +103,11 @@ public class MessageListener extends ListenerAdapter {
         bot.getDictionary().Init();
     }
 
-    private class ResultHandler implements AudioLoadResultHandler {
-        private final Message m;
+    private static class ResultHandler implements AudioLoadResultHandler {
         private final MessageReceivedEvent event;
-        private final boolean ytsearch;
 
         private ResultHandler(Message m, MessageReceivedEvent event, boolean ytsearch) {
-            this.m = m;
             this.event = event;
-            this.ytsearch = ytsearch;
         }
 
         private void loadSingle(AudioTrack track, AudioPlaylist playlist) {

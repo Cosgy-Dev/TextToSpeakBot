@@ -30,14 +30,12 @@ import java.util.HashMap;
 public class UserSettingsManager {
     private final HashMap<Long, UserSettings> settings;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Path path = null;
-    private boolean create = false;
     private Connection connection;
-    private Statement statement;
 
     public UserSettingsManager() {
         this.settings = new HashMap<>();
-        path = OtherUtil.getPath("UserData.sqlite");
+        Path path = OtherUtil.getPath("UserData.sqlite");
+        boolean create = false;
         if (!path.toFile().exists()) {
             create = true;
             String original = OtherUtil.loadResource(this, "UserData.sqlite");
@@ -51,7 +49,7 @@ public class UserSettingsManager {
 
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite");
-            statement = connection.createStatement();
+            Statement statement = connection.createStatement();
             String sql = "create table settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)";
             if (create) {
                 statement.execute(sql);

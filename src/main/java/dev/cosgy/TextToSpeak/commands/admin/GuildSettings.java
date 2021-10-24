@@ -40,14 +40,25 @@ public class GuildSettings extends AdminCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
+        if(!checkAdminPermission(client, event)){
+            event.reply(client.getWarning()+"権限がないため実行できません。").queue();
+            return;
+        }
+
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
+
+        String text = "null";
+        if(settings.getTextChannel(event.getGuild()) != null){
+            text = settings.getTextChannel(event.getGuild()).getName();
+        }
+
         EmbedBuilder ebuilder = new EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.getGuild().getName() + "の設定")
                 .addField("ユーザー名読み上げ：", String.valueOf(Objects.requireNonNull(settings).isReadName()), false)
                 .addField("参加、退出時の読み上げ：", String.valueOf(settings.isJoinAndLeaveRead()), false)
                 //.addField("接頭語：", settings.getPrefix(), false)
-                .addField("読み上げるチャンネル：", settings.getTextChannel(event.getGuild()).getName(), false)
+                .addField("読み上げるチャンネル：", text, false)
                 .addField("読み上げの主音量：", String.valueOf(settings.getVolume()), false);
         event.replyEmbeds(ebuilder.build()).queue();
     }
@@ -55,13 +66,18 @@ public class GuildSettings extends AdminCommand {
     @Override
     protected void execute(CommandEvent event) {
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
+        String text = "null";
+        if(settings.getTextChannel(event.getGuild()) != null){
+            text = settings.getTextChannel(event.getGuild()).getName();
+        }
+
         EmbedBuilder ebuilder = new EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.getGuild().getName() + "の設定")
                 .addField("ユーザー名読み上げ：", String.valueOf(Objects.requireNonNull(settings).isReadName()), false)
                 .addField("参加、退出時の読み上げ：", String.valueOf(settings.isJoinAndLeaveRead()), false)
                 //.addField("接頭語：", settings.getPrefix(), false)
-                .addField("読み上げるチャンネル：", settings.getTextChannel(event.getGuild()).getName(), false)
+                .addField("読み上げるチャンネル：", text, false)
                 .addField("読み上げの主音量：", String.valueOf(settings.getVolume()), false);
         event.reply(ebuilder.build());
     }
