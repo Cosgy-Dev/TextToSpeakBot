@@ -41,7 +41,7 @@ public class BotConfig {
     private int maxMessageCount;
     private OnlineStatus status;
     private Activity game;
-    private boolean updatealerts, dbots;
+    private boolean updatealerts, dbots, helpToDm;
 
 
     private boolean valid = false;
@@ -78,6 +78,7 @@ public class BotConfig {
             aloneTimeUntilStop = config.getLong("alonetimeuntilstop");
             maxMessageCount = config.getInt("maxmessagecount");
             winjtalkdir = config.getString("winjtalkdir");
+            helpToDm = config.getBoolean("helptodm");
             dbots = owner == 334091398263341056L;
 
 
@@ -161,6 +162,10 @@ public class BotConfig {
 
     public Activity getGame() {
         return game;
+    }
+
+    public boolean getHelpToDm() {
+        return helpToDm;
     }
 
     public OnlineStatus getStatus() {
