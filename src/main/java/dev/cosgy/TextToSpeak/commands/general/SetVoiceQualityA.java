@@ -34,7 +34,7 @@ public class SetVoiceQualityA extends SlashCommand {
     public SetVoiceQualityA(Bot bot) {
         this.bot = bot;
         this.name = "setqa";
-        this.help = "声質aの設定を変更します。";
+        this.help = "オールパス値の設定を変更します。";
         this.guildOnly = false;
         this.category = new Category("設定");
 
@@ -72,7 +72,7 @@ public class SetVoiceQualityA extends SlashCommand {
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
         settings.setVoiceQualityA(bd.floatValue());
-        event.reply("声質aを" + bd + "に設定しました。").queue();
+        event.reply("オールパス値を" + bd + "に設定しました。").queue();
     }
 
     @Override
@@ -103,6 +103,6 @@ public class SetVoiceQualityA extends SlashCommand {
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
         settings.setVoiceQualityA(bd.floatValue());
-        event.reply("声質aを" + bd + "に設定しました。");
+        event.reply("オールパス値を" + bd + "に設定しました。");
     }
 }

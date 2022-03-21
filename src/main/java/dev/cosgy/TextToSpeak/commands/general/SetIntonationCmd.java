@@ -35,7 +35,7 @@ public class SetIntonationCmd extends SlashCommand {
     public SetIntonationCmd(Bot bot) {
         this.bot = bot;
         this.name = "setinto";
-        this.help = "抑揚の設定を変更します。";
+        this.help = "F0系列内変動の重みの設定を変更します。";
         this.guildOnly = false;
         this.category = new Category("設定");
 
@@ -69,7 +69,7 @@ public class SetIntonationCmd extends SlashCommand {
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
         settings.setIntonation(bd.floatValue());
-        event.reply("抑揚を" + bd + "に設定しました。").queue();
+        event.reply("F0系列内変動の重みを" + bd + "に設定しました。").queue();
     }
 
     @Override
@@ -78,7 +78,7 @@ public class SetIntonationCmd extends SlashCommand {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("setintoコマンド")
                     .addField("使用方法:", name + " <数値(0.0~)>", false)
-                    .addField("説明:", "抑揚の設定を変更します。抑揚は、0.0以上の数値で設定して下さい。", false);
+                    .addField("説明:", "F0系列内変動の重みを変更します。F0系列内変動の重みは、0.0以上の数値で設定して下さい。", false);
             event.reply(ebuilder.build());
             return;
         }
@@ -104,6 +104,6 @@ public class SetIntonationCmd extends SlashCommand {
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
         settings.setIntonation(bd.floatValue());
-        event.reply("抑揚を" + bd + "に設定しました。");
+        event.reply("F0系列内変動の重みを" + bd + "に設定しました。");
     }
 }

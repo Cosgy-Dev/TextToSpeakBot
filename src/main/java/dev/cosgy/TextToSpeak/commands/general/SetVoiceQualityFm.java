@@ -35,7 +35,7 @@ public class SetVoiceQualityFm extends SlashCommand {
     public SetVoiceQualityFm(Bot bot) {
         this.bot = bot;
         this.name = "setqfm";
-        this.help = "声質fmの設定を変更します。";
+        this.help = "追加ハーフトーンの設定を変更します。";
         this.guildOnly = false;
         this.category = new Category("設定");
 
@@ -73,7 +73,7 @@ public class SetVoiceQualityFm extends SlashCommand {
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
         settings.setVoiceQualityFm(bd.floatValue());
-        event.reply("声質fmを" + bd + "に設定しました。").queue();
+        event.reply("追加ハーフトーンを" + bd + "に設定しました。").queue();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class SetVoiceQualityFm extends SlashCommand {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("setqfmコマンド")
                     .addField("使用方法:", name + " <数値(0.0~)>", false)
-                    .addField("説明:", "声質fmの設定を変更します。", false);
+                    .addField("説明:", "追加ハーフトーンの設定を変更します。", false);
             event.reply(ebuilder.build());
             return;
         }
@@ -112,6 +112,6 @@ public class SetVoiceQualityFm extends SlashCommand {
         }
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
         settings.setVoiceQualityFm(bd.floatValue());
-        event.reply("声質fmを" + bd + "に設定しました。");
+        event.reply("追加ハーフトーンを" + bd + "に設定しました。");
     }
 }
