@@ -44,10 +44,10 @@ public class SettingsCmd extends SlashCommand {
                 .setColor(Color.orange)
                 .setTitle(event.getUser().getName() + "の設定")
                 .addField("声：", settings.getVoice(), false)
-                .addField("速度：", String.valueOf(settings.getSpeed()), false)
-                .addField("抑揚：", String.valueOf(settings.getIntonation()), false)
-                .addField("声質a：", String.valueOf(settings.getVoiceQualityA()), false)
-                .addField("声質fm：", String.valueOf(settings.getVoiceQualityFm()), false);
+                .addField("読み上げ速度：", String.valueOf(settings.getSpeed()), false)
+                .addField("F0系列内変動の重み：", String.valueOf(settings.getIntonation()), false)
+                .addField("オールパス値：", String.valueOf(settings.getVoiceQualityA()), false)
+                .addField("追加ハーフトーン：", String.valueOf(settings.getVoiceQualityFm()), false);
         event.replyEmbeds(ebuilder.build()).queue();
     }
 
