@@ -29,18 +29,14 @@ import java.util.HashMap;
 
 public class UserSettingsManager {
     private final HashMap<Long, UserSettings> settings;
-
-    private Path path = null;
-    private boolean create = false;
-    private Connection connection;
-    private Statement statement;
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Connection connection;
 
-    public UserSettingsManager(){
+    public UserSettingsManager() {
         this.settings = new HashMap<>();
-        path = OtherUtil.getPath("UserData.sqlite");
-        if(!path.toFile().exists()){
+        Path path = OtherUtil.getPath("UserData.sqlite");
+        boolean create = false;
+        if (!path.toFile().exists()) {
             create = true;
             String original = OtherUtil.loadResource(this, "UserData.sqlite");
             try {
@@ -53,15 +49,15 @@ public class UserSettingsManager {
 
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite");
-            statement = connection.createStatement();
+            Statement statement = connection.createStatement();
             String sql = "create table settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)";
-            if(create){
+            if (create) {
                 statement.execute(sql);
             }
 
             ResultSet rs = statement.executeQuery("select * from settings");
             while (rs.next()) {
-                settings.put(rs.getLong(1), new UserSettings(this, rs.getLong(1), rs.getString(2),rs.getFloat(3), rs.getFloat(4), rs.getFloat(5), rs.getFloat(6)));
+                settings.put(rs.getLong(1), new UserSettings(this, rs.getLong(1), rs.getString(2), rs.getFloat(3), rs.getFloat(4), rs.getFloat(5), rs.getFloat(6)));
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -75,15 +71,15 @@ public class UserSettingsManager {
 
     /**
      * デフォルト設定のデータを作って返す。
+     *
      * @return 作成されたデフォルト設定
      */
     private UserSettings createDefaultSettings(Long userId) {
         // [スピード:0.0-] [抑揚:0.0-] [声質a:0.0-1.0] [声質fm:0.0-]
-        return new UserSettings(this, userId, "mei_normal", 1.0f,1.0f,0.5f,2.0f);
+        return new UserSettings(this, userId, "mei_normal", 1.0f, 1.0f, 0.5f, 2.0f);
     }
 
-    // TODO: 設定のセーブを行うクラス。バッチ処理にする予定。最終的には、更新が必要なデータのみ保存するようにする予定
-    protected void saveSetting(Long userId){
+    protected void saveSetting(Long userId) {
         String sql = "REPLACE INTO settings VALUES (?,?,?,?,?,?)";
         UserSettings settings = this.settings.get(userId);
         try {

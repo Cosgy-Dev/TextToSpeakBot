@@ -16,7 +16,6 @@
 
 package dev.cosgy.TextToSpeak.settings;
 
-import com.google.gson.Gson;
 import com.jagrosh.jdautilities.command.GuildSettingsManager;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Guild;
@@ -43,7 +42,7 @@ public class SettingsManager implements GuildSettingsManager {
                         o.has("volume") ? o.getInt("volume") : 50,
                         o.has("read_name") && o.getBoolean("read_name"),
                         o.has("join_and_leave_read") && o.getBoolean("join_and_leave_read")
-                        ));
+                ));
             });
         } catch (IOException | JSONException e) {
             LoggerFactory.getLogger("Settings").warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): " + e);
@@ -61,6 +60,7 @@ public class SettingsManager implements GuildSettingsManager {
 
     /**
      * デフォルト設定のデータを作って返す。
+     *
      * @return 作成されたデフォルト設定
      */
     private Settings createDefaultSettings() {
@@ -81,9 +81,9 @@ public class SettingsManager implements GuildSettingsManager {
                 o.put("prefix", s.getPrefix());
             if (s.getVolume() != 50)
                 o.put("volume", s.getVolume());
-            if(s.isReadName())
+            if (s.isReadName())
                 o.put("read_name", s.isReadName());
-            if(s.isJoinAndLeaveRead())
+            if (s.isJoinAndLeaveRead())
                 o.put("join_and_leave_read", s.isJoinAndLeaveRead());
             obj.put(Long.toString(key), o);
         });

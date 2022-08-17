@@ -22,7 +22,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.cosgy.TextToSpeak.audio.AudioHandler;
 import dev.cosgy.TextToSpeak.audio.QueuedTrack;
-import dev.cosgy.TextToSpeak.listeners.MessageListener;
 import dev.cosgy.TextToSpeak.settings.Settings;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Member;
@@ -33,16 +32,12 @@ import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -50,11 +45,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class Listener extends ListenerAdapter {
     private final Bot bot;
+    Logger log = getLogger(this.getClass());
 
     public Listener(Bot bot) {
         this.bot = bot;
     }
-    Logger log = getLogger(this.getClass());
 
     @Override
     public void onReady(ReadyEvent event) {
@@ -84,8 +79,7 @@ public class Listener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event)
-    {
+    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
     }
 
     @Override
@@ -94,12 +88,12 @@ public class Listener extends ListenerAdapter {
 
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
-        if(settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelLeft() && event.getChannelLeft().getMembers().size() > 1){
+        if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelLeft() && event.getChannelLeft().getMembers().size() > 1) {
             String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルから退出しました。");
             bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.LeaveResultHandler(null, event));
         }
 
-        if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)){
+        if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)) {
             AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
             handler.getQueue().clear();
             bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
@@ -111,7 +105,7 @@ public class Listener extends ListenerAdapter {
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
 
-        if(settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelJoined()){
+        if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelJoined()) {
             String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルに参加しました。");
             bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.JoinResultHandler(null, event, false));
         }

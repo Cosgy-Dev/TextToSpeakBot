@@ -16,10 +16,12 @@
 
 package dev.cosgy.TextToSpeak.commands;
 
-import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandClient;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
-public abstract class AdminCommand extends Command {
+public abstract class AdminCommand extends SlashCommand {
     public AdminCommand() {
         this.category = new Category("管理", event ->
         {
@@ -30,5 +32,13 @@ public abstract class AdminCommand extends Command {
             return event.getMember().hasPermission(Permission.MANAGE_SERVER);
         });
         this.guildOnly = true;
+    }
+
+    public static boolean checkAdminPermission(CommandClient client, SlashCommandEvent event){
+        if (event.getUser().getId().equals(client.getOwnerId()) || event.getMember().isOwner())
+            return true;
+        if (event.getGuild() == null)
+            return true;
+        return event.getMember().hasPermission(Permission.MANAGE_SERVER);
     }
 }

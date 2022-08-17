@@ -14,13 +14,18 @@
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
 
-package dev.cosgy.TextToSpeak.commands;
+package dev.cosgy.TextToSpeak.utils;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
+import java.util.HashMap;
 
-public abstract class OwnerCommand extends SlashCommand {
-    public OwnerCommand() {
-        this.category = new Category("Owner");
-        this.ownerCommand = true;
+public class ReadChannel {
+    private static HashMap<Long, Long> chat = new HashMap<>();
+
+    public static void setChannel(Long guild, Long textChannel) {
+        chat.put(guild, textChannel);
+    }
+
+    public static Long getChannel(Long guild) {
+        return chat.get(guild);
     }
 }

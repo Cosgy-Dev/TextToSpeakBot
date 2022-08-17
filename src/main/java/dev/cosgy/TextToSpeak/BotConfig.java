@@ -16,7 +16,6 @@
 
 package dev.cosgy.TextToSpeak;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -38,10 +37,11 @@ public class BotConfig {
     private Path path = null;
 
     private String token, prefix, altprefix, dictionary, voiceDirectory, winjtalkdir;
-    private long owner;
+    private long owner, aloneTimeUntilStop;
+    private int maxMessageCount;
     private OnlineStatus status;
     private Activity game;
-    private boolean updatealerts, dbots;
+    private boolean updatealerts, dbots, helpToDm;
 
 
     private boolean valid = false;
@@ -75,7 +75,10 @@ public class BotConfig {
             updatealerts = config.getBoolean("updatealerts");
             dictionary = config.getString("dictionary");
             voiceDirectory = config.getString("voiceDirectory");
+            aloneTimeUntilStop = config.getLong("alonetimeuntilstop");
+            maxMessageCount = config.getInt("maxmessagecount");
             winjtalkdir = config.getString("winjtalkdir");
+            helpToDm = config.getBoolean("helptodm");
             dbots = owner == 334091398263341056L;
 
 
@@ -161,6 +164,10 @@ public class BotConfig {
         return game;
     }
 
+    public boolean getHelpToDm() {
+        return helpToDm;
+    }
+
     public OnlineStatus getStatus() {
         return status;
     }
@@ -169,16 +176,24 @@ public class BotConfig {
         return updatealerts;
     }
 
-    public String getDictionary(){
+    public String getDictionary() {
         return dictionary;
     }
 
-    public String getVoiceDirectory(){
+    public String getVoiceDirectory() {
         return voiceDirectory;
     }
 
-    public String getWinJTalkDir(){
+    public String getWinJTalkDir() {
         return winjtalkdir;
+    }
+
+    public long getAloneTimeUntilStop() {
+        return aloneTimeUntilStop;
+    }
+
+    public int getMaxMessageCount() {
+        return maxMessageCount;
     }
 
     public boolean getDBots() {

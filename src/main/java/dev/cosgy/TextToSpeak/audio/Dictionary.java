@@ -31,10 +31,10 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Dictionary {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Bot bot;
     private Path path = null;
     private boolean create = false;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Connection connection;
     private Statement statement;
 
@@ -45,16 +45,19 @@ public class Dictionary {
      */
     private HashMap<Long, HashMap<String, String>> guildDic;
 
-    public Dictionary(Bot bot){
+    public Dictionary(Bot bot) {
         this.bot = bot;
         this.guildDic = new HashMap<>();
     }
 
-    public void Init(){
-        int count =0;
+    /**
+     * クラスを初期化するためのメゾット
+     */
+    public void Init() {
+        int count = 0;
         logger.info("辞書データの読み込みを開始");
         path = OtherUtil.getPath("UserData.sqlite");
-        if(!path.toFile().exists()){
+        if (!path.toFile().exists()) {
             create = true;
             String original = OtherUtil.loadResource(this, "UserData.sqlite");
             try {
@@ -92,14 +95,21 @@ public class Dictionary {
         logger.info("辞書データの読み込み完了 単語数:" + count);
     }
 
+    /**
+     * データベースとHashMapの内容を更新または新規追加します。
+     *
+     * @param guildId サーバーID
+     * @param word    単語
+     * @param reading 読み方
+     */
     public void UpdateDictionary(Long guildId, String word, String reading) {
         HashMap<String, String> words;
         words = bot.getDictionary().GetWords(guildId);
         boolean NewWord = false;
-        try{
+        try {
             NewWord = words.containsKey(word);
             words.put(word, reading);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             words = new HashMap<>();
             words.put(word, reading);
         }
@@ -107,7 +117,7 @@ public class Dictionary {
         guildDic.put(guildId, words);
         String sql;
         PreparedStatement ps;
-        if(!NewWord) {
+        if (!NewWord) {
             sql = "INSERT INTO Dictionary VALUES (?,?,?)";
             try {
                 ps = connection.prepareStatement(sql);
@@ -118,7 +128,7 @@ public class Dictionary {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-        }else{
+        } else {
             sql = "UPDATE Dictionary SET reading = ? WHERE guild_id = ? AND word = ?";
             try {
                 ps = connection.prepareStatement(sql);
@@ -132,12 +142,19 @@ public class Dictionary {
         }
     }
 
-    public boolean DeleteDictionary(Long guildId, String word){
+    /**
+     * データベースに登録されている単語を削除します。
+     *
+     * @param guildId サーバーID
+     * @param word    単語
+     * @return 正常に削除できた場合は {@code true}、削除時に問題が発生した場合は{@code false}を返します。
+     */
+    public boolean DeleteDictionary(Long guildId, String word) {
         HashMap<String, String> words;
         words = bot.getDictionary().GetWords(guildId);
         try {
             words.remove(word);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return false;
         }
         guildDic.put(guildId, words);
@@ -155,7 +172,13 @@ public class Dictionary {
         return true;
     }
 
-    public HashMap<String, String> GetWords(Long guildId){
+    /**
+     * サーバーの辞書データを取得します。
+     *
+     * @param guildId サーバーID
+     * @return {@code HashMap<String, String>}形式の変数を返します。
+     */
+    public HashMap<String, String> GetWords(Long guildId) {
         return guildDic.get(guildId);
     }
 }

@@ -18,14 +18,14 @@ package dev.cosgy.TextToSpeak.settings;
 
 public class UserSettings {
     private final UserSettingsManager manager;
-    private Long userId;
+    private final Long userId;
     private String voice;
     private float speed;
     private float intonation;
     private float voiceQualityA;
     private float voiceQualityFm;
 
-    public UserSettings(UserSettingsManager manager, Long userId,String voice, float speed, float intonation, float voiceQualityA, float voiceQualityFm){
+    public UserSettings(UserSettingsManager manager, Long userId, String voice, float speed, float intonation, float voiceQualityA, float voiceQualityFm) {
         this.manager = manager;
         this.userId = userId;
         this.voice = voice;
@@ -37,53 +37,52 @@ public class UserSettings {
 
 
     // getter
-    public Long getUserId(){
+    public Long getUserId() {
         return userId;
     }
 
-    public String getVoice(){
+    public String getVoice() {
         return voice;
     }
 
-    public float getSpeed(){
-        return speed;
-    }
-
-    public float getIntonation(){
-        return  intonation;
-    }
-
-    public float getVoiceQualityA(){
-        return voiceQualityA;
-    }
-
-    public float getVoiceQualityFm(){
-        return voiceQualityFm;
-    }
-
-    // TODO: 書き込みの処理を入れてない。DBなのでバッチ処理をした方が良いかもしれない。
     // setter
-    public void setVoice(String voice){
+    public void setVoice(String voice) {
         this.voice = voice;
         this.manager.saveSetting(userId);
     }
 
-    public void setSpeed(float speed){
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
         this.speed = speed;
         this.manager.saveSetting(userId);
     }
 
-    public void setIntonation(float intonation){
+    public float getIntonation() {
+        return intonation;
+    }
+
+    public void setIntonation(float intonation) {
         this.intonation = intonation;
         this.manager.saveSetting(userId);
     }
 
-    public void setVoiceQualityA(float voiceQualityA){
+    public float getVoiceQualityA() {
+        return voiceQualityA;
+    }
+
+    public void setVoiceQualityA(float voiceQualityA) {
         this.voiceQualityA = voiceQualityA;
         this.manager.saveSetting(userId);
     }
 
-    public void setVoiceQualityFm(float voiceQualityFm){
+    public float getVoiceQualityFm() {
+        return voiceQualityFm;
+    }
+
+    public void setVoiceQualityFm(float voiceQualityFm) {
         this.voiceQualityFm = voiceQualityFm;
         this.manager.saveSetting(userId);
     }

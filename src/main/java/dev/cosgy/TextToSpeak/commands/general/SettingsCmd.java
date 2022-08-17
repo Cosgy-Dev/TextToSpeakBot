@@ -16,30 +16,48 @@
 
 package dev.cosgy.TextToSpeak.commands.general;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.awt.*;
 
-public class SettingsCmd extends Command {
+public class SettingsCmd extends SlashCommand {
     protected Bot bot;
-    public SettingsCmd(Bot bot){
+
+    public SettingsCmd(Bot bot) {
         this.bot = bot;
         this.guildOnly = false;
         this.name = "settings";
         this.help = "現在の設定を確認します。";
         this.category = new Category("設定");
     }
+
     @Override
-    protected void execute(CommandEvent event){
+    protected void execute(SlashCommandEvent event) {
+        UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
+
+        EmbedBuilder ebuilder = new EmbedBuilder()
+                .setColor(Color.orange)
+                .setTitle(event.getUser().getName() + "の設定")
+                .addField("声：", settings.getVoice(), false)
+                .addField("読み上げ速度：", String.valueOf(settings.getSpeed()), false)
+                .addField("F0系列内変動の重み：", String.valueOf(settings.getIntonation()), false)
+                .addField("オールパス値：", String.valueOf(settings.getVoiceQualityA()), false)
+                .addField("追加ハーフトーン：", String.valueOf(settings.getVoiceQualityFm()), false);
+        event.replyEmbeds(ebuilder.build()).queue();
+    }
+
+    @Override
+    protected void execute(CommandEvent event) {
         UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
 
         EmbedBuilder ebuilder = new EmbedBuilder()
                 .setColor(Color.orange)
-                .setTitle(event.getAuthor().getName()+"の設定")
+                .setTitle(event.getAuthor().getName() + "の設定")
                 .addField("声：", settings.getVoice(), false)
                 .addField("速度：", String.valueOf(settings.getSpeed()), false)
                 .addField("抑揚：", String.valueOf(settings.getIntonation()), false)

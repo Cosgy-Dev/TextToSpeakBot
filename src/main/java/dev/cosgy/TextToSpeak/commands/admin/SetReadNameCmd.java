@@ -20,13 +20,13 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.AdminCommand;
 import dev.cosgy.TextToSpeak.settings.Settings;
-import dev.cosgy.TextToSpeak.settings.SettingsManager;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SetReadNameCmd extends AdminCommand {
+    private final Bot bot;
     Logger log = LoggerFactory.getLogger(this.getClass());
-    private Bot bot;
 
     public SetReadNameCmd(Bot bot) {
         this.bot = bot;
@@ -35,13 +35,30 @@ public class SetReadNameCmd extends AdminCommand {
     }
 
     @Override
+    protected void execute(SlashCommandEvent event) {
+        if(!checkAdminPermission(client, event)){
+            event.reply(client.getWarning()+"権限がないため実行できません。").queue();
+            return;
+        }
+        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
+
+        if (settings.isReadName()) {
+            settings.setReadName(false);
+            event.reply("ユーザー名の読み上げを無効にしました。").queue();
+        } else {
+            settings.setReadName(true);
+            event.reply("ユーザー名の読み上げを有効にしました。").queue();
+        }
+    }
+
+    @Override
     protected void execute(CommandEvent event) {
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
-        if(settings.isReadName()){
+        if (settings.isReadName()) {
             settings.setReadName(false);
             event.reply("ユーザー名の読み上げを無効にしました。");
-        }else{
+        } else {
             settings.setReadName(true);
             event.reply("ユーザー名の読み上げを有効にしました。");
         }

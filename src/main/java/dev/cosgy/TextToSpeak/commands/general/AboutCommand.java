@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
+import net.dv8tion.jda.api.entities.ChannelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class AboutCommand extends Command {
         this.help = "ボットに関する情報を表示します";
         this.guildOnly = false;
         this.perms = perms;
-        this.botPermissions = new Permission[] {Permission.MESSAGE_EMBED_LINKS};
+        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
     }
 
     public void setIsAuthor(boolean value) {
@@ -77,7 +78,7 @@ public class AboutCommand extends Command {
             }
         }
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(event.getGuild() == null ? color : event.getGuild().getSelfMember().getColor());
+        builder.setColor(event.isFromType(ChannelType.TEXT) ? event.getGuild().getSelfMember().getColor() : color);
         builder.setAuthor("" + event.getSelfUser().getName() + "について!", null, event.getSelfUser().getAvatarUrl());
         String CosgyOwner = "Cosgy Devが運営、開発をしています。";
         String author = event.getJDA().getUserById(event.getClient().getOwnerId()) == null ? "<@" + event.getClient().getOwnerId() + ">"
@@ -91,14 +92,11 @@ public class AboutCommand extends Command {
                 .append("`で確認することができます。");
         builder.setDescription(descr);
 
-        if (event.getJDA().getShardInfo().getShardTotal() == 1)
-        {
+        if (event.getJDA().getShardInfo().getShardTotal() == 1) {
             builder.addField("ステータス", event.getJDA().getGuilds().size() + " サーバー\n1 シャード", true);
             builder.addField("ユーザー", event.getJDA().getUsers().size() + " ユニーク\n" + event.getJDA().getGuilds().stream().mapToInt(g -> g.getMembers().size()).sum() + " 合計", true);
             builder.addField("チャンネル", event.getJDA().getTextChannels().size() + " テキスト\n" + event.getJDA().getVoiceChannels().size() + " ボイス", true);
-        }
-        else
-        {
+        } else {
             builder.addField("ステータス", (event.getClient()).getTotalGuilds() + " サーバー\nシャード " + (event.getJDA().getShardInfo().getShardId() + 1)
                     + "/" + event.getJDA().getShardInfo().getShardTotal(), true);
             builder.addField("", event.getJDA().getUsers().size() + " ユーザーのシャード\n" + event.getJDA().getGuilds().size() + " サーバー", true);

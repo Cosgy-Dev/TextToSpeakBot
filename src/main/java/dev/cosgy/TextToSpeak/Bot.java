@@ -17,10 +17,7 @@
 package dev.cosgy.TextToSpeak;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import dev.cosgy.TextToSpeak.audio.AudioHandler;
-import dev.cosgy.TextToSpeak.audio.Dictionary;
-import dev.cosgy.TextToSpeak.audio.PlayerManager;
-import dev.cosgy.TextToSpeak.audio.VoiceCreation;
+import dev.cosgy.TextToSpeak.audio.*;
 import dev.cosgy.TextToSpeak.gui.GUI;
 import dev.cosgy.TextToSpeak.settings.SettingsManager;
 import dev.cosgy.TextToSpeak.settings.UserSettingsManager;
@@ -46,13 +43,14 @@ public class Bot {
     private final VoiceCreation voiceCreation;
     private final UserSettingsManager userSettingsManager;
     private final Dictionary dictionary;
+    private final AloneInVoiceHandler aloneInVoiceHandler;
 
     private boolean shuttingDown = false;
     private JDA jda;
     private GUI gui;
 
 
-    public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings, VoiceCreation voiceCreation, UserSettingsManager userSettingsManager) {
+    public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings) {
         this.waiter = waiter;
         this.lang = ResourceBundle.getBundle("lang.yomiage", Locale.JAPAN);
         this.config = config;
@@ -60,10 +58,12 @@ public class Bot {
         this.threadpool = Executors.newSingleThreadScheduledExecutor();
         this.players = new PlayerManager(this);
         this.players.init();
-        this.voiceCreation = voiceCreation;
+        this.voiceCreation = new VoiceCreation();
         voiceCreation.Init(this);
-        this.userSettingsManager = userSettingsManager;
+        this.userSettingsManager = new UserSettingsManager();
         this.dictionary = new Dictionary(this);
+        this.aloneInVoiceHandler = new AloneInVoiceHandler(this);
+        this.aloneInVoiceHandler.init();
     }
 
     public JDA getJDA() {
@@ -112,7 +112,7 @@ public class Bot {
         this.gui = gui;
     }
 
-    public ResourceBundle GetLang(){
+    public ResourceBundle GetLang() {
         return lang;
     }
 
@@ -136,13 +136,19 @@ public class Bot {
         return threadpool;
     }
 
-    public VoiceCreation getVoiceCreation(){
+    public VoiceCreation getVoiceCreation() {
         return voiceCreation;
     }
 
-    public UserSettingsManager getUserSettingsManager(){
+    public UserSettingsManager getUserSettingsManager() {
         return userSettingsManager;
     }
 
-    public Dictionary getDictionary(){return dictionary;}
+    public Dictionary getDictionary() {
+        return dictionary;
+    }
+
+    public AloneInVoiceHandler getAloneInVoiceHandler() {
+        return aloneInVoiceHandler;
+    }
 }
