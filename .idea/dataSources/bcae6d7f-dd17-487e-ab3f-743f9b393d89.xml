@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="UserData">
-  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.38">
+  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.41">
     <root id="1">
       <ServerVersion>3.34.0</ServerVersion>
     </root>
@@ -1326,80 +1326,5 @@
     <argument id="488" parent="168">
       <Position>1</Position>
     </argument>
-    <table id="489" parent="169" name="Dictionary"/>
-    <table id="490" parent="169" name="settings"/>
-    <table id="491" parent="169" name="sqlite_master">
-      <System>1</System>
-    </table>
-    <table id="492" parent="169" name="sqlite_sequence">
-      <System>1</System>
-    </table>
-    <column id="493" parent="489" name="guild_id">
-      <DataType>integer|0s</DataType>
-      <Position>1</Position>
-    </column>
-    <column id="494" parent="489" name="word">
-      <DataType>text|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="495" parent="489" name="reading">
-      <DataType>text|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="496" parent="490" name="id">
-      <DataType>integer|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="497" parent="490" name="voice">
-      <DataType>TEXT|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="498" parent="490" name="speed">
-      <DataType>real|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="499" parent="490" name="intonation">
-      <DataType>real|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <column id="500" parent="490" name="voiceQualityA">
-      <DataType>real|0s</DataType>
-      <Position>5</Position>
-    </column>
-    <column id="501" parent="490" name="voiceQualityFm">
-      <DataType>real|0s</DataType>
-      <Position>6</Position>
-    </column>
-    <key id="502" parent="490" name="settings_pk">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <column id="503" parent="491" name="type">
-      <DataType>text|0s</DataType>
-      <Position>1</Position>
-    </column>
-    <column id="504" parent="491" name="name">
-      <DataType>text|0s</DataType>
-      <Position>2</Position>
-    </column>
-    <column id="505" parent="491" name="tbl_name">
-      <DataType>text|0s</DataType>
-      <Position>3</Position>
-    </column>
-    <column id="506" parent="491" name="rootpage">
-      <DataType>int|0s</DataType>
-      <Position>4</Position>
-    </column>
-    <column id="507" parent="491" name="sql">
-      <DataType>text|0s</DataType>
-      <Position>5</Position>
-    </column>
-    <column id="508" parent="492" name="name">
-      <Position>1</Position>
-    </column>
-    <column id="509" parent="492" name="seq">
-      <Position>2</Position>
-    </column>
   </database-model>
 </dataSource>
