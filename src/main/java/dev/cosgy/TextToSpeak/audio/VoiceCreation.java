@@ -87,6 +87,7 @@ public class VoiceCreation {
 
         HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
         String dicMsg = message;
+        dicMsg = dicMsg.replaceAll("[\\uD800-\\uDFFF]", " ");
         dicMsg = dicMsg.replaceAll("Kosugi_kun", "コスギクン");
 
         try {
