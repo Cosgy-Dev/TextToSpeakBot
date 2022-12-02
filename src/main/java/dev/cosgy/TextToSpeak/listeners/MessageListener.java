@@ -27,8 +27,11 @@ import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import dev.cosgy.TextToSpeak.utils.ReadChannel;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MessageListener extends ListenerAdapter {
@@ -59,7 +62,7 @@ public class MessageListener extends ListenerAdapter {
         if (event.isFromType(ChannelType.TEXT)) {
             if (isBot) return;
             Guild guild = event.getGuild();
-            TextChannel textChannel = event.getTextChannel();
+            TextChannel textChannel = event.getChannel().asTextChannel();
             TextChannel settingText = bot.getSettingsManager().getSettings(event.getGuild()).getTextChannel(event.getGuild());
 
             if (!guild.getAudioManager().isConnected()) {

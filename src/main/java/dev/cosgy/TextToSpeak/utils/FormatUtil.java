@@ -16,7 +16,8 @@
 
 package dev.cosgy.TextToSpeak.utils;
 
-import net.dv8tion.jda.api.entities.TextChannel;
+
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.List;
 

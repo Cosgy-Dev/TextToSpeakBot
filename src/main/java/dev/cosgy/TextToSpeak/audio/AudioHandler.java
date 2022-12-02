@@ -76,7 +76,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public boolean isVoiceListening(JDA jda) {
-        return guild(jda).getSelfMember().getVoiceState().inVoiceChannel() && audioPlayer.getPlayingTrack() != null;
+        return guild(jda).getSelfMember().getVoiceState().inAudioChannel() && audioPlayer.getPlayingTrack() != null;
     }
 
     public Set<String> getVotes() {
