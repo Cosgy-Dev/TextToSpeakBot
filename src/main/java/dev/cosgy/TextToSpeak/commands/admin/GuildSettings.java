@@ -40,15 +40,15 @@ public class GuildSettings extends AdminCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        if(!checkAdminPermission(event.getClient(), event)){
-            event.reply(event.getClient().getWarning()+"権限がないため実行できません。").queue();
+        if (!checkAdminPermission(event.getClient(), event)) {
+            event.reply(event.getClient().getWarning() + "権限がないため実行できません。").queue();
             return;
         }
 
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
         String text = "null";
-        if(settings.getTextChannel(event.getGuild()) != null){
+        if (settings.getTextChannel(event.getGuild()) != null) {
             text = settings.getTextChannel(event.getGuild()).getName();
         }
 
@@ -67,7 +67,7 @@ public class GuildSettings extends AdminCommand {
     protected void execute(CommandEvent event) {
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
         String text = "null";
-        if(settings.getTextChannel(event.getGuild()) != null){
+        if (settings.getTextChannel(event.getGuild()) != null) {
             text = settings.getTextChannel(event.getGuild()).getName();
         }
 

@@ -17,7 +17,6 @@
 package dev.cosgy.TextToSpeak;
 
 import com.github.lalyos.jfiglet.FigletFont;
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -46,7 +45,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
-import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +121,7 @@ public class TextToSpeak {
                 .setGuildSettingsManager(settings)
                 .setListener(new CommandAudit());
 
-        List<SlashCommand> slashCommandList = new ArrayList<SlashCommand>() {{
+        List<SlashCommand> slashCommandList = new ArrayList<>() {{
             add(aboutCommand);
             add(new JoinCmd(bot));
             add(new ByeCmd(bot));
@@ -143,13 +141,13 @@ public class TextToSpeak {
             add(new ShutdownCmd(bot));
         }};
         cb.addSlashCommands(slashCommandList.toArray(new SlashCommand[0]));
-        cb.addCommands(slashCommandList.toArray(new SlashCommand[0]));
+        //cb.addCommands(slashCommandList.toArray(new SlashCommand[0]));
 
         boolean nogame = false;
         if (config.getStatus() != OnlineStatus.UNKNOWN)
             cb.setStatus(config.getStatus());
         if (config.getGame() == null)
-            cb.setActivity(Activity.playing(config.getPrefix()+"helpでヘルプを確認"));
+            cb.setActivity(Activity.playing(config.getPrefix() + "helpでヘルプを確認"));
         else if (config.getGame().getName().toLowerCase().matches("(none|なし)")) {
             cb.setActivity(null);
             nogame = true;

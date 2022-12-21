@@ -22,10 +22,9 @@ import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.Settings;
 import dev.cosgy.TextToSpeak.utils.ReadChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.awt.*;

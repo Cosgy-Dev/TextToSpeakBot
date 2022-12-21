@@ -30,7 +30,8 @@ import java.util.Objects;
 
 public class HelpCmd extends SlashCommand {
     public Bot bot;
-    public HelpCmd(Bot bot){
+
+    public HelpCmd(Bot bot) {
         this.bot = bot;
         this.name = "help";
         this.help = "コマンド一覧を表示します。";

@@ -110,8 +110,8 @@ public class SettcCmd extends AdminCommand {
 
         @Override
         protected void execute(SlashCommandEvent event) {
-            if(!checkAdminPermission(event.getClient(), event)){
-                event.reply(event.getClient().getWarning()+"権限がないため実行できません。").queue();
+            if (!checkAdminPermission(event.getClient(), event)) {
+                event.reply(event.getClient().getWarning() + "権限がないため実行できません。").queue();
                 return;
             }
             Settings s = event.getClient().getSettingsFor(event.getGuild());

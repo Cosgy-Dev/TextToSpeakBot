@@ -131,7 +131,7 @@ public class BotConfig {
             // if we get through the whole config, it's good to go
             valid = true;
         } catch (ConfigException |
-                IOException ex) {
+                 IOException ex) {
             prompt.alert(Prompt.Level.ERROR, CONTEXT, ex + ": " + ex.getMessage() + "\n\n設定ファイルの場所: " + path.toAbsolutePath().toString());
         }
     }
