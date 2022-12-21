@@ -38,7 +38,7 @@ public class JoinCmd extends SlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        Settings settings = client.getSettingsFor(event.getGuild());
+        Settings settings = event.getClient().getSettingsFor(event.getGuild());
         TextChannel channel = settings.getTextChannel(event.getGuild());
         bot.getPlayerManager().setUpHandler(event.getGuild());
 
@@ -54,7 +54,7 @@ public class JoinCmd extends SlashCommand {
             event.reply(String.format("**%s**に接続しました。", userState.getChannel().getName())).queue();
             ReadChannel.setChannel(event.getGuild().getIdLong(), event.getTextChannel().getIdLong());
         } catch (PermissionException ex) {
-            event.reply(client.getError() + String.format("**%s**に接続できません!", userState.getChannel().getName())).queue();
+            event.reply(event.getClient().getError() + String.format("**%s**に接続できません!", userState.getChannel().getName())).queue();
         }
 
         if (channel == null) {

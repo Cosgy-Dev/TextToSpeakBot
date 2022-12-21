@@ -36,8 +36,8 @@ public class JLReadCmd extends AdminCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        if(!checkAdminPermission(client, event)){
-            event.reply(client.getWarning()+"権限がないため実行できません。").queue();
+        if(!checkAdminPermission(event.getClient(), event)){
+            event.reply(event.getClient().getWarning()+"権限がないため実行できません。").queue();
             return;
         }
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());

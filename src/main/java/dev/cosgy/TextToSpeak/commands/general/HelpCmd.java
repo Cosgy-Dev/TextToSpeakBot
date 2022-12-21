@@ -38,20 +38,20 @@ public class HelpCmd extends SlashCommand {
     protected void execute(SlashCommandEvent event) {
         StringBuilder builder = new StringBuilder("**" + event.getJDA().getSelfUser().getName() + "** コマンド一覧:\n");
         Category category = null;
-        List<Command> commands = client.getCommands();
+        List<Command> commands = event.getClient().getCommands();
         for (Command command : commands) {
             if (!command.isHidden() && (!command.isOwnerCommand() ||event.getMember().isOwner())) {
                 if (!Objects.equals(category, command.getCategory())) {
                     category = command.getCategory();
                     builder.append("\n\n  __").append(category == null ? "カテゴリなし" : category.getName()).append("__:\n");
                 }
-                builder.append("\n`").append(client.getTextualPrefix()).append(client.getPrefix() == null ? " " : "").append(command.getName())
+                builder.append("\n`").append(event.getClient().getTextualPrefix()).append(event.getClient().getPrefix() == null ? " " : "").append(command.getName())
                         .append(command.getArguments() == null ? "`" : " " + command.getArguments() + "`")
                         .append(" - ").append(command.getHelp());
             }
         }
-        if (client.getServerInvite() != null)
-            builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(client.getServerInvite());
+        if (event.getClient().getServerInvite() != null)
+            builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(event.getClient().getServerInvite());
 
         event.reply(builder.toString()).queue();
 
