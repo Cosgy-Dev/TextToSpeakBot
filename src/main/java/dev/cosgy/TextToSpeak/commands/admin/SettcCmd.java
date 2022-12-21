@@ -121,9 +121,9 @@ public class SettcCmd extends AdminCommand {
 
         @Override
         protected void execute(CommandEvent event) {
-            Settings s = event.getevent.getClient()().getSettingsFor(event.getGuild());
+            Settings s = event.getClient().getSettingsFor(event.getGuild());
             s.setTextChannel(null);
-            event.reply(event.getevent.getClient()().getSuccess() + "読み上げるチャンネル設定をリセットしました。");
+            event.reply(event.getClient().getSuccess() + "読み上げるチャンネル設定をリセットしました。");
         }
     }
 
