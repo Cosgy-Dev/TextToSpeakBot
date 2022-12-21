@@ -18,8 +18,8 @@ package dev.cosgy.TextToSpeak.commands;
 
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.SlashCommand;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public abstract class AdminCommand extends SlashCommand {
     public AdminCommand() {

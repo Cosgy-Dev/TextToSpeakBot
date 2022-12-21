@@ -18,9 +18,9 @@ package dev.cosgy.TextToSpeak.commands.general;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.audio.AudioHandler;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public class ByeCmd extends SlashCommand {
     protected final Bot bot;

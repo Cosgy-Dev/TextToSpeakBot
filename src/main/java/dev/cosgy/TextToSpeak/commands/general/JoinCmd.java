@@ -18,12 +18,12 @@ package dev.cosgy.TextToSpeak.commands.general;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
+import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.Settings;
 import dev.cosgy.TextToSpeak.utils.ReadChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 public class JoinCmd extends SlashCommand {
@@ -44,7 +44,7 @@ public class JoinCmd extends SlashCommand {
 
         GuildVoiceState userState = event.getMember().getVoiceState();
 
-        if (!userState.inVoiceChannel()) {
+        if (!userState.inAudioChannel()) {
             event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。").queue();
             return;
         }
@@ -72,7 +72,7 @@ public class JoinCmd extends SlashCommand {
 
         GuildVoiceState userState = event.getMember().getVoiceState();
 
-        if (!userState.inVoiceChannel()) {
+        if (!userState.inAudioChannel()) {
             event.reply("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。");
             return;
         }
