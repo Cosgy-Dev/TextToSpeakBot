@@ -84,7 +84,7 @@ public class WordListCmd extends SlashCommand {
             for (int i = 0; i < list.size(); i++) {
                 wordList[i] = list.get(i);
             }
-            m.deleteOriginal();
+            m.deleteOriginal().queue();
             builder.setText("単語一覧")
                     .setItems(wordList)
                     .setUsers(event.getUser())

@@ -21,14 +21,17 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
 public class HelpCmd extends SlashCommand {
     public Bot bot;
-    public HelpCmd(Bot bot){
+
+    public HelpCmd(Bot bot) {
         this.bot = bot;
         this.name = "help";
         this.help = "コマンド一覧を表示します。";
@@ -36,16 +39,20 @@ public class HelpCmd extends SlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        StringBuilder builder = new StringBuilder("**" + event.getJDA().getSelfUser().getName() + "** コマンド一覧:\n");
+        EmbedBuilder eBuilder = new EmbedBuilder();
+        eBuilder.setTitle("**" + event.getJDA().getSelfUser().getName() + "** コマンド一覧");
+        eBuilder.setColor(new Color(245, 229, 107));
+
+        StringBuilder builder = new StringBuilder();
         Category category = null;
-        List<Command> commands = client.getCommands();
-        for (Command command : commands) {
-            if (!command.isHidden() && (!command.isOwnerCommand() ||event.getMember().isOwner())) {
+        List<SlashCommand> commands = client.getSlashCommands();
+        for (SlashCommand command : commands) {
+            if (!command.isHidden() && (!command.isOwnerCommand() || event.getMember().isOwner())) {
                 if (!Objects.equals(category, command.getCategory())) {
                     category = command.getCategory();
                     builder.append("\n\n  __").append(category == null ? "カテゴリなし" : category.getName()).append("__:\n");
                 }
-                builder.append("\n`").append(client.getTextualPrefix()).append(client.getPrefix() == null ? " " : "").append(command.getName())
+                builder.append("\n`").append("/").append(command.getName())
                         .append(command.getArguments() == null ? "`" : " " + command.getArguments() + "`")
                         .append(" - ").append(command.getHelp());
             }
@@ -53,7 +60,8 @@ public class HelpCmd extends SlashCommand {
         if (client.getServerInvite() != null)
             builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(client.getServerInvite());
 
-        event.reply(builder.toString()).queue();
+        eBuilder.setDescription(builder);
+        event.replyEmbeds(eBuilder.build()).queue();
 
         /*event.reply(builder.toString(), unused ->
         {
@@ -81,13 +89,13 @@ public class HelpCmd extends SlashCommand {
         if (event.getClient().getServerInvite() != null)
             builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(event.getClient().getServerInvite());
 
-        if(bot.getConfig().getHelpToDm()){
+        if (bot.getConfig().getHelpToDm()) {
             event.replyInDm(builder.toString(), unused ->
             {
                 if (event.isFromType(ChannelType.TEXT))
                     event.reactSuccess();
             }, t -> event.replyWarning("ダイレクトメッセージをブロックしているため、ヘルプを送信できません。"));
-        }else{
+        } else {
             event.reply(builder.toString());
         }
     }

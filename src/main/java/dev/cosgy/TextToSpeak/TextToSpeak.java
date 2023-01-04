@@ -17,7 +17,6 @@
 package dev.cosgy.TextToSpeak;
 
 import com.github.lalyos.jfiglet.FigletFont;
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -46,7 +45,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
-import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +58,8 @@ public class TextToSpeak {
     public final static Permission[] RECOMMENDED_PERMS = {Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION,
             Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI, Permission.USE_APPLICATION_COMMANDS,
             Permission.MANAGE_CHANNEL, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.NICKNAME_CHANGE};
-    public final static GatewayIntent[] INTENTS = {GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT};    public static boolean CHECK_UPDATE = true;
+    public final static GatewayIntent[] INTENTS = {GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT};
+    public static boolean CHECK_UPDATE = true;
     public static boolean COMMAND_AUDIT_ENABLED = false;
 
     /**
@@ -122,7 +121,7 @@ public class TextToSpeak {
                 .setGuildSettingsManager(settings)
                 .setListener(new CommandAudit());
 
-        List<Command> commandList = new ArrayList<Command>() {{
+        List<SlashCommand> slashCommandList = new ArrayList<>() {{
             add(aboutCommand);
             add(new JoinCmd(bot));
             add(new ByeCmd(bot));
@@ -141,34 +140,14 @@ public class TextToSpeak {
             add(new GuildSettings(bot));
             add(new ShutdownCmd(bot));
         }};
-        cb.addCommands(commandList.toArray(new Command[0]));
-
-        List<SlashCommand> slashCommandList = new ArrayList<SlashCommand>() {{
-            //add(aboutCommand);
-            add(new JoinCmd(bot));
-            add(new ByeCmd(bot));
-            add(new SettingsCmd(bot));
-            add(new SetVoiceCmd(bot));
-            add(new SetSpeedCmd(bot));
-            add(new SetIntonationCmd(bot));
-            add(new SetVoiceQualityA(bot));
-            add(new SetVoiceQualityFm(bot));
-            add(new AddWordCmd(bot));
-            add(new WordListCmd(bot));
-            add(new DlWordCmd(bot));
-            add(new SettcCmd(bot));
-            add(new SetReadNameCmd(bot));
-            add(new JLReadCmd(bot));
-            add(new GuildSettings(bot));
-            add(new ShutdownCmd(bot));
-        }};
         cb.addSlashCommands(slashCommandList.toArray(new SlashCommand[0]));
+        //cb.addCommands(slashCommandList.toArray(new SlashCommand[0]));
 
         boolean nogame = false;
         if (config.getStatus() != OnlineStatus.UNKNOWN)
             cb.setStatus(config.getStatus());
         if (config.getGame() == null)
-            cb.setActivity(Activity.playing(config.getPrefix()+"helpでヘルプを確認"));
+            cb.setActivity(Activity.playing(config.getPrefix() + "helpでヘルプを確認"));
         else if (config.getGame().getName().toLowerCase().matches("(none|なし)")) {
             cb.setActivity(null);
             nogame = true;
@@ -193,7 +172,7 @@ public class TextToSpeak {
         try {
             JDA jda = JDABuilder.create(config.getToken(), Arrays.asList(INTENTS))
                     .enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
-                    .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOJI)
+                    .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOJI, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
                     .setActivity(nogame ? null : Activity.playing("準備中..."))
                     .setStatus(config.getStatus() == OnlineStatus.INVISIBLE || config.getStatus() == OnlineStatus.OFFLINE
                             ? OnlineStatus.INVISIBLE : OnlineStatus.DO_NOT_DISTURB)

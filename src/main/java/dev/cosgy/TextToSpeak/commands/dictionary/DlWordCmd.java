@@ -64,9 +64,9 @@ public class DlWordCmd extends SlashCommand {
         boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
 
         if (result) {
-            event.reply("単語を削除しました。").queue();
+            event.reply(String.format("単語(%s)を削除しました。", args)).queue();
         } else {
-            event.reply("削除中に問題が発生しました。").queue();
+            event.reply("削除中に問題が発生しました。").setEphemeral(true).queue();
         }
     }
 
@@ -97,7 +97,7 @@ public class DlWordCmd extends SlashCommand {
         boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
 
         if (result) {
-            event.reply("単語を削除しました。");
+            event.reply(String.format("単語(%s)を削除しました。", args));
         } else {
             event.reply("削除中に問題が発生しました。");
         }

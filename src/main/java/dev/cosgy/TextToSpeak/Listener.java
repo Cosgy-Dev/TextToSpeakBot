@@ -77,10 +77,10 @@ public class Listener extends ListenerAdapter {
 
         Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
 
-        if(event.getChannelLeft() != null) {
+        if (event.getChannelLeft() != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelLeft() && event.getChannelLeft().getMembers().size() > 1) {
                 String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルから退出しました。");
-                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.LeaveResultHandler(null, event));
+                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.ResultHandler(null, event));
             }
 
             if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)) {
@@ -90,10 +90,10 @@ public class Listener extends ListenerAdapter {
             }
         }
 
-        if(event.getChannelJoined() != null){
+        if (event.getChannelJoined() != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelJoined()) {
                 String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルに参加しました。");
-                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.JoinResultHandler(null, event, false));
+                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.ResultHandler(null, event));
             }
         }
     }
@@ -105,15 +105,13 @@ public class Listener extends ListenerAdapter {
     }
 
 
-    private class JoinResultHandler implements AudioLoadResultHandler {
+    private class ResultHandler implements AudioLoadResultHandler {
         private final Message m;
         private final GuildVoiceUpdateEvent event;
-        private final boolean ytsearch;
 
-        private JoinResultHandler(Message m, GuildVoiceUpdateEvent event, boolean ytsearch) {
+        private ResultHandler(Message m, GuildVoiceUpdateEvent event) {
             this.m = m;
             this.event = event;
-            this.ytsearch = ytsearch;
         }
 
         private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
@@ -131,40 +129,6 @@ public class Listener extends ListenerAdapter {
                 }
             });
             return count[0];
-        }
-
-        @Override
-        public void trackLoaded(AudioTrack track) {
-            loadSingle(track, null);
-        }
-
-        @Override
-        public void playlistLoaded(AudioPlaylist playlist) {
-
-        }
-
-        @Override
-        public void noMatches() {
-        }
-
-        @Override
-        public void loadFailed(FriendlyException throwable) {
-
-        }
-    }
-
-    private class LeaveResultHandler implements AudioLoadResultHandler {
-        private final Message m;
-        private final GuildVoiceUpdateEvent event;
-
-        private LeaveResultHandler(Message m, GuildVoiceUpdateEvent event) {
-            this.m = m;
-            this.event = event;
-        }
-
-        private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
-            AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-            handler.addTrack(new QueuedTrack(track, event.getMember().getUser()));
         }
 
         @Override

@@ -86,18 +86,18 @@ public class SettcCmd extends AdminCommand {
 
         @Override
         protected void execute(SlashCommandEvent event) {
-            Settings s = client.getSettingsFor(event.getGuild());
+            Settings s = event.getClient().getSettingsFor(event.getGuild());
 
 
             if (event.getOption("channel").getChannelType() != ChannelType.TEXT) {
-                event.reply(client.getError() + "テキストチャンネルを設定して下さい。").queue();
+                event.reply(event.getClient().getError() + "テキストチャンネルを設定して下さい。").queue();
                 return;
             }
             Long channelId = event.getOption("channel").getAsLong();
             TextChannel tc = event.getGuild().getTextChannelById(channelId);
 
             s.setTextChannel(tc);
-            event.reply(client.getSuccess() + "読み上げるチャンネルを<#" + tc.getId() + ">に設定しました。").queue();
+            event.reply(event.getClient().getSuccess() + "読み上げるチャンネルを<#" + tc.getId() + ">に設定しました。").queue();
 
         }
     }
@@ -110,13 +110,13 @@ public class SettcCmd extends AdminCommand {
 
         @Override
         protected void execute(SlashCommandEvent event) {
-            if(!checkAdminPermission(client, event)){
-                event.reply(client.getWarning()+"権限がないため実行できません。").queue();
+            if (!checkAdminPermission(event.getClient(), event)) {
+                event.reply(event.getClient().getWarning() + "権限がないため実行できません。").queue();
                 return;
             }
-            Settings s = client.getSettingsFor(event.getGuild());
+            Settings s = event.getClient().getSettingsFor(event.getGuild());
             s.setTextChannel(null);
-            event.reply(client.getSuccess() + "読み上げるチャンネル設定をリセットしました。").queue();
+            event.reply(event.getClient().getSuccess() + "読み上げるチャンネル設定をリセットしました。").queue();
         }
 
         @Override

@@ -60,7 +60,7 @@ public class AddWordCmd extends SlashCommand {
         String reading = event.getOption("read").getAsString();
 
         if (!isFullKana(reading)) {
-            event.reply("読み方はすべてカタカナで入力して下さい。").queue();
+            event.reply("読み方はすべてカタカナで入力して下さい。").setEphemeral(true).queue();
             return;
         }
 
@@ -68,7 +68,14 @@ public class AddWordCmd extends SlashCommand {
 
         Dictionary dic = bot.getDictionary();
         dic.UpdateDictionary(event.getGuild().getIdLong(), word, reading);
-        event.reply("これから" + bot.getJDA().getSelfUser().getName() + "は、`" + word + "`を`" + reading + "`と読みます。").queue();
+
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setColor(new Color(0, 163, 129));
+        builder.setTitle("辞書に単語を追加しました。");
+        builder.addField("単語", "```" + word + "```", false);
+        builder.addField("読み", "```" + reading + "```", false);
+
+        event.replyEmbeds(builder.build()).queue();
     }
 
     @Override
@@ -100,6 +107,13 @@ public class AddWordCmd extends SlashCommand {
 
         Dictionary dic = bot.getDictionary();
         dic.UpdateDictionary(event.getGuild().getIdLong(), word, reading);
-        event.reply("これから" + bot.getJDA().getSelfUser().getName() + "は、`" + word + "`を`" + reading + "`と読みます。");
+
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setColor(new Color(0, 163, 129));
+        builder.setTitle("辞書に単語を追加しました。");
+        builder.addField("単語", "```" + word + "```", false);
+        builder.addField("読み", "```" + reading + "```", false);
+
+        event.reply(builder.build());
     }
 }

@@ -26,7 +26,9 @@ import dev.cosgy.TextToSpeak.audio.QueuedTrack;
 import dev.cosgy.TextToSpeak.audio.VoiceCreation;
 import dev.cosgy.TextToSpeak.utils.ReadChannel;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -62,7 +64,7 @@ public class MessageListener extends ListenerAdapter {
         if (event.isFromType(ChannelType.TEXT)) {
             if (isBot) return;
             Guild guild = event.getGuild();
-            TextChannel textChannel = event.getChannel().asTextChannel();
+            TextChannel textChannel = event.getGuildChannel().asTextChannel();
             TextChannel settingText = bot.getSettingsManager().getSettings(event.getGuild()).getTextChannel(event.getGuild());
 
             if (!guild.getAudioManager().isConnected()) {
@@ -75,8 +77,8 @@ public class MessageListener extends ListenerAdapter {
                 return;
             }
 
-            if(textChannel != settingText){
-                if(settingText == null){
+            if (textChannel != settingText) {
+                if (settingText == null) {
                     settingText = event.getGuild().getTextChannelById(ReadChannel.getChannel(event.getGuild().getIdLong()));
                 }
             }

@@ -21,6 +21,9 @@ import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.audio.AudioHandler;
+import net.dv8tion.jda.api.EmbedBuilder;
+
+import java.awt.*;
 
 public class ByeCmd extends SlashCommand {
     protected final Bot bot;
@@ -38,7 +41,12 @@ public class ByeCmd extends SlashCommand {
         handler.stopAndClear();
         bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
         event.getGuild().getAudioManager().closeAudioConnection();
-        event.reply("ボイスチャンネルから切断しました。").queue();
+
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setColor(new Color(180, 76, 151));
+        builder.setTitle("VCから切断");
+        builder.setDescription("ボイスチャンネルから切断しました。");
+        event.replyEmbeds(builder.build()).queue();
     }
 
     @Override
@@ -47,6 +55,11 @@ public class ByeCmd extends SlashCommand {
         handler.stopAndClear();
         bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
         event.getGuild().getAudioManager().closeAudioConnection();
-        event.reply("ボイスチャンネルから切断しました。");
+
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setColor(new Color(180, 76, 151));
+        builder.setTitle("VCから切断");
+        builder.setDescription("ボイスチャンネルから切断しました。");
+        event.reply(builder.build());
     }
 }
