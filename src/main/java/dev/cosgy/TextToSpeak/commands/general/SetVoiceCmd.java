@@ -22,14 +22,21 @@ import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SetVoiceCmd extends SlashCommand {
     protected Bot bot;
+    String[] voices;
 
     public SetVoiceCmd(Bot bot) {
         this.bot = bot;
@@ -39,14 +46,14 @@ public class SetVoiceCmd extends SlashCommand {
         this.category = new Category("設定");
 
         List<OptionData> options = new ArrayList<>();
-        options.add(new OptionData(OptionType.STRING, "name", "声データの名前", false));
+        options.add(new OptionData(OptionType.STRING, "name", "声データの名前", true, true));
 
         this.options = options;
+        voices = bot.getVoiceCreation().getVoices().toArray(new String[0]);
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        ArrayList<String> voices = bot.getVoiceCreation().getVoices();
         if (event.getOption("name") == null) {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("setvoiceコマンド")
@@ -56,11 +63,12 @@ public class SetVoiceCmd extends SlashCommand {
             return;
         }
         String viceName = event.getOption("name").getAsString();
-        if (voices.contains(viceName)) {
+
+        if(isValidVoice(viceName)) {
             UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
             settings.setVoice(viceName);
             event.reply("声データを`" + viceName + "`に設定しました。").queue();
-        } else {
+        }else{
             event.reply("有効な声データを選択して下さい。").queue();
         }
     }
@@ -84,5 +92,31 @@ public class SetVoiceCmd extends SlashCommand {
         } else {
             event.reply("有効な声データを選択して下さい。");
         }
+    }
+
+    @Override
+    public void onAutoComplete(CommandAutoCompleteInteractionEvent event) {
+        if(event.getName().equals("setvoice") && event.getFocusedOption().getName().equals("name")) {
+            List<Command.Choice> options = Stream.of(voices)
+                    .filter(word -> word.startsWith(event.getFocusedOption().getValue())) // only display words that start with the user's current input
+                    .map(word -> new Command.Choice(word, word)) // map the words to choices
+                    .collect(Collectors.toList());
+            event.replyChoices(options).queue();
+        }
+        super.onAutoComplete(event);
+    }
+
+    /**
+     * ユーザーが入力した声の名前が有効かを確認
+     * @param voice ユーザーが入力した声の名前
+     * @return 名前が有効の場合は true 無効な場合は false
+     */
+    private boolean isValidVoice(String voice){
+        for (String v : voices) {
+            if (Objects.equals(v, voice)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
