@@ -141,13 +141,13 @@ public class TextToSpeak {
             add(new ShutdownCmd(bot));
         }};
         cb.addSlashCommands(slashCommandList.toArray(new SlashCommand[0]));
-        //cb.addCommands(slashCommandList.toArray(new SlashCommand[0]));
+        cb.addCommands(slashCommandList.toArray(new SlashCommand[0]));
 
         boolean nogame = false;
         if (config.getStatus() != OnlineStatus.UNKNOWN)
             cb.setStatus(config.getStatus());
         if (config.getGame() == null)
-            cb.setActivity(Activity.playing(config.getPrefix() + "helpでヘルプを確認"));
+            cb.setActivity(Activity.playing("/helpでヘルプを確認"));
         else if (config.getGame().getName().toLowerCase().matches("(none|なし)")) {
             cb.setActivity(null);
             nogame = true;
