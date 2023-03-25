@@ -26,8 +26,8 @@
             <url>https://dl.bintray.com/jagrosh/maven</url>
         </repository>
         <repository>
-            <id>chew-m2</id>
-            <url>https://m2.chew.pro/releases</url>
+            <id>chew-m2-snapshots</id>
+            <url>https://m2.chew.pro/snapshots/</url>
         </repository>
         <repository>
             <id>dv8tion</id>
