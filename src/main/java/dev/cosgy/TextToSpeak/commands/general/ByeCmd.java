@@ -24,6 +24,7 @@ import dev.cosgy.TextToSpeak.audio.AudioHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class ByeCmd extends SlashCommand {
     protected final Bot bot;
@@ -39,7 +40,11 @@ public class ByeCmd extends SlashCommand {
     protected void execute(SlashCommandEvent event) {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         handler.stopAndClear();
-        bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
+        try {
+            bot.getVoiceCreation().clearGuildFolder(event.getGuild());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         event.getGuild().getAudioManager().closeAudioConnection();
 
         EmbedBuilder builder = new EmbedBuilder();
@@ -53,7 +58,11 @@ public class ByeCmd extends SlashCommand {
     protected void execute(CommandEvent event) {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         handler.stopAndClear();
-        bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
+        try {
+            bot.getVoiceCreation().clearGuildFolder(event.getGuild());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         event.getGuild().getAudioManager().closeAudioConnection();
 
         EmbedBuilder builder = new EmbedBuilder();
