@@ -192,23 +192,5 @@ public class TextToSpeak {
                     "設定ファイルの場所: " + config.getConfigLocation());
             System.exit(1);
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(TextToSpeak::ShutDown));
-    }
-
-    private static void ShutDown() {
-        Logger log = getLogger("シャットダウン");
-
-        log.info("一時ファイルを削除中...");
-        File tmp = new File("tmp");
-        File wav = new File("wav");
-        try {
-            FileUtils.cleanDirectory(tmp);
-            FileUtils.cleanDirectory(wav);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        log.info("一時ファイルを削除しました。");
-        //bot.shutdown();
     }
 }

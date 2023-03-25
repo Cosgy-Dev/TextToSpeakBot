@@ -33,13 +33,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class DlWordCmd extends SlashCommand {
     private final Bot bot;
-    Logger log = getLogger(this.getClass());
+    private final Logger log = getLogger(getClass());
 
     public DlWordCmd(Bot bot) {
         this.bot = bot;
         this.name = "dlwd";
         this.help = "辞書に登録されている単語を削除します。";
         this.category = new Category("辞書");
+
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.STRING, "word", "単語", true));
 
@@ -52,12 +53,8 @@ public class DlWordCmd extends SlashCommand {
 
         String args = event.getOption("word").getAsString();
 
-        try {
-            if (!words.containsKey(args)) {
-                event.reply(args + "は、辞書に登録されていません。").queue();
-                return;
-            }
-        } catch (NullPointerException e) {
+        if (!words.containsKey(args)) {
+            event.reply(args + "は、辞書に登録されていません。").queue();
             return;
         }
 
@@ -85,12 +82,8 @@ public class DlWordCmd extends SlashCommand {
 
         String args = event.getArgs();
 
-        try {
-            if (!words.containsKey(args)) {
-                event.reply(args + "は、辞書に登録されていません。");
-                return;
-            }
-        } catch (NullPointerException e) {
+        if (!words.containsKey(args)) {
+            event.reply(args + "は、辞書に登録されていません。");
             return;
         }
 

@@ -31,10 +31,13 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -79,20 +82,34 @@ public class Listener extends ListenerAdapter {
 
         if (event.getChannelLeft() != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelLeft() && event.getChannelLeft().getMembers().size() > 1) {
-                String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルから退出しました。");
+                String file = null;
+                try {
+                    file = bot.getVoiceCreation().createVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルから退出しました。");
+                } catch (IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.ResultHandler(null, event));
             }
 
             if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)) {
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 handler.getQueue().clear();
-                bot.getVoiceCreation().ClearGuildFolder(event.getGuild());
+                try {
+                    bot.getVoiceCreation().clearGuildFolder(event.getGuild());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         if (event.getChannelJoined() != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelJoined()) {
-                String file = bot.getVoiceCreation().CreateVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルに参加しました。");
+                String file = null;
+                try {
+                    file = bot.getVoiceCreation().createVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルに参加しました。");
+                } catch (IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.ResultHandler(null, event));
             }
         }
@@ -100,8 +117,28 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent event) {
-        log.info("シャットダウンします。");
-        bot.shutdown();
+        bot.getJDA().shutdown();
+        try {
+            if (!bot.getJDA().awaitShutdown(10, TimeUnit.SECONDS)) { // awaitTermination()はawaitShutdown()の代替メソッド
+                bot.getJDA().shutdownNow();
+                if (!bot.getJDA().awaitShutdown(10, TimeUnit.SECONDS)) {
+                    log.warn("JDAのシャットダウンがタイムアウトしました。");
+                }
+            }
+        } catch (InterruptedException e) {
+            bot.getJDA().shutdownNow();
+            Thread.currentThread().interrupt();
+            log.warn("JDAのシャットダウンが中断されました。");
+        }
+
+        // 一時ファイルを削除
+        try {
+            FileUtils.cleanDirectory(new File("tmp"));
+            FileUtils.cleanDirectory(new File("wav"));
+            log.info("一時ファイルを削除しました。");
+        } catch (IOException e) {
+            log.warn("一時ファイルの削除に失敗しました。");
+        }
     }
 
 

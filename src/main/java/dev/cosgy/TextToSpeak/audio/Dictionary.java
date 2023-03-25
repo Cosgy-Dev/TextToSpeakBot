@@ -52,7 +52,7 @@ public class Dictionary {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite");
-            statement = connection.createStatement();
+            Statement statement = connection.createStatement();
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS Dictionary(guild_id integer,word text,reading)");
 
             List<Guild> guilds = bot.getJDA().getGuilds();

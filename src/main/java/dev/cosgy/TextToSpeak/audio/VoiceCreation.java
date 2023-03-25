@@ -18,6 +18,9 @@ package dev.cosgy.TextToSpeak.audio;
 
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.settings.UserSettings;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -63,9 +67,15 @@ public class VoiceCreation {
         UserSettings settings = bot.getUserSettingsManager().getSettings(user.getIdLong());
 
         // 辞書データを取得し、メッセージを変換する
-        HashMap<String, String> words = bot.getDictionary().GetWords(guild.getIdLong());
+        HashMap<String, String> words = bot.getDictionary().getWords(guild.getIdLong());
         String dicMsg = sanitizeMessage(message);
+        for (Map.Entry<String, String> entry : words.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            dicMsg = dicMsg.replaceAll(key, value);
+        }
         String tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg);
+
 
         // コマンドを生成して実行する
         String[] command = getCommand(settings, tmpFilePath, fileName);
