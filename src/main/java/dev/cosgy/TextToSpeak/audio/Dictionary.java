@@ -29,70 +29,50 @@ import java.nio.file.Path;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class Dictionary {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Bot bot;
-    private Path path = null;
-    private boolean create = false;
-    private Connection connection;
-    private Statement statement;
+    private final Bot bot;
+    private final Path path;
+    private final boolean create;
+    private final Connection connection;
+    private final ConcurrentHashMap<Long, HashMap<String, String>> guildDic;
 
-    /**
-     * Long サーバーID
-     * String 1　元の単語
-     * String 2　単語の読み
-     */
-    private HashMap<Long, HashMap<String, String>> guildDic;
+    private static Dictionary instance;
 
-    public Dictionary(Bot bot) {
+    private Dictionary(Bot bot) {
         this.bot = bot;
-        this.guildDic = new HashMap<>();
-    }
-
-    /**
-     * クラスを初期化するためのメゾット
-     */
-    public void Init() {
-        int count = 0;
-        logger.info("辞書データの読み込みを開始");
-        path = OtherUtil.getPath("UserData.sqlite");
-        if (!path.toFile().exists()) {
-            create = true;
-            String original = OtherUtil.loadResource(this, "UserData.sqlite");
-            try {
-                FileUtils.writeStringToFile(path.toFile(), original, StandardCharsets.UTF_8);
-                logger.info("データベースファイルが存在しなかったためファイルを作成しました。");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        this.guildDic = new ConcurrentHashMap<>();
+        this.path = OtherUtil.getPath("UserData.sqlite");
+        this.create = !path.toFile().exists();
 
         try {
+            Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite");
             statement = connection.createStatement();
-            String SQL = "CREATE TABLE IF NOT EXISTS Dictionary(guild_id integer,word text,reading)";
-            statement.execute(SQL);
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS Dictionary(guild_id integer,word text,reading)");
 
             List<Guild> guilds = bot.getJDA().getGuilds();
-
-
             for (Guild value : guilds) {
                 long guildId = value.getIdLong();
-                PreparedStatement ps = connection.prepareStatement("select * from Dictionary where guild_id = ?");
-                ps.setLong(1, guildId);
-                ResultSet rs = ps.executeQuery();
-                HashMap<String, String> word = new HashMap<>();
-                while (rs.next()) {
-                    word.put(rs.getString(2), rs.getString(3));
-                    count++;
-                }
-                guildDic.put(guildId, word);
+                Optional<HashMap<String, String>> optionalHashMap = getWordsFromDatabase(guildId);
+                optionalHashMap.ifPresent(hashMap -> guildDic.put(guildId, hashMap));
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException | ClassNotFoundException e) {
+            logger.error("An error occurred while initializing the dictionary: ", e);
+            throw new IllegalStateException(e);
         }
-        logger.info("辞書データの読み込み完了 単語数:" + count);
+        logger.info("Dictionary initialization completed.");
+    }
+
+    public static Dictionary getInstance(Bot bot) {
+        if (instance == null) {
+            instance = new Dictionary(bot);
+        }
+        return instance;
     }
 
     /**
@@ -102,83 +82,91 @@ public class Dictionary {
      * @param word    単語
      * @param reading 読み方
      */
-    public void UpdateDictionary(Long guildId, String word, String reading) {
-        HashMap<String, String> words;
-        words = bot.getDictionary().GetWords(guildId);
-        boolean NewWord = false;
-        try {
-            NewWord = words.containsKey(word);
+    public synchronized void updateDictionary(Long guildId, String word, String reading) {
+        guildDic.compute(guildId, (k, v) -> {
+            HashMap<String, String> words = v != null ? v : new HashMap<>();
             words.put(word, reading);
-        } catch (NullPointerException e) {
-            words = new HashMap<>();
-            words.put(word, reading);
-        }
-
-        guildDic.put(guildId, words);
-        String sql;
-        PreparedStatement ps;
-        if (!NewWord) {
-            sql = "INSERT INTO Dictionary VALUES (?,?,?)";
-            try {
-                ps = connection.prepareStatement(sql);
-                ps.setLong(1, guildId);
-                ps.setString(2, word);
-                ps.setString(3, reading);
-                ps.execute();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        } else {
-            sql = "UPDATE Dictionary SET reading = ? WHERE guild_id = ? AND word = ?";
-            try {
-                ps = connection.prepareStatement(sql);
-                ps.setLong(2, guildId);
-                ps.setString(3, word);
-                ps.setString(1, reading);
-                ps.execute();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
+            executeUpdate(guildId, word, reading);
+            return words;
+        });
     }
 
     /**
      * データベースに登録されている単語を削除します。
-     *
-     * @param guildId サーバーID
-     * @param word    単語
-     * @return 正常に削除できた場合は {@code true}、削除時に問題が発生した場合は{@code false}を返します。
-     */
-    public boolean DeleteDictionary(Long guildId, String word) {
-        HashMap<String, String> words;
-        words = bot.getDictionary().GetWords(guildId);
-        try {
+*
+* @param guildId サーバーID
+* @param word 単語
+* @return 正常に削除できた場合は {@code true}、削除時に問題が発生した場合は{@code false}を返します。
+*/
+public synchronized boolean deleteDictionary(Long guildId, String word) {
+        guildDic.compute(guildId, (k, v) -> {
+            if (v == null || !v.containsKey(word)) {
+                return null;
+            }
+            HashMap<String, String> words = new HashMap<>(v);
             words.remove(word);
-        } catch (NullPointerException e) {
-            return false;
-        }
-        guildDic.put(guildId, words);
-
-        String sql = "DELETE FROM Dictionary WHERE guild_id = ? AND word = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setLong(1, guildId);
-            ps.setString(2, word);
-            ps.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
+            executeDelete(guildId, word);
+            return words;
+        });
         return true;
     }
 
     /**
-     * サーバーの辞書データを取得します。
-     *
-     * @param guildId サーバーID
-     * @return {@code HashMap<String, String>}形式の変数を返します。
-     */
-    public HashMap<String, String> GetWords(Long guildId) {
-        return guildDic.get(guildId);
+ * サーバーの辞書データを取得します。
+ *
+ * @param guildId サーバーID
+ * @return {@code HashMap<String, String>}形式の変数を返します。
+ */
+public HashMap<String, String> getWords(Long guildId) {
+        return guildDic.getOrDefault(guildId, new HashMap<>());
+    }
+
+    private Optional<HashMap<String, String>> getWordsFromDatabase(Long guildId) {
+        String sql = "SELECT * FROM Dictionary WHERE guild_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, guildId);
+            ResultSet rs = ps.executeQuery();
+            HashMap<String, String> word = new HashMap<>();
+            while (rs.next()) {
+                word.put(rs.getString(2), rs.getString(3));
+            }
+            return Optional.of(word);
+        } catch (SQLException throwables) {
+            logger.error("An error occurred while retrieving data from the dictionary: ", throwables);
+            return Optional.empty();
+        }
+    }
+
+    private void executeUpdate(Long guildId, String word, String reading) {
+        String sql = "INSERT INTO Dictionary VALUES (?,?,?) ON CONFLICT (guild_id, word) DO UPDATE SET reading = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, guildId);
+            ps.setString(2, word);
+            ps.setString(3, reading);
+            ps.setString(4, reading);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            logger.error("An error occurred while updating the dictionary: ", throwables);
+        }
+    }
+
+    private void executeDelete(Long guildId, String word) {
+        String sql = "DELETE FROM Dictionary WHERE guild_id = ? AND word = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, guildId);
+            ps.setString(2, word);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            logger.error("An error occurred while deleting from the dictionary: ", throwables);
+        }
+    }
+
+    public void close() {
+        try {
+            connection.close();
+        } catch (SQLException throwables) {
+            logger.error("An error occurred while closing the database connection: ", throwables);
+        }
     }
 }
+
