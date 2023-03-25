@@ -25,95 +25,105 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 public class AddWordCmd extends SlashCommand {
-    private final Bot bot;
-    Logger log = getLogger(this.getClass());
+        private final Bot bot;
+        private static final Logger logger = LoggerFactory.getLogger(AddWordCmd.class);
+        private static final Color SUCCESS_COLOR = new Color(0, 163, 129);
+        private static final Color ERROR_COLOR = Color.RED;
+        private static final String INVALID_ARGS_MESSAGE = "コマンドが無効です。単語と読み方の２つを入力して実行して下さい。";
+        private static final String USAGE_MESSAGE = "使用方法: /addWord <単語> <読み方>";
+        private static final String KATAKANA_REGEX = "^[ァ-ヶー]*$";
 
-    public AddWordCmd(Bot bot) {
-        this.bot = bot;
-        this.name = "addwd";
-        this.help = "辞書に、単語を追加します。辞書に単語が存在している場合は上書きされます。";
-        this.category = new Category("辞書");
+        public AddWordCmd(Bot bot) {
+                this.bot = bot;
+                this.name = "addWord";
+                this.help = "辞書に単語を追加します。辞書に単語が存在している場合は上書きされます。";
+                this.category = new Category("辞書");
 
-        List<OptionData> options = new ArrayList<>();
-        options.add(new OptionData(OptionType.STRING, "word", "単語", true));
-        options.add(new OptionData(OptionType.STRING, "read", "読み方（カタカナ）", true));
-
-        this.options = options;
-    }
-
-    public static boolean isFullKana(String str) {
-        return Pattern.matches("^[ァ-ヶー]*$", str);
-    }
-
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        String word = event.getOption("word").getAsString();
-        String reading = event.getOption("read").getAsString();
-
-        if (!isFullKana(reading)) {
-            event.reply("読み方はすべてカタカナで入力して下さい。").setEphemeral(true).queue();
-            return;
+                List<OptionData> options = new ArrayList<>();
+                options.add(new OptionData(OptionType.STRING, "word", "単語", true));
+                options.add(new OptionData(OptionType.STRING, "reading", "読み方（カタカナ）", true));
+                this.options = options;
         }
 
-        log.debug("単語追加:" + word + "-" + reading);
-
-        Dictionary dic = bot.getDictionary();
-        dic.UpdateDictionary(event.getGuild().getIdLong(), word, reading);
-
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(new Color(0, 163, 129));
-        builder.setTitle("辞書に単語を追加しました。");
-        builder.addField("単語", "```" + word + "```", false);
-        builder.addField("読み", "```" + reading + "```", false);
-
-        event.replyEmbeds(builder.build()).queue();
-    }
-
-    @Override
-    protected void execute(CommandEvent event) {
-        String[] parts = event.getArgs().split("\\s+", 2);
-        String word = null;
-        String reading = null;
-
-        if (parts.length < 2) {
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(Color.red)
-                    .setTitle("AddWordコマンド")
-                    .addField("コマンドが無効です。", "単語と読み方の２つを入力して実行して下さい。", false)
-                    .addField("使用方法:", name + " <単語> <読み方>", false);
-
-            event.reply(builder.build());
-            return;
+        private static boolean isKatakana(String str) {
+                return Pattern.matches(KATAKANA_REGEX, str);
         }
 
-        word = parts[0];
-        reading = parts[1];
+        private void handleCommand(SlashCommandEvent event, String word, String reading) {
+                long guildId = event.getGuild().getIdLong();
+                Dictionary dictionary = bot.getDictionary();
+                boolean isWordExist = dictionary.GetWords(guildId).containsKey(word);
 
-        if (!isFullKana(reading)) {
-            event.reply("読み方はすべてカタカナで入力して下さい。");
-            return;
+                if (isWordExist) {
+                        EmbedBuilder builder = new EmbedBuilder()
+                    .setColor(ERROR_COLOR)
+                    .setTitle("単語が既に存在します。上書きしますか？")
+                    .setDescription("既に辞書に登録されている単語を上書きする場合は、このメッセージにリアクションしてください。");
+                        event.replyEmbeds(builder.build()).queue((message) -> {
+                                message.addReaction("\u2705").queue();
+                                bot.getReactionManager().subscribeAction(message.getIdLong(), (userId) -> {
+                                        dictionary.UpdateDictionary(guildId, word, reading);
+                                        sendSuccessMessage(even);
+                                });
+                        });
+                } else {
+                        dictionary.UpdateDictionary(guildId, word, reading);
+                        sendSuccessMessage(event);
+                }
         }
 
-        log.debug("単語追加:" + word + "-" + reading);
+        private void sendSuccessMessage(SlashCommandEvent event) {
+                EmbedBuilder builder = new EmbedBuilder()
+            .setColor(SUCCESS_COLOR)
+            .setTitle("単語を追加しました。")
+            .addField("単語", "```" + event.getOption("word").getAsString() + "```", false)
+            .addField("読み", "```" + event.getOption("reading").getAsString() + "```", false);
+                event.replyEmbeds(builder.build()).queue();
+        }
 
-        Dictionary dic = bot.getDictionary();
-        dic.UpdateDictionary(event.getGuild().getIdLong(), word, reading);
+        @Override
+        protected void execute(SlashCommandEvent event) {
+                String word = event.getOption("word").getAsString();
+                String reading = event.getOption("reading").getAsString();
 
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(new Color(0, 163, 129));
-        builder.setTitle("辞書に単語を追加しました。");
-        builder.addField("単語", "```" + word + "```", false);
-        builder.addField("読み", "```" + reading + "```", false);
+                if (!isKatakana(reading)) {
+                        event.reply("読み方はすべてカタカナで入力して下さい。").setEphemeral(true).queue();
+                        return;
+                }
 
-        event.reply(builder.build());
-    }
+                handleCommand(event, word, reading);
+        }
+
+        @Override
+protected void execute(CommandEvent event) {
+                String[] parts = event.getArgs().split("\\s+", 2);
+
+                if (parts.length < 2) {
+                        EmbedBuilder builder = new EmbedBuilder()
+                .setColor(ERROR_COLOR)
+                .setTitle("AddWordコマンド")
+                .addField("エラー", INVALID_ARGS_MESSAGE, false)
+                .addField("使用方法:", USAGE_MESSAGE, false);
+                        event.reply(builder.build());
+                        return;
+                }
+
+                String word = parts[0];
+                String reading = parts[1];
+
+                if (!isKatakana(reading)) {
+                        event.reply("読み方はすべてカタカナで入力して下さい。");
+                        return;
+                }
+
+                handleCommand(event, word, reading);
+        }
 }
