@@ -112,7 +112,7 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent e) {
-
+        bot.readyJDA();
     }
 
     private static class ResultHandler implements AudioLoadResultHandler {

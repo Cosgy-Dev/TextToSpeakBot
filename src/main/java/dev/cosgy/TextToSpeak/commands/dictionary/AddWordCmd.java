@@ -42,7 +42,7 @@ public class AddWordCmd extends SlashCommand {
         private static final Color SUCCESS_COLOR = new Color(0, 163, 129);
         private static final Color ERROR_COLOR = Color.RED;
         private static final String INVALID_ARGS_MESSAGE = "コマンドが無効です。単語と読み方の２つを入力して実行して下さい。";
-        private static final String USAGE_MESSAGE = "使用方法: /addWord <単語> <読み方>";
+        private static final String USAGE_MESSAGE = "使用方法: /addword <単語> <読み方>";
         private static final String KATAKANA_REGEX = "^[ァ-ヶー]*$";
 
         private final String ok = "✔";
@@ -50,7 +50,7 @@ public class AddWordCmd extends SlashCommand {
 
         public AddWordCmd(Bot bot) {
                 this.bot = bot;
-                this.name = "addWord";
+                this.name = "wdad";
                 this.help = "辞書に単語を追加します。辞書に単語が存在している場合は上書きされます。";
                 this.category = new Category("辞書");
 

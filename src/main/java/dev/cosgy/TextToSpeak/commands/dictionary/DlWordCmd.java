@@ -37,7 +37,7 @@ public class DlWordCmd extends SlashCommand {
 
     public DlWordCmd(Bot bot) {
         this.bot = bot;
-        this.name = "dlwd";
+        this.name = "wddl";
         this.help = "辞書に登録されている単語を削除します。";
         this.category = new Category("辞書");
 

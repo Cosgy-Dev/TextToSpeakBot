@@ -42,7 +42,7 @@ public class Bot {
     private final PlayerManager players;
     private final VoiceCreation voiceCreation;
     private final UserSettingsManager userSettingsManager;
-    private final Dictionary dictionary;
+    private Dictionary dictionary;
     private final AloneInVoiceHandler aloneInVoiceHandler;
 
     private boolean shuttingDown = false;
@@ -60,7 +60,6 @@ public class Bot {
         this.players.init();
         this.voiceCreation = new VoiceCreation(this);
         this.userSettingsManager = new UserSettingsManager();
-        this.dictionary = Dictionary.getInstance(this);
         this.aloneInVoiceHandler = new AloneInVoiceHandler(this);
         this.aloneInVoiceHandler.init();
     }
@@ -71,6 +70,10 @@ public class Bot {
 
     public void setJDA(JDA jda) {
         this.jda = jda;
+    }
+
+    public void readyJDA(){
+        this.dictionary = Dictionary.getInstance(this);
     }
 
     public void closeAudioConnection(long guildId) {
