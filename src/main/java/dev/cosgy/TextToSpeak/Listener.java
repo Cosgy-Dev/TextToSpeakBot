@@ -117,28 +117,7 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent event) {
-        bot.getJDA().shutdown();
-        try {
-            if (!bot.getJDA().awaitShutdown(10, TimeUnit.SECONDS)) { // awaitTermination()はawaitShutdown()の代替メソッド
-                bot.getJDA().shutdownNow();
-                if (!bot.getJDA().awaitShutdown(10, TimeUnit.SECONDS)) {
-                    log.warn("JDAのシャットダウンがタイムアウトしました。");
-                }
-            }
-        } catch (InterruptedException e) {
-            bot.getJDA().shutdownNow();
-            Thread.currentThread().interrupt();
-            log.warn("JDAのシャットダウンが中断されました。");
-        }
-
-        // 一時ファイルを削除
-        try {
-            FileUtils.cleanDirectory(new File("tmp"));
-            FileUtils.cleanDirectory(new File("wav"));
-            log.info("一時ファイルを削除しました。");
-        } catch (IOException e) {
-            log.warn("一時ファイルの削除に失敗しました。");
-        }
+        bot.shutdown();
     }
 
 

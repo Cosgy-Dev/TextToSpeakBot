@@ -24,12 +24,19 @@ import dev.cosgy.TextToSpeak.settings.UserSettingsManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 
 public class Bot {
@@ -49,7 +56,7 @@ public class Bot {
     private JDA jda;
     private GUI gui;
 
-
+    Logger log = getLogger(this.getClass());
     public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings) {
         this.waiter = waiter;
         this.lang = ResourceBundle.getBundle("lang.yomiage", Locale.JAPAN);
@@ -103,7 +110,31 @@ public class Bot {
                     ah.getPlayer().destroy();
                 }
             });
+
+            // ここからJDAの終了処理
             jda.shutdown();
+            try {
+                if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) { // awaitTermination()はawaitShutdown()の代替メソッド
+                    jda.shutdownNow();
+                    if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) {
+                        log.warn("JDAのシャットダウンがタイムアウトしました。");
+                    }
+                }
+            } catch (InterruptedException e) {
+                jda.shutdownNow();
+                Thread.currentThread().interrupt();
+                log.warn("JDAのシャットダウンが中断されました。");
+            }
+
+            // 一時ファイルを削除
+            try {
+                FileUtils.cleanDirectory(new File("tmp"));
+                FileUtils.cleanDirectory(new File("wav"));
+                log.info("一時ファイルを削除しました。");
+            } catch (IOException e) {
+                log.warn("一時ファイルの削除に失敗しました。");
+            }
+
         }
         if (gui != null)
             gui.dispose();
