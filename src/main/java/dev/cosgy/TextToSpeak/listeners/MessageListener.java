@@ -36,6 +36,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.io.IOException;
+
 public class MessageListener extends ListenerAdapter {
     private final Bot bot;
 
@@ -93,7 +95,12 @@ public class MessageListener extends ListenerAdapter {
                 }
 
                 VoiceCreation vc = bot.getVoiceCreation();
-                String file = vc.CreateVoice(guild, author, msg);
+                String file = null;
+                try {
+                    file = vc.createVoice(guild, author, msg);
+                } catch (IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
                 bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event, false));
 
@@ -105,7 +112,7 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent e) {
-        bot.getDictionary().Init();
+
     }
 
     private static class ResultHandler implements AudioLoadResultHandler {

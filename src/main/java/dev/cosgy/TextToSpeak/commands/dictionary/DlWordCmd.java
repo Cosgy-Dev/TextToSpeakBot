@@ -49,7 +49,7 @@ public class DlWordCmd extends SlashCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        HashMap<String, String> words = bot.getDictionary().GetWords(event.getGuild().getIdLong());
+        HashMap<String, String> words = bot.getDictionary().getWords(event.getGuild().getIdLong());
 
         String args = event.getOption("word").getAsString();
 
@@ -58,7 +58,7 @@ public class DlWordCmd extends SlashCommand {
             return;
         }
 
-        boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
+        boolean result = bot.getDictionary().deleteDictionary(event.getGuild().getIdLong(), args);
 
         if (result) {
             event.reply(String.format("単語(%s)を削除しました。", args)).queue();
@@ -78,7 +78,7 @@ public class DlWordCmd extends SlashCommand {
             return;
         }
 
-        HashMap<String, String> words = bot.getDictionary().GetWords(event.getGuild().getIdLong());
+        HashMap<String, String> words = bot.getDictionary().getWords(event.getGuild().getIdLong());
 
         String args = event.getArgs();
 
@@ -87,7 +87,7 @@ public class DlWordCmd extends SlashCommand {
             return;
         }
 
-        boolean result = bot.getDictionary().DeleteDictionary(event.getGuild().getIdLong(), args);
+        boolean result = bot.getDictionary().deleteDictionary(event.getGuild().getIdLong(), args);
 
         if (result) {
             event.reply(String.format("単語(%s)を削除しました。", args));

@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class WordListCmd extends SlashCommand {
@@ -50,14 +51,14 @@ public class WordListCmd extends SlashCommand {
                 .showPageNumbers(true)
                 .wrapPageEnds(true)
                 .setEventWaiter(bot.getWaiter())
-                .setTimeout(1);
+                .setTimeout(1, TimeUnit.MINUTES);
 
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
         event.reply("単語一覧を表示します。").queue(m -> {
-            List<String> wordList = bot.getDictionary().GetWords(event.getGuild().getIdLong())
+            List<String> wordList = bot.getDictionary().getWords(event.getGuild().getIdLong())
                     .entrySet().stream()
                     .map(entry -> entry.getKey() + "-" + entry.getValue())
                     .collect(Collectors.toList());
@@ -72,7 +73,7 @@ public class WordListCmd extends SlashCommand {
                     .setItems(wordList.toArray(new String[0]))
                     .setUsers(event.getUser())
                     .setColor(event.getGuild().getSelfMember().getColor());
-            builder.build().paginate(event.getChannel());
+            builder.build().paginate(event.getChannel(), 1);
         });
     }
 
@@ -83,7 +84,7 @@ public class WordListCmd extends SlashCommand {
             pagenum = Integer.parseInt(event.getArgs());
         } catch (NumberFormatException ignore) {}
 
-        List<String> wordList = bot.getDictionary().GetWords(event.getGuild().getIdLong())
+        List<String> wordList = bot.getDictionary().getWords(event.getGuild().getIdLong())
                 .entrySet().stream()
                 .map(entry -> entry.getKey() + "-" + entry.getValue())
                 .collect(Collectors.toList());

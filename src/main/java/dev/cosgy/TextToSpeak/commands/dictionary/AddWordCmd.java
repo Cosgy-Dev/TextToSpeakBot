@@ -19,9 +19,12 @@ package dev.cosgy.TextToSpeak.commands.dictionary;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
+import com.jagrosh.jdautilities.menu.ButtonMenu;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.audio.Dictionary;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.slf4j.Logger;
@@ -30,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public class AddWordCmd extends SlashCommand {
@@ -40,6 +44,9 @@ public class AddWordCmd extends SlashCommand {
         private static final String INVALID_ARGS_MESSAGE = "コマンドが無効です。単語と読み方の２つを入力して実行して下さい。";
         private static final String USAGE_MESSAGE = "使用方法: /addWord <単語> <読み方>";
         private static final String KATAKANA_REGEX = "^[ァ-ヶー]*$";
+
+        private final String ok = "✔";
+        private final String no = "❌";
 
         public AddWordCmd(Bot bot) {
                 this.bot = bot;
@@ -60,22 +67,29 @@ public class AddWordCmd extends SlashCommand {
         private void handleCommand(SlashCommandEvent event, String word, String reading) {
                 long guildId = event.getGuild().getIdLong();
                 Dictionary dictionary = bot.getDictionary();
-                boolean isWordExist = dictionary.GetWords(guildId).containsKey(word);
-
+                boolean isWordExist = dictionary.getWords(guildId).containsKey(word);
+                event.deferReply().queue();
                 if (isWordExist) {
-                        EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(ERROR_COLOR)
-                    .setTitle("単語が既に存在します。上書きしますか？")
-                    .setDescription("既に辞書に登録されている単語を上書きする場合は、このメッセージにリアクションしてください。");
-                        event.replyEmbeds(builder.build()).queue((message) -> {
-                                message.addReaction("\u2705").queue();
-                                bot.getReactionManager().subscribeAction(message.getIdLong(), (userId) -> {
-                                        dictionary.UpdateDictionary(guildId, word, reading);
-                                        sendSuccessMessage(even);
-                                });
-                        });
+                        new ButtonMenu.Builder()
+                        .setText("単語が既に存在します。上書きしますか？")
+                        .addChoices(no, ok)
+                        .setEventWaiter(bot.getWaiter())
+                        .setTimeout(30, TimeUnit.SECONDS)
+                        .setAction(re ->{
+                                if(re.getName().equals(ok)){
+                                        dictionary.updateDictionary(guildId, word, reading);
+                                        sendSuccessMessage(event);
+                                }else{
+                                        event.reply("辞書登録をキャンセルしました。").queue();
+                                }
+                        }).setFinalAction(m -> {
+                                try {
+                                        m.clearReactions().queue();
+                                        m.delete().queue();
+                                }catch (PermissionException ignore){}
+                        }).build().display(event.getMessageChannel());
                 } else {
-                        dictionary.UpdateDictionary(guildId, word, reading);
+                        dictionary.updateDictionary(guildId, word, reading);
                         sendSuccessMessage(event);
                 }
         }
@@ -96,31 +110,6 @@ public class AddWordCmd extends SlashCommand {
 
                 if (!isKatakana(reading)) {
                         event.reply("読み方はすべてカタカナで入力して下さい。").setEphemeral(true).queue();
-                        return;
-                }
-
-                handleCommand(event, word, reading);
-        }
-
-        @Override
-protected void execute(CommandEvent event) {
-                String[] parts = event.getArgs().split("\\s+", 2);
-
-                if (parts.length < 2) {
-                        EmbedBuilder builder = new EmbedBuilder()
-                .setColor(ERROR_COLOR)
-                .setTitle("AddWordコマンド")
-                .addField("エラー", INVALID_ARGS_MESSAGE, false)
-                .addField("使用方法:", USAGE_MESSAGE, false);
-                        event.reply(builder.build());
-                        return;
-                }
-
-                String word = parts[0];
-                String reading = parts[1];
-
-                if (!isKatakana(reading)) {
-                        event.reply("読み方はすべてカタカナで入力して下さい。");
                         return;
                 }
 

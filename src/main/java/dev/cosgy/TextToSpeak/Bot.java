@@ -58,10 +58,9 @@ public class Bot {
         this.threadpool = Executors.newSingleThreadScheduledExecutor();
         this.players = new PlayerManager(this);
         this.players.init();
-        this.voiceCreation = new VoiceCreation();
-        voiceCreation.Init(this);
+        this.voiceCreation = new VoiceCreation(this);
         this.userSettingsManager = new UserSettingsManager();
-        this.dictionary = new Dictionary(this);
+        this.dictionary = Dictionary.getInstance(this);
         this.aloneInVoiceHandler = new AloneInVoiceHandler(this);
         this.aloneInVoiceHandler.init();
     }
