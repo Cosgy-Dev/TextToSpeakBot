@@ -37,20 +37,8 @@ public class ShutdownCmd extends OwnerCommand {
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        event.reply("一時ファイルを削除しています。").queue(m -> {
-            File tmp = new File("tmp");
-            File wav = new File("wav");
-
-            try {
-                FileUtils.cleanDirectory(tmp);
-                FileUtils.cleanDirectory(wav);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            m.editOriginal("一時ファイルを削除しました。").queue();
-            event.reply(event.getClient().getWarning() + "シャットダウンしています...").queue();
-            bot.shutdown();
-        });
+        event.reply(event.getClient().getWarning() + "シャットダウンしています...").queue();
+        bot.shutdown();
     }
 
     @Override
