@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -114,16 +115,12 @@ public class Bot {
             // ここからJDAの終了処理
             jda.shutdown();
             try {
-                if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) { // awaitTermination()はawaitShutdown()の代替メソッド
-                    jda.shutdownNow();
-                    if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) {
-                        log.warn("JDAのシャットダウンがタイムアウトしました。");
-                    }
+                if (!jda.awaitShutdown(Duration.ofSeconds(10))) { // シャットダウンが優雅な場合はtrue、タイムアウトを超えた場合はfalseを返します。
+                    jda.shutdownNow(); // 残っているリクエストをすべてキャンセルし、スレッドプールを停止する。
+                    jda.awaitShutdown(); // シャットダウンが完了するまで待つ（無期限）
                 }
             } catch (InterruptedException e) {
-                jda.shutdownNow();
-                Thread.currentThread().interrupt();
-                log.warn("JDAのシャットダウンが中断されました。");
+                throw new RuntimeException(e);
             }
 
             // 一時ファイルを削除
