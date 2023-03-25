@@ -16,12 +16,14 @@
 
 package dev.cosgy.TextToSpeak.commands.general;
 
+import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jagrosh.jdautilities.commons.JDAUtilitiesInfo;
 import com.jagrosh.jdautilities.doc.standard.CommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
@@ -91,21 +93,25 @@ public class AboutCommand extends SlashCommand {
                 .append(event.getJDA().getSelfUser().getName()).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
                 .append("\nこのボットの使用方法は`").append(event.getClient().getTextualPrefix()).append(event.getClient().getHelpWord())
                 .append("`で確認することができます。");
+        getMessage(builder, descr, event.getJDA(), event.getClient());
+        event.replyEmbeds(builder.build()).queue();
+    }
+
+    private void getMessage(EmbedBuilder builder, StringBuilder descr, JDA jda, CommandClient client) {
         builder.setDescription(descr);
 
-        if (event.getJDA().getShardInfo().getShardTotal() == 1) {
-            builder.addField("ステータス", event.getJDA().getGuilds().size() + " サーバー\n1 シャード", true);
-            builder.addField("ユーザー", event.getJDA().getUsers().size() + " ユニーク\n" + event.getJDA().getGuilds().stream().mapToInt(g -> g.getMembers().size()).sum() + " 合計", true);
-            builder.addField("チャンネル", event.getJDA().getTextChannels().size() + " テキスト\n" + event.getJDA().getVoiceChannels().size() + " ボイス", true);
+        if (jda.getShardInfo().getShardTotal() == 1) {
+            builder.addField("ステータス", jda.getGuilds().size() + " サーバー\n1 シャード", true);
+            builder.addField("ユーザー", jda.getUsers().size() + " ユニーク\n" + jda.getGuilds().stream().mapToInt(g -> g.getMembers().size()).sum() + " 合計", true);
+            builder.addField("チャンネル", jda.getTextChannels().size() + " テキスト\n" + jda.getVoiceChannels().size() + " ボイス", true);
         } else {
-            builder.addField("ステータス", (event.getClient()).getTotalGuilds() + " サーバー\nシャード " + (event.getJDA().getShardInfo().getShardId() + 1)
-                    + "/" + event.getJDA().getShardInfo().getShardTotal(), true);
-            builder.addField("", event.getJDA().getUsers().size() + " ユーザーのシャード\n" + event.getJDA().getGuilds().size() + " サーバー", true);
-            builder.addField("", event.getJDA().getTextChannels().size() + " テキストチャンネル\n" + event.getJDA().getVoiceChannels().size() + " ボイスチャンネル", true);
+            builder.addField("ステータス", (client).getTotalGuilds() + " サーバー\nシャード " + (jda.getShardInfo().getShardId() + 1)
+                    + "/" + jda.getShardInfo().getShardTotal(), true);
+            builder.addField("", jda.getUsers().size() + " ユーザーのシャード\n" + jda.getGuilds().size() + " サーバー", true);
+            builder.addField("", jda.getTextChannels().size() + " テキストチャンネル\n" + jda.getVoiceChannels().size() + " ボイスチャンネル", true);
         }
         builder.setFooter("再起動が行われた時間", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg");
-        builder.setTimestamp(event.getClient().getStartTime());
-        event.replyEmbeds(builder.build()).queue();
+        builder.setTimestamp(client.getStartTime());
     }
 
     @Override
@@ -133,20 +139,7 @@ public class AboutCommand extends SlashCommand {
                 .append(event.getSelfUser().getName()).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
                 .append("\nこのボットの使用方法は`").append(event.getClient().getTextualPrefix()).append(event.getClient().getHelpWord())
                 .append("`で確認することができます。");
-        builder.setDescription(descr);
-
-        if (event.getJDA().getShardInfo().getShardTotal() == 1) {
-            builder.addField("ステータス", event.getJDA().getGuilds().size() + " サーバー\n1 シャード", true);
-            builder.addField("ユーザー", event.getJDA().getUsers().size() + " ユニーク\n" + event.getJDA().getGuilds().stream().mapToInt(g -> g.getMembers().size()).sum() + " 合計", true);
-            builder.addField("チャンネル", event.getJDA().getTextChannels().size() + " テキスト\n" + event.getJDA().getVoiceChannels().size() + " ボイス", true);
-        } else {
-            builder.addField("ステータス", (event.getClient()).getTotalGuilds() + " サーバー\nシャード " + (event.getJDA().getShardInfo().getShardId() + 1)
-                    + "/" + event.getJDA().getShardInfo().getShardTotal(), true);
-            builder.addField("", event.getJDA().getUsers().size() + " ユーザーのシャード\n" + event.getJDA().getGuilds().size() + " サーバー", true);
-            builder.addField("", event.getJDA().getTextChannels().size() + " テキストチャンネル\n" + event.getJDA().getVoiceChannels().size() + " ボイスチャンネル", true);
-        }
-        builder.setFooter("再起動が行われた時間", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg");
-        builder.setTimestamp(event.getClient().getStartTime());
+        getMessage(builder, descr, event.getJDA(), event.getClient());
         event.reply(builder.build());
     }
 }
