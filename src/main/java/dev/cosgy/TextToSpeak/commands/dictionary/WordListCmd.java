@@ -43,7 +43,8 @@ public class WordListCmd extends SlashCommand {
                 .setFinalAction(m -> {
                     try {
                         m.clearReactions().queue();
-                    } catch (PermissionException ignore) {}
+                    } catch (PermissionException ignore) {
+                    }
                 })
                 .setItemsPerPage(10)
                 .waitOnSinglePage(false)
@@ -82,7 +83,8 @@ public class WordListCmd extends SlashCommand {
         int pagenum = 1;
         try {
             pagenum = Integer.parseInt(event.getArgs());
-        } catch (NumberFormatException ignore) {}
+        } catch (NumberFormatException ignore) {
+        }
 
         List<String> wordList = bot.getDictionary().getWords(event.getGuild().getIdLong())
                 .entrySet().stream()

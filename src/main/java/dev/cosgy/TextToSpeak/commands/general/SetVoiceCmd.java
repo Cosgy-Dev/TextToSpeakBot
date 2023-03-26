@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -64,11 +63,11 @@ public class SetVoiceCmd extends SlashCommand {
         }
         String viceName = event.getOption("name").getAsString();
 
-        if(isValidVoice(viceName)) {
+        if (isValidVoice(viceName)) {
             UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
             settings.setVoice(viceName);
             event.reply("声データを`" + viceName + "`に設定しました。").queue();
-        }else{
+        } else {
             event.reply("有効な声データを選択して下さい。").queue();
         }
     }
@@ -96,7 +95,7 @@ public class SetVoiceCmd extends SlashCommand {
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event) {
-        if(event.getName().equals("setvoice") && event.getFocusedOption().getName().equals("name")) {
+        if (event.getName().equals("setvoice") && event.getFocusedOption().getName().equals("name")) {
             List<Command.Choice> options = Stream.of(voices)
                     .filter(word -> word.startsWith(event.getFocusedOption().getValue())) // only display words that start with the user's current input
                     .map(word -> new Command.Choice(word, word)) // map the words to choices
@@ -108,10 +107,11 @@ public class SetVoiceCmd extends SlashCommand {
 
     /**
      * ユーザーが入力した声の名前が有効かを確認
+     *
      * @param voice ユーザーが入力した声の名前
      * @return 名前が有効の場合は true 無効な場合は false
      */
-    private boolean isValidVoice(String voice){
+    private boolean isValidVoice(String voice) {
         for (String v : voices) {
             if (Objects.equals(v, voice)) {
                 return true;

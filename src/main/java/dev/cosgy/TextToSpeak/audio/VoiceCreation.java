@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class VoiceCreation {
     private static final Logger logger = LoggerFactory.getLogger(VoiceCreation.class);

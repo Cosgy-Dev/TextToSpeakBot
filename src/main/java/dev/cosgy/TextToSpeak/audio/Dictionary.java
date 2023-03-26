@@ -19,29 +19,24 @@ package dev.cosgy.TextToSpeak.audio;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import net.dv8tion.jda.api.entities.Guild;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class Dictionary {
+    private static Dictionary instance;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Bot bot;
     private final Path path;
     private final boolean create;
     private final Connection connection;
     private final ConcurrentHashMap<Long, HashMap<String, String>> guildDic;
-
-    private static Dictionary instance;
 
     private Dictionary(Bot bot) {
         this.bot = bot;
@@ -93,12 +88,12 @@ public class Dictionary {
 
     /**
      * データベースに登録されている単語を削除します。
-*
-* @param guildId サーバーID
-* @param word 単語
-* @return 正常に削除できた場合は {@code true}、削除時に問題が発生した場合は{@code false}を返します。
-*/
-public synchronized boolean deleteDictionary(Long guildId, String word) {
+     *
+     * @param guildId サーバーID
+     * @param word    単語
+     * @return 正常に削除できた場合は {@code true}、削除時に問題が発生した場合は{@code false}を返します。
+     */
+    public synchronized boolean deleteDictionary(Long guildId, String word) {
         guildDic.compute(guildId, (k, v) -> {
             if (v == null || !v.containsKey(word)) {
                 return null;
@@ -112,12 +107,12 @@ public synchronized boolean deleteDictionary(Long guildId, String word) {
     }
 
     /**
- * サーバーの辞書データを取得します。
- *
- * @param guildId サーバーID
- * @return {@code HashMap<String, String>}形式の変数を返します。
- */
-public HashMap<String, String> getWords(Long guildId) {
+     * サーバーの辞書データを取得します。
+     *
+     * @param guildId サーバーID
+     * @return {@code HashMap<String, String>}形式の変数を返します。
+     */
+    public HashMap<String, String> getWords(Long guildId) {
         return guildDic.getOrDefault(guildId, new HashMap<>());
     }
 

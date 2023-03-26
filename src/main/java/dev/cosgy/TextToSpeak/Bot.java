@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -50,14 +49,13 @@ public class Bot {
     private final PlayerManager players;
     private final VoiceCreation voiceCreation;
     private final UserSettingsManager userSettingsManager;
-    private Dictionary dictionary;
     private final AloneInVoiceHandler aloneInVoiceHandler;
-
+    Logger log = getLogger(this.getClass());
+    private Dictionary dictionary;
     private boolean shuttingDown = false;
     private JDA jda;
     private GUI gui;
 
-    Logger log = getLogger(this.getClass());
     public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings) {
         this.waiter = waiter;
         this.lang = ResourceBundle.getBundle("lang.yomiage", Locale.JAPAN);
@@ -80,7 +78,7 @@ public class Bot {
         this.jda = jda;
     }
 
-    public void readyJDA(){
+    public void readyJDA() {
         this.dictionary = Dictionary.getInstance(this);
     }
 
@@ -115,12 +113,16 @@ public class Bot {
             // ここからJDAの終了処理
             jda.shutdown();
             try {
-                if (!jda.awaitShutdown(Duration.ofSeconds(10))) { // シャットダウンが優雅な場合はtrue、タイムアウトを超えた場合はfalseを返します。
-                    jda.shutdownNow(); // 残っているリクエストをすべてキャンセルし、スレッドプールを停止する。
-                    jda.awaitShutdown(); // シャットダウンが完了するまで待つ（無期限）
+                if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) {
+                    jda.shutdownNow();
+                    if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) {
+                        log.warn("JDAのシャットダウンがタイムアウトしました。");
+                    }
                 }
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                jda.shutdownNow();
+                Thread.currentThread().interrupt();
+                log.warn("JDAのシャットダウンが中断されました。");
             }
 
             // 一時ファイルを削除
