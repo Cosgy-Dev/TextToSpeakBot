@@ -43,6 +43,7 @@
         </repository>
         <repository>
             <id>chew-m2-snapshots</id>
+            <name>m2-chew</name>
             <url>https://m2.chew.pro/snapshots/</url>
         </repository>
         <repository>
