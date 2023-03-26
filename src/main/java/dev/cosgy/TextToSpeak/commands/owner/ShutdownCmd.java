@@ -20,10 +20,6 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import dev.cosgy.TextToSpeak.Bot;
 import dev.cosgy.TextToSpeak.commands.OwnerCommand;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class ShutdownCmd extends OwnerCommand {
     private final Bot bot;
@@ -43,20 +39,7 @@ public class ShutdownCmd extends OwnerCommand {
 
     @Override
     protected void execute(CommandEvent event) {
-
-        event.reply("一時ファイルを削除しています。", m -> {
-            File tmp = new File("tmp");
-            File wav = new File("wav");
-
-            try {
-                FileUtils.cleanDirectory(tmp);
-                FileUtils.cleanDirectory(wav);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            m.editMessage("一時ファイルを削除しました。").queue();
-            event.replyWarning("シャットダウンしています...");
-            bot.shutdown();
-        });
+        event.reply(event.getClient().getWarning() + "シャットダウンしています...");
+        bot.shutdown();
     }
 }
