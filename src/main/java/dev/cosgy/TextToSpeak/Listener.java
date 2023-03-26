@@ -52,7 +52,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         if (event.getJDA().getGuilds().isEmpty()) {
-            Logger log = LoggerFactory.getLogger("YomiageBot");
+            Logger log = LoggerFactory.getLogger("TTSBot");
             log.warn("このボットはグループに入っていません！ボットをあなたのグループに追加するには、以下のリンクを使用してください。");
             log.warn(event.getJDA().getInviteUrl(TextToSpeak.RECOMMENDED_PERMS));
         }
