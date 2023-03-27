@@ -45,7 +45,7 @@ public class HelpCmd extends SlashCommand {
 
         StringBuilder builder = new StringBuilder();
         Category category = null;
-        List<SlashCommand> commands = client.getSlashCommands();
+        List<SlashCommand> commands = event.getClient().getSlashCommands();
         for (SlashCommand command : commands) {
             if (!command.isHidden() && (!command.isOwnerCommand() || event.getMember().isOwner())) {
                 if (!Objects.equals(category, command.getCategory())) {
@@ -57,18 +57,16 @@ public class HelpCmd extends SlashCommand {
                         .append(" - ").append(command.getHelp());
             }
         }
-        if (client.getServerInvite() != null)
+        if (event.getClient().getServerInvite() != null)
             builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(client.getServerInvite());
 
         eBuilder.setDescription(builder);
-        event.replyEmbeds(eBuilder.build()).queue();
 
-        /*event.reply(builder.toString(), unused ->
-        {
-            if (event.isFromType(ChannelType.TEXT))
-                event.reactSuccess();
-        }, t -> event.replyWarning("ダイレクトメッセージをブロックしているため、ヘルプを送信できません。"));
-         */
+        if (bot.getConfig().getHelpToDm()) {
+            event.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(eBuilder.build())).queue();
+        } else {
+            event.replyEmbeds(eBuilder.build()).queue();
+        }
     }
 
     public void execute(CommandEvent event) {

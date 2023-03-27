@@ -95,7 +95,7 @@ public class TextAreaOutputStream extends OutputStream {
         private final LinkedList<Integer> lengths;
         private final List<String> values;
 
-        private int curLength;
+        private int curLength = 0;
         private boolean clear;
         private boolean queue;
 
@@ -105,7 +105,6 @@ public class TextAreaOutputStream extends OutputStream {
             lengths = new LinkedList<>();
             values = new ArrayList<>();
 
-            curLength = 0;
             clear = false;
             queue = true;
         }

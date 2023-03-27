@@ -80,13 +80,13 @@ public class Listener extends ListenerAdapter {
 
         if (event.getChannelLeft() != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelLeft() && event.getChannelLeft().getMembers().size() > 1) {
-                String file = null;
+                String file;
                 try {
                     file = bot.getVoiceCreation().createVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルから退出しました。");
                 } catch (IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.ResultHandler(null, event));
+                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event));
             }
 
             if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)) {
@@ -108,7 +108,7 @@ public class Listener extends ListenerAdapter {
                 } catch (IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new Listener.ResultHandler(null, event));
+                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event));
             }
         }
     }

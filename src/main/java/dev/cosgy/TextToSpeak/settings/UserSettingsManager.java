@@ -1,3 +1,5 @@
+package dev.cosgy.TextToSpeak.settings;
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Copyright 2023 Cosgy Dev                                                             /
 //                                                                                       /
@@ -13,8 +15,6 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
-
-package dev.cosgy.TextToSpeak.settings;
 
 import dev.cosgy.TextToSpeak.utils.OtherUtil;
 import org.apache.commons.io.FileUtils;
@@ -43,47 +43,37 @@ public class UserSettingsManager {
                 FileUtils.writeStringToFile(path.toFile(), original, StandardCharsets.UTF_8);
                 logger.info("データベースファイルが存在しなかったためファイルを作成しました。");
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("データベースファイルを作成できませんでした。", e);
             }
         }
 
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite");
             Statement statement = connection.createStatement();
-            String sql = "create table settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)";
-            if (create) {
-                statement.execute(sql);
-            }
+            String sql = "create table if not exists settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)";
+            statement.execute(sql);
 
             ResultSet rs = statement.executeQuery("select * from settings");
             while (rs.next()) {
                 settings.put(rs.getLong(1), new UserSettings(this, rs.getLong(1), rs.getString(2), rs.getFloat(3), rs.getFloat(4), rs.getFloat(5), rs.getFloat(6)));
             }
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            logger.error("データベースに接続できませんでした。", throwables);
         }
     }
 
-
     public UserSettings getSettings(long userId) {
-        return settings.computeIfAbsent(userId, id -> createDefaultSettings(userId));
+        return settings.computeIfAbsent(userId, this::createDefaultSettings);
     }
 
-    /**
-     * デフォルト設定のデータを作って返す。
-     *
-     * @return 作成されたデフォルト設定
-     */
     private UserSettings createDefaultSettings(Long userId) {
-        // [スピード:0.0-] [抑揚:0.0-] [声質a:0.0-1.0] [声質fm:0.0-]
         return new UserSettings(this, userId, "mei_normal", 1.0f, 1.0f, 0.5f, 2.0f);
     }
 
     protected void saveSetting(Long userId) {
-        String sql = "REPLACE INTO settings VALUES (?,?,?,?,?,?)";
+        String sql = "REPLACE INTO settings (id, voice, speed, intonation, voiceQualityA, voiceQualityFm) VALUES (?,?,?,?,?,?)";
         UserSettings settings = this.settings.get(userId);
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, userId);
             ps.setString(2, settings.getVoice());
             ps.setFloat(3, settings.getSpeed());
@@ -94,7 +84,16 @@ public class UserSettingsManager {
             logger.debug(ps.toString());
             ps.executeUpdate();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            logger.error("設定を保存できませんでした。", throwables);
+        }
+    }
+
+    public void closeConnection() {
+        try {
+            connection.close();
+            logger.info("データベース接続を終了しました。");
+        } catch (SQLException e) {
+            logger.error("データベース接続を終了できませんでした。", e);
         }
     }
 }

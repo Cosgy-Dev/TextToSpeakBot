@@ -67,11 +67,10 @@ public class TextToSpeak {
         Logger log = getLogger("立ち上げ");
         try {
             System.out.println(FigletFont.convertOneLine("Yomiage Bot v" + OtherUtil.getCurrentVersion()) + "\n" + "by Cosgy Dev");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
 
-        Prompt prompt = new Prompt("Yomiage Bot", "noguiモードに切り替えます。  -Dnogui=trueフラグを含めると、手動でnoguiモードで起動できます。",
+        Prompt prompt = new Prompt("TextToSpeak Bot", "noguiモードに切り替えます。  -Dnogui=trueフラグを含めると、手動でnoguiモードで起動できます。",
                 "true".equalsIgnoreCase(System.getProperty("nogui", "false")));
 
         // check deprecated nogui mode (new way of setting it is -Dnogui=true)
@@ -121,6 +120,7 @@ public class TextToSpeak {
 
         List<SlashCommand> slashCommandList = new ArrayList<>() {{
             add(aboutCommand);
+            add(new HelpCmd(bot));
             add(new JoinCmd(bot));
             add(new ByeCmd(bot));
             add(new SettingsCmd(bot));

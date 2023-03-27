@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.awt.*;
-import java.util.Objects;
 
 public class JoinCmd extends SlashCommand {
     protected Bot bot;
@@ -60,7 +59,7 @@ public class JoinCmd extends SlashCommand {
             return;
         }
 
-        builder.addField("読み上げ対象", "<#" + Objects.requireNonNullElseGet(channel, event::getChannel).getId() + ">", false);
+        builder.addField("読み上げ対象", "<#" + event.getChannel().getId() + ">", false);
 
         try {
             event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());

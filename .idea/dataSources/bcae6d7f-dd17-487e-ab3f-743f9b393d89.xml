@@ -1424,37 +1424,67 @@
       <Position>1</Position>
     </argument>
     <table id="504" parent="173" name="Dictionary"/>
-    <table id="505" parent="173" name="sqlite_master">
+    <table id="505" parent="173" name="settings"/>
+    <table id="506" parent="173" name="sqlite_master">
       <System>1</System>
     </table>
-    <column id="506" parent="504" name="guild_id">
+    <column id="507" parent="504" name="guild_id">
       <DasType>integer|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="507" parent="504" name="word">
+    <column id="508" parent="504" name="word">
       <DasType>text|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="508" parent="504" name="reading">
+    <column id="509" parent="504" name="reading">
       <Position>3</Position>
     </column>
-    <column id="509" parent="505" name="type">
-      <DasType>TEXT|0s</DasType>
+    <column id="510" parent="505" name="id">
+      <DasType>integer|0s</DasType>
+      <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="510" parent="505" name="name">
+    <column id="511" parent="505" name="voice">
       <DasType>TEXT|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="511" parent="505" name="tbl_name">
+    <column id="512" parent="505" name="speed">
+      <DasType>real|0s</DasType>
+      <Position>3</Position>
+    </column>
+    <column id="513" parent="505" name="intonation">
+      <DasType>real|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="514" parent="505" name="voiceQualityA">
+      <DasType>real|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <column id="515" parent="505" name="voiceQualityFm">
+      <DasType>real|0s</DasType>
+      <Position>6</Position>
+    </column>
+    <key id="516" parent="505" name="settings_pk">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="517" parent="506" name="type">
+      <DasType>TEXT|0s</DasType>
+      <Position>1</Position>
+    </column>
+    <column id="518" parent="506" name="name">
+      <DasType>TEXT|0s</DasType>
+      <Position>2</Position>
+    </column>
+    <column id="519" parent="506" name="tbl_name">
       <DasType>TEXT|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="512" parent="505" name="rootpage">
+    <column id="520" parent="506" name="rootpage">
       <DasType>INT|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="513" parent="505" name="sql">
+    <column id="521" parent="506" name="sql">
       <DasType>TEXT|0s</DasType>
       <Position>5</Position>
     </column>
