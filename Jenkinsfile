@@ -21,8 +21,5 @@ pipeline {
             sh '''qodana'''
          }
       }
-      stage("build"){
-
-      }
    }
 }
