@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class SetVoiceCmd extends SlashCommand {
         if (event.getOption("name") == null) {
             EmbedBuilder ebuilder = new EmbedBuilder()
                     .setTitle("setvoiceコマンド")
-                    .addField("声データ一覧：", voices.toString(), false)
+                    .addField("声データ一覧：", Arrays.toString(voices), false)
                     .addField("使用方法：", name + " <声データの名前>", false);
             event.replyEmbeds(ebuilder.build()).queue();
             return;

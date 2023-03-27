@@ -42,8 +42,6 @@ public class AddWordCmd extends SlashCommand {
     private static final String USAGE_MESSAGE = "使用方法: /addword <単語> <読み方>";
     private static final String KATAKANA_REGEX = "^[ァ-ヶー]*$";
     private final Bot bot;
-    private final String ok = "✔";
-    private final String no = "❌";
 
     public AddWordCmd(Bot bot) {
         this.bot = bot;
@@ -67,6 +65,8 @@ public class AddWordCmd extends SlashCommand {
         boolean isWordExist = dictionary.getWords(guildId).containsKey(word);
         event.deferReply().queue();
         if (isWordExist) {
+            String no = "❌";
+            String ok = "✔";
             new ButtonMenu.Builder()
                     .setText("単語が既に存在します。上書きしますか？")
                     .addChoices(no, ok)

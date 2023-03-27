@@ -102,7 +102,7 @@ public class Listener extends ListenerAdapter {
 
         if (event.getChannelJoined() != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelJoined()) {
-                String file = null;
+                String file;
                 try {
                     file = bot.getVoiceCreation().createVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルに参加しました。");
                 } catch (IOException | InterruptedException e) {

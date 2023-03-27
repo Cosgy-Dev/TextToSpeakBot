@@ -5,9 +5,9 @@
 1. Forkする
 2. Branchを作る: `git checkout -b my-new-feature`
 3. テストする: `java -jar TextToSpeak-*.jar`
-3. 変更をコミットする: `git commit -am 'Add some feature'`
-4. Pushする: `git push origin my-new-feature`
-5. Pull Requestを送る
+4. 変更をコミットする: `git commit -am 'Add some feature'`
+5. Pushする: `git push origin my-new-feature`
+6. Pull Requestを送る
 
 ## Issues
 

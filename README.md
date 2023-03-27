@@ -11,6 +11,10 @@
 # 読み上げボット(TextToSpeakBot)
 
 読み上げボットは、Open JTalkを使用したシンプルで操作性の良いボットです。
+ユーザーは、自分のオリジナルの声を設定を変更することで変更可能です。
+Java言語を使用しており動作が高速で比較的簡単にホストすることが可能です。
+
+<iframe src="https://discord.com/widget?id=497317844191805450&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 
 # 機能
 

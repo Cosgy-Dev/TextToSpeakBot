@@ -95,7 +95,7 @@ public class MessageListener extends ListenerAdapter {
                 }
 
                 VoiceCreation vc = bot.getVoiceCreation();
-                String file = null;
+                String file;
                 try {
                     file = vc.createVoice(guild, author, msg);
                 } catch (IOException | InterruptedException e) {

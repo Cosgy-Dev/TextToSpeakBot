@@ -48,8 +48,7 @@ public class OtherUtil {
             String filename = path.substring(WINDOWS_INVALID_PATH.length());
             try {
                 path = new File(TextToSpeak.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath() + File.separator + filename;
-            } catch (URISyntaxException ex) {
-                ex.printStackTrace();
+            } catch (URISyntaxException ignored) {
             }
         }
         return Paths.get(path);
