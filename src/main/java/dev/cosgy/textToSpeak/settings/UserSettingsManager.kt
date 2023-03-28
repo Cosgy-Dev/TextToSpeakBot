@@ -25,16 +25,13 @@ import java.sql.SQLException
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
 class UserSettingsManager {
-    private val settings: HashMap<Long, UserSettings>
+    private val settings: HashMap<Long, UserSettings> = HashMap()
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private var connection: Connection? = null
 
     init {
-        settings = HashMap()
         val path = OtherUtil.getPath("UserData.sqlite")
-        var create = false
-        if (!path!!.toFile().exists()) {
-            create = true
+        if (!path.toFile().exists()) {
             val original = OtherUtil.loadResource(this, "UserData.sqlite")
             try {
                 FileUtils.writeStringToFile(path.toFile(), original, StandardCharsets.UTF_8)

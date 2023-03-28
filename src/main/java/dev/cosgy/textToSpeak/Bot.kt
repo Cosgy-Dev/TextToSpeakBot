@@ -24,6 +24,7 @@ import dev.cosgy.textToSpeak.settings.UserSettingsManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import org.apache.commons.io.FileUtils
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
@@ -41,7 +42,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     val voiceCreation: VoiceCreation
     val userSettingsManager: UserSettingsManager
     val aloneInVoiceHandler: AloneInVoiceHandler
-    var log = LoggerFactory.getLogger(this.javaClass)
+    var log: Logger = LoggerFactory.getLogger(this.javaClass)
     var dictionary: Dictionary? = null
         private set
     private var shuttingDown = false

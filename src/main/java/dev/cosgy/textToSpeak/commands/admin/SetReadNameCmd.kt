@@ -19,10 +19,11 @@ import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jdautilities.command.SlashCommandEvent
 import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.commands.AdminCommand
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class SetReadNameCmd(private val bot: Bot) : AdminCommand() {
-    var log = LoggerFactory.getLogger(this.javaClass)
+    var log: Logger = LoggerFactory.getLogger(this.javaClass)
 
     init {
         name = "setreadname"
