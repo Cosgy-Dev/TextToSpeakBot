@@ -58,24 +58,6 @@ class Settings : GuildSettingsProvider {
         manager.writeSettings()
     }
 
-    fun getVolume(): Int {
-        return volume
-    }
-
-    fun setVolume(volume: Int) {
-        this.volume = volume
-        manager.writeSettings()
-    }
-
-    fun getPrefix(): String? {
-        return prefix
-    }
-
-    fun setPrefix(prefix: String?) {
-        this.prefix = prefix
-        manager.writeSettings()
-    }
-
     override fun getPrefixes(): Collection<String?> {
         return if (prefix == null) emptySet() else setOf(prefix)
     }
