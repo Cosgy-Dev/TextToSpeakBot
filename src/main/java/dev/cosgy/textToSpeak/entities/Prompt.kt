@@ -13,106 +13,70 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.entities
 
-package dev.cosgy.TextToSpeak.entities;
+import org.slf4j.LoggerFactory
+import java.util.*
+import javax.swing.JOptionPane
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+class Prompt @JvmOverloads constructor(private val title: String, noguiMessage: String? = null, var isNoGUI: Boolean = "true".equals(System.getProperty("nogui"), ignoreCase = true)) {
+    private val noguiMessage: String
+    private var scanner: Scanner? = null
 
-import javax.swing.*;
-import java.util.Scanner;
-
-public class Prompt {
-    private final String title;
-    private final String noguiMessage;
-
-    private boolean nogui;
-    private Scanner scanner;
-
-    public Prompt(String title) {
-        this(title, null);
+    init {
+        this.noguiMessage = noguiMessage ?: "noguiモードに切り替えます。 -nogui=trueフラグを含めることで、手動でnoguiモードで起動できます。"
     }
 
-    public Prompt(String title, String noguiMessage) {
-        this(title, noguiMessage, "true".equalsIgnoreCase(System.getProperty("nogui")));
-    }
-
-    public Prompt(String title, String noguiMessage, boolean nogui) {
-        this.title = title;
-        this.noguiMessage = noguiMessage == null ? "noguiモードに切り替えます。 -nogui=trueフラグを含めることで、手動でnoguiモードで起動できます。" : noguiMessage;
-        this.nogui = nogui;
-    }
-
-    public boolean isNoGUI() {
-        return nogui;
-    }
-
-    public void alert(Level level, String context, String message) {
-        if (nogui) {
-            Logger log = LoggerFactory.getLogger(context);
-            switch (level) {
-                case WARNING:
-                    log.warn(message);
-                    break;
-                case ERROR:
-                    log.error(message);
-                    break;
-                case INFO:
-                default:
-                    log.info(message);
-                    break;
+    fun alert(level: Level?, context: String?, message: String) {
+        if (isNoGUI) {
+            val log = LoggerFactory.getLogger(context)
+            when (level) {
+                Level.WARNING -> log.warn(message)
+                Level.ERROR -> log.error(message)
+                Level.INFO -> log.info(message)
+                else -> log.info(message)
             }
         } else {
             try {
-                int option = 0;
-                switch (level) {
-                    case INFO:
-                        option = JOptionPane.INFORMATION_MESSAGE;
-                        break;
-                    case WARNING:
-                        option = JOptionPane.WARNING_MESSAGE;
-                        break;
-                    case ERROR:
-                        break;
-                    default:
-                        option = JOptionPane.PLAIN_MESSAGE;
-                        break;
+                var option = 0
+                when (level) {
+                    Level.INFO -> option = JOptionPane.INFORMATION_MESSAGE
+                    Level.WARNING -> option = JOptionPane.WARNING_MESSAGE
+                    Level.ERROR -> {}
+                    else -> option = JOptionPane.PLAIN_MESSAGE
                 }
-                JOptionPane.showMessageDialog(null, "<html><body><p style='width: 400px;'>" + message, title, option);
-            } catch (Exception e) {
-                nogui = true;
-                alert(Level.WARNING, context, noguiMessage);
-                alert(level, context, message);
+                JOptionPane.showMessageDialog(null, "<html><body><p style='width: 400px;'>$message", title, option)
+            } catch (e: Exception) {
+                isNoGUI = true
+                alert(Level.WARNING, context, noguiMessage)
+                alert(level, context, message)
             }
         }
     }
 
-    public String prompt(String content) {
-        if (nogui) {
-            if (scanner == null)
-                scanner = new Scanner(System.in);
+    fun prompt(content: String?): String? {
+        return if (isNoGUI) {
+            if (scanner == null) scanner = Scanner(System.`in`)
             try {
-                System.out.println(content);
-                if (scanner.hasNextLine())
-                    return scanner.nextLine();
-                return null;
-            } catch (Exception e) {
-                alert(Level.ERROR, title, "コマンドラインから入力を読み込めません。");
-                e.printStackTrace();
-                return null;
+                println(content)
+                if (scanner!!.hasNextLine()) scanner!!.nextLine() else null
+            } catch (e: Exception) {
+                alert(Level.ERROR, title, "コマンドラインから入力を読み込めません。")
+                e.printStackTrace()
+                null
             }
         } else {
             try {
-                return JOptionPane.showInputDialog(null, content, title, JOptionPane.QUESTION_MESSAGE);
-            } catch (Exception e) {
-                nogui = true;
-                alert(Level.WARNING, title, noguiMessage);
-                return prompt(content);
+                JOptionPane.showInputDialog(null, content, title, JOptionPane.QUESTION_MESSAGE)
+            } catch (e: Exception) {
+                isNoGUI = true
+                alert(Level.WARNING, title, noguiMessage)
+                prompt(content)
             }
         }
     }
 
-    public enum Level {
+    enum class Level {
         INFO, WARNING, ERROR
     }
 }

@@ -13,155 +13,117 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak
 
-package dev.cosgy.TextToSpeak;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import dev.cosgy.textToSpeak.audio.AudioHandler
+import dev.cosgy.textToSpeak.audio.QueuedTrack
+import dev.cosgy.textToSpeak.utils.OtherUtil
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
+import net.dv8tion.jda.api.events.session.ReadyEvent
+import net.dv8tion.jda.api.events.session.ShutdownEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
 
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import dev.cosgy.TextToSpeak.audio.AudioHandler;
-import dev.cosgy.TextToSpeak.audio.QueuedTrack;
-import dev.cosgy.TextToSpeak.settings.Settings;
-import dev.cosgy.TextToSpeak.utils.OtherUtil;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
-import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.events.session.ShutdownEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import static org.slf4j.LoggerFactory.getLogger;
-
-public class Listener extends ListenerAdapter {
-    private final Bot bot;
-    Logger log = getLogger(this.getClass());
-
-    public Listener(Bot bot) {
-        this.bot = bot;
-    }
-
-    @Override
-    public void onReady(ReadyEvent event) {
-        if (event.getJDA().getGuilds().isEmpty()) {
-            Logger log = LoggerFactory.getLogger("TTSBot");
-            log.warn("このボットはグループに入っていません！ボットをあなたのグループに追加するには、以下のリンクを使用してください。");
-            log.warn(event.getJDA().getInviteUrl(TextToSpeak.RECOMMENDED_PERMS));
+class Listener(private val bot: Bot) : ListenerAdapter() {
+    var log: Logger = LoggerFactory.getLogger(this.javaClass)
+    override fun onReady(event: ReadyEvent) {
+        if (event.jda.guilds.isEmpty()) {
+            val log = LoggerFactory.getLogger("TTSBot")
+            log.warn("このボットはグループに入っていません！ボットをあなたのグループに追加するには、以下のリンクを使用してください。")
+            log.warn(event.jda.getInviteUrl(*TextToSpeak.RECOMMENDED_PERMS))
         }
-        if (bot.getConfig().useUpdateAlerts()) {
-            bot.getThreadpool().scheduleWithFixedDelay(() ->
-            {
-                User owner = bot.getJDA().getUserById(bot.getConfig().getOwnerId());
+        if (bot.config.useUpdateAlerts()) {
+            bot.threadpool.scheduleWithFixedDelay({
+                val owner = bot.jda?.getUserById(bot.config.ownerId)
                 if (owner != null) {
-                    String currentVersion = OtherUtil.getCurrentVersion();
-                    String latestVersion = OtherUtil.getLatestVersion();
-                    if (latestVersion != null && !currentVersion.equalsIgnoreCase(latestVersion) && TextToSpeak.CHECK_UPDATE) {
-                        String msg = String.format(OtherUtil.NEW_VERSION_AVAILABLE, currentVersion, latestVersion);
-                        owner.openPrivateChannel().queue(pc -> pc.sendMessage(msg).queue());
+                    val currentVersion = OtherUtil.currentVersion
+                    val latestVersion = OtherUtil.latestVersion
+                    if (latestVersion != null && !currentVersion.equals(latestVersion, ignoreCase = true) && TextToSpeak.CHECK_UPDATE) {
+                        val msg = String.format(OtherUtil.NEW_VERSION_AVAILABLE, currentVersion, latestVersion)
+                        owner.openPrivateChannel().queue { pc: PrivateChannel -> pc.sendMessage(msg).queue() }
                     }
                 }
-            }, 0, 24, TimeUnit.HOURS);
+            }, 0, 24, TimeUnit.HOURS)
         }
     }
 
-    @Override
-    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
-        Member botMember = event.getGuild().getSelfMember();
-
-        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
-
-        if (event.getChannelLeft() != null) {
-            if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelLeft() && event.getChannelLeft().getMembers().size() > 1) {
-                String file;
-                try {
-                    file = bot.getVoiceCreation().createVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルから退出しました。");
-                } catch (IOException | InterruptedException e) {
-                    throw new RuntimeException(e);
+    override fun onGuildVoiceUpdate(event: GuildVoiceUpdateEvent) {
+        val botMember = event.guild.selfMember
+        val settings = bot.settingsManager.getSettings(event.guild)
+        if (event.channelLeft != null) {
+            if (settings!!.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelLeft && event.channelLeft!!.members.size > 1) {
+                val file: String? = try {
+                    bot.voiceCreation.createVoice(event.guild, event.member.user, event.member.user.name + "がボイスチャンネルから退出しました。")
+                } catch (e: IOException) {
+                    throw RuntimeException(e)
+                } catch (e: InterruptedException) {
+                    throw RuntimeException(e)
                 }
-                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event));
+                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(null, event))
             }
-
-            if (event.getChannelLeft().getMembers().size() == 1 && event.getChannelLeft().getMembers().contains(botMember)) {
-                AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-                handler.getQueue().clear();
+            if (event.channelLeft!!.members.size == 1 && event.channelLeft!!.members.contains(botMember)) {
+                val handler = event.guild.audioManager.sendingHandler as AudioHandler?
+                handler!!.queue.clear()
                 try {
-                    bot.getVoiceCreation().clearGuildFolder(event.getGuild());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    bot.voiceCreation.clearGuildFolder(event.guild)
+                } catch (e: IOException) {
+                    throw RuntimeException(e)
                 }
             }
         }
-
-        if (event.getChannelJoined() != null) {
-            if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.getGuild().getSelfMember().getVoiceState()).getChannel() == event.getChannelJoined()) {
-                String file;
-                try {
-                    file = bot.getVoiceCreation().createVoice(event.getGuild(), event.getMember().getUser(), event.getMember().getUser().getName() + "がボイスチャンネルに参加しました。");
-                } catch (IOException | InterruptedException e) {
-                    throw new RuntimeException(e);
+        if (event.channelJoined != null) {
+            if (settings!!.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelJoined) {
+                val file: String? = try {
+                    bot.voiceCreation.createVoice(event.guild, event.member.user, event.member.user.name + "がボイスチャンネルに参加しました。")
+                } catch (e: IOException) {
+                    throw RuntimeException(e)
+                } catch (e: InterruptedException) {
+                    throw RuntimeException(e)
                 }
-                bot.getPlayerManager().loadItemOrdered(event.getGuild(), file, new ResultHandler(null, event));
+                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(null, event))
             }
         }
     }
 
-    @Override
-    public void onShutdown(@NotNull ShutdownEvent event) {
-        bot.shutdown();
+    override fun onShutdown(event: ShutdownEvent) {
+        bot.shutdown()
     }
 
-
-    private class ResultHandler implements AudioLoadResultHandler {
-        private final Message m;
-        private final GuildVoiceUpdateEvent event;
-
-        private ResultHandler(Message m, GuildVoiceUpdateEvent event) {
-            this.m = m;
-            this.event = event;
+    private inner class ResultHandler(private val m: Message?, private val event: GuildVoiceUpdateEvent) : AudioLoadResultHandler {
+        private fun loadSingle(track: AudioTrack) {
+            val handler = event.guild.audioManager.sendingHandler as AudioHandler?
+            handler!!.addTrack(QueuedTrack(track, event.member.user))
         }
 
-        private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
-            AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-            handler.addTrack(new QueuedTrack(track, event.getMember().getUser()));
-        }
-
-        private int loadPlaylist(AudioPlaylist playlist, AudioTrack exclude) {
-            int[] count = {0};
-            playlist.getTracks().forEach((track) -> {
-                if (!track.equals(exclude)) {
-                    AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-                    handler.addTrack(new QueuedTrack(track, event.getMember().getUser()));
-                    count[0]++;
+        private fun loadPlaylist(playlist: AudioPlaylist, exclude: AudioTrack): Int {
+            val count = intArrayOf(0)
+            playlist.tracks.forEach(Consumer { track: AudioTrack ->
+                if (track != exclude) {
+                    val handler = event.guild.audioManager.sendingHandler as AudioHandler?
+                    handler!!.addTrack(QueuedTrack(track, event.member.user))
+                    count[0]++
                 }
-            });
-            return count[0];
+            })
+            return count[0]
         }
 
-        @Override
-        public void trackLoaded(AudioTrack track) {
-            loadSingle(track, null);
+        override fun trackLoaded(track: AudioTrack) {
+            loadSingle(track)
         }
 
-        @Override
-        public void playlistLoaded(AudioPlaylist playlist) {
-
-        }
-
-        @Override
-        public void noMatches() {
-        }
-
-        @Override
-        public void loadFailed(FriendlyException throwable) {
-
-        }
+        override fun playlistLoaded(playlist: AudioPlaylist) {}
+        override fun noMatches() {}
+        override fun loadFailed(throwable: FriendlyException) {}
     }
 }

@@ -13,33 +13,27 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.owner
 
-package dev.cosgy.TextToSpeak.commands.owner;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.Bot
+import dev.cosgy.textToSpeak.commands.OwnerCommand
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.commands.OwnerCommand;
-
-public class ShutdownCmd extends OwnerCommand {
-    private final Bot bot;
-
-    public ShutdownCmd(Bot bot) {
-        this.bot = bot;
-        this.name = "shutdown";
-        this.help = "一時ファイルを削除してボットを停止します。";
-        this.guildOnly = false;
+class ShutdownCmd(private val bot: Bot) : OwnerCommand() {
+    init {
+        name = "shutdown"
+        help = "一時ファイルを削除してボットを停止します。"
+        guildOnly = false
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        event.reply(event.getClient().getWarning() + "シャットダウンしています...").queue();
-        bot.shutdown();
+    override fun execute(event: SlashCommandEvent) {
+        event.reply(event.client.warning + "シャットダウンしています...").queue()
+        bot.shutdown()
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
-        event.reply(event.getClient().getWarning() + "シャットダウンしています...");
-        bot.shutdown();
+    override fun execute(event: CommandEvent) {
+        event.reply(event.client.warning + "シャットダウンしています...")
+        bot.shutdown()
     }
 }

@@ -13,14 +13,13 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands
 
-package dev.cosgy.TextToSpeak.commands;
+import com.jagrosh.jdautilities.command.SlashCommand
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-
-public abstract class OwnerCommand extends SlashCommand {
-    public OwnerCommand() {
-        this.category = new Category("Owner");
-        this.ownerCommand = true;
+abstract class OwnerCommand : SlashCommand() {
+    init {
+        this.category = Category("Owner")
+        ownerCommand = true
     }
 }

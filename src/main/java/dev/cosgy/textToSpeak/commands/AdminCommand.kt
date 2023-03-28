@@ -13,33 +13,30 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands
 
-package dev.cosgy.TextToSpeak.commands;
+import com.jagrosh.jdautilities.command.CommandClient
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommand
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import net.dv8tion.jda.api.Permission
+import java.util.function.Predicate
 
-import com.jagrosh.jdautilities.command.CommandClient;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import net.dv8tion.jda.api.Permission;
-
-public abstract class AdminCommand extends SlashCommand {
-    public AdminCommand() {
-        this.category = new Category("管理", event ->
-        {
-            if (event.isOwner() || event.getMember().isOwner())
-                return true;
-            if (event.getGuild() == null)
-                return true;
-            return event.getMember().hasPermission(Permission.MANAGE_SERVER);
-        });
-        this.guildOnly = true;
-        this.userPermissions = new Permission[]{Permission.ADMINISTRATOR};
+abstract class AdminCommand : SlashCommand() {
+    init {
+        this.category = Category("管理", Predicate { event: CommandEvent ->
+            if (event.isOwner || event.member.isOwner) return@Predicate true
+            if (event.guild == null) return@Predicate true
+            event.member.hasPermission(Permission.MANAGE_SERVER)
+        })
+        guildOnly = true
+        userPermissions = arrayOf(Permission.ADMINISTRATOR)
     }
 
-    public static boolean checkAdminPermission(CommandClient client, SlashCommandEvent event) {
-        if (event.getUser().getId().equals(client.getOwnerId()) || event.getMember().isOwner())
-            return true;
-        if (event.getGuild() == null)
-            return true;
-        return event.getMember().hasPermission(Permission.MANAGE_SERVER);
+    companion object {
+        fun checkAdminPermission(client: CommandClient, event: SlashCommandEvent): Boolean {
+            if (event.user.id == client.ownerId || event.member!!.isOwner) return true
+            return if (event.guild == null) true else event.member!!.hasPermission(Permission.MANAGE_SERVER)
+        }
     }
 }

@@ -13,29 +13,25 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.listeners
 
-package dev.cosgy.TextToSpeak.listeners;
+import com.jagrosh.jdautilities.command.Command
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.CommandListener
+import dev.cosgy.textToSpeak.TextToSpeak
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import org.slf4j.LoggerFactory
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.CommandListener;
-import dev.cosgy.TextToSpeak.TextToSpeak;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class CommandAudit implements CommandListener {
-    @Override
-    public void onCommand(CommandEvent event, Command command) {
+class CommandAudit : CommandListener {
+    override fun onCommand(event: CommandEvent, command: Command) {
         if (TextToSpeak.COMMAND_AUDIT_ENABLED) {
-            Logger logger = LoggerFactory.getLogger("CommandAudit");
-            String textFormat = event.isFromType(ChannelType.PRIVATE) ? "%s%s で %s#%s (%s) がコマンド %s を実行しました" : "%s の #%s で %s#%s (%s) がコマンド %s を実行しました";
-
+            val logger = LoggerFactory.getLogger("CommandAudit")
+            val textFormat = if (event.isFromType(ChannelType.PRIVATE)) "%s%s で %s#%s (%s) がコマンド %s を実行しました" else "%s の #%s で %s#%s (%s) がコマンド %s を実行しました"
             logger.info(String.format(textFormat,
-                    event.isFromType(ChannelType.PRIVATE) ? "DM" : event.getGuild().getName(),
-                    event.isFromType(ChannelType.PRIVATE) ? "" : event.getTextChannel().getName(),
-                    event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(),
-                    event.getMessage().getContentDisplay()));
+                    if (event.isFromType(ChannelType.PRIVATE)) "DM" else event.guild.name,
+                    if (event.isFromType(ChannelType.PRIVATE)) "" else event.textChannel.name,
+                    event.author.name, event.author.discriminator, event.author.id,
+                    event.message.contentDisplay))
         }
     }
 }

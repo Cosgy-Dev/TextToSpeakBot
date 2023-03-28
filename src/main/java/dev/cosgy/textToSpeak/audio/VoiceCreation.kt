@@ -13,182 +13,160 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.audio
 
-package dev.cosgy.TextToSpeak.audio;
+import dev.cosgy.textToSpeak.Bot
+import dev.cosgy.textToSpeak.settings.UserSettings
+import net.dv8tion.jda.api.entities.*
+import org.apache.commons.io.FileUtils
+import org.slf4j.LoggerFactory
+import java.io.*
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.*
 
-import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.settings.UserSettings;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+class VoiceCreation( // 各種設定の値を保持するためのフィールド
+        private val bot: Bot) {
+    private val dictionary: String? = bot.config.dictionary
+    private val voiceDirectory: String? = bot.config.voiceDirectory
+    private val winJTalkDir: String? = bot.config.winJTalkDir
+    private val maxMessageCount: Int = bot.config.maxMessageCount
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-public class VoiceCreation {
-    private static final Logger logger = LoggerFactory.getLogger(VoiceCreation.class);
-    private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("win");
-
-    // 各種設定の値を保持するためのフィールド
-    private final Bot bot;
-    private final String dictionary;
-    private final String voiceDirectory;
-    private final String winJTalkDir;
-    private final int maxMessageCount;
-
-    // 初期化処理を行うメソッド
-    public VoiceCreation(Bot bot) {
-        this.bot = bot;
-        this.dictionary = bot.getConfig().getDictionary();
-        this.voiceDirectory = bot.getConfig().getVoiceDirectory();
-        this.winJTalkDir = bot.getConfig().getWinJTalkDir();
-        this.maxMessageCount = bot.getConfig().getMaxMessageCount();
-    }
-
-    public String createVoice(Guild guild, User user, String message) throws IOException, InterruptedException {
+    @Throws(IOException::class, InterruptedException::class)
+    fun createVoice(guild: Guild, user: User, message: String): String {
         // ファイル名やパスの生成に使用するIDを生成する
-        String guildId = guild.getId();
-        String fileId = UUID.randomUUID().toString();
-        String fileName = "wav" + File.separator + guildId + File.separator + fileId + ".wav";
+        val guildId = guild.id
+        val fileId = UUID.randomUUID().toString()
+        val fileName = "wav" + File.separator + guildId + File.separator + fileId + ".wav"
 
         // 必要なディレクトリを作成する
-        createDirectories(guildId);
+        createDirectories(guildId)
 
         // ユーザーの設定を取得する
-        UserSettings settings = bot.getUserSettingsManager().getSettings(user.getIdLong());
+        val settings = bot.userSettingsManager.getSettings(user.idLong)
 
         // 辞書データを取得し、メッセージを変換する
-        HashMap<String, String> words = bot.getDictionary().getWords(guild.getIdLong());
-        String dicMsg = sanitizeMessage(message);
-        for (Map.Entry<String, String> entry : words.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            dicMsg = dicMsg.replaceAll(key, value);
+        val words = bot.dictionary?.getWords(guild.idLong)
+        var dicMsg = sanitizeMessage(message)
+        for ((key, value) in words!!) {
+            dicMsg = dicMsg.replace(key!!.toRegex(), value!!)
         }
-        String tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg);
+        val tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg)
 
 
         // コマンドを生成して実行する
-        String[] command = getCommand(settings, tmpFilePath, fileName);
-        ProcessBuilder builder = new ProcessBuilder(command);
-
-        builder.redirectErrorStream(true);
-        logger.debug("Command: " + String.join(" ", command));
-        Process process = builder.start();
-        process.waitFor();
-
-        return fileName;
+        val command = getCommand(settings, tmpFilePath, fileName)
+        val builder = ProcessBuilder(*command)
+        builder.redirectErrorStream(true)
+        logger.debug("Command: " + java.lang.String.join(" ", *command))
+        val process = builder.start()
+        process.waitFor()
+        return fileName
     }
 
     // メッセージをサニタイズするメソッド
-    private String sanitizeMessage(String message) {
-        String sanitizedMsg = message.replaceAll("[\\uD800-\\uDFFF]", " ");
-        sanitizedMsg = sanitizedMsg.replaceAll("Kosugi_kun", "コスギクン");
-        return sanitizedMsg;
+    private fun sanitizeMessage(message: String): String {
+        var sanitizedMsg = message.replace("[\\uD800-\\uDFFF]".toRegex(), " ")
+        sanitizedMsg = sanitizedMsg.replace("Kosugi_kun".toRegex(), "コスギクン")
+        return sanitizedMsg
     }
 
     // テキストファイルを作成するメソッド
-    private String createTmpTextFile(String guildId, String fileId, String message) throws FileNotFoundException, UnsupportedEncodingException {
-        String filePath = "tmp" + File.separator + guildId + File.separator + fileId + ".txt";
-        try (PrintWriter writer = new PrintWriter(filePath, getCharacterCode())) {
-            writer.write(message);
-        }
-        return filePath;
+    @Throws(FileNotFoundException::class, UnsupportedEncodingException::class)
+    private fun createTmpTextFile(guildId: String, fileId: String, message: String): String {
+        val filePath = "tmp" + File.separator + guildId + File.separator + fileId + ".txt"
+        PrintWriter(filePath, characterCode).use { writer -> writer.write(message) }
+        return filePath
     }
 
-    // 文字コードを取得するメソッド
-    private String getCharacterCode() {
-        return IS_WINDOWS ? "Shift-JIS" : "UTF-8";
-    }
+    private val characterCode: String
+        // 文字コードを取得するメソッド
+        get() = if (IS_WINDOWS) "Shift-JIS" else "UTF-8"
 
     // コマンドを生成するメソッド
-    private String[] getCommand(UserSettings settings, String tmpFilePath, String fileName) {
-        ArrayList<String> command = new ArrayList<>();
-        command.add(getOpenJTalkExecutable());
-        command.add("-x");
-        command.add(dictionary);
-        command.add("-m");
-        command.add(getVoiceFilePath(settings.getVoice()));
-        command.add("-ow");
-        command.add(fileName);
-        command.add("-r");
-        command.add(String.valueOf(settings.getSpeed()));
-        command.add("-jf");
-        command.add(String.valueOf(settings.getIntonation()));
-        command.add("-a");
-        command.add(String.valueOf(settings.getVoiceQualityA()));
-        command.add("-fm");
-        command.add(String.valueOf(settings.getVoiceQualityFm()));
-        command.add(tmpFilePath);
-
-        return command.toArray(new String[0]);
+    private fun getCommand(settings: UserSettings?, tmpFilePath: String, fileName: String): Array<String?> {
+        val command = ArrayList<String?>()
+        command.add(openJTalkExecutable)
+        command.add("-x")
+        command.add(dictionary)
+        command.add("-m")
+        command.add(getVoiceFilePath(settings!!.voice))
+        command.add("-ow")
+        command.add(fileName)
+        command.add("-r")
+        command.add(settings.speed.toString())
+        command.add("-jf")
+        command.add(settings.intonation.toString())
+        command.add("-a")
+        command.add(settings.voiceQualityA.toString())
+        command.add("-fm")
+        command.add(settings.voiceQualityFm.toString())
+        command.add(tmpFilePath)
+        return command.toTypedArray()
     }
 
-    private String getOpenJTalkExecutable() {
-        if (IS_WINDOWS) {
-            return Paths.get(winJTalkDir, "open_jtalk.exe").toString();
+    private val openJTalkExecutable: String?
+        get() = if (IS_WINDOWS) {
+            winJTalkDir?.let { Paths.get(it, "open_jtalk.exe").toString() }
         } else {
-            return "open_jtalk";
+            "open_jtalk"
         }
-    }
 
-    private String getVoiceFilePath(String voice) {
-        return Paths.get(voiceDirectory, voice + ".htsvoice").toString();
+    private fun getVoiceFilePath(voice: String?): String? {
+        return voiceDirectory?.let { Paths.get(it, "$voice.htsvoice").toString() }
     }
 
     // 必要なディレクトリを作成するメソッド
-    private void createDirectories(String guildId) throws IOException {
-        createDirectory("tmp");
-        createDirectory("tmp" + File.separator + guildId);
-        createDirectory("wav");
-        createDirectory("wav" + File.separator + guildId);
+    @Throws(IOException::class)
+    private fun createDirectories(guildId: String) {
+        createDirectory("tmp")
+        createDirectory("tmp" + File.separator + guildId)
+        createDirectory("wav")
+        createDirectory("wav" + File.separator + guildId)
     }
 
     // ディレクトリを作成するメゾット
-    private void createDirectory(String directory) throws IOException {
-        Path path = Paths.get(directory);
+    @Throws(IOException::class)
+    private fun createDirectory(directory: String) {
+        val path = Paths.get(directory)
         if (!Files.exists(path)) {
-            Files.createDirectory(path);
-            logger.info("Created directory: " + directory);
+            Files.createDirectory(path)
+            logger.info("Created directory: $directory")
         }
     }
 
     // ギルドに関連する一時ファイルや音声ファイルを削除するメソッド
-    public void clearGuildFolder(Guild guild) throws IOException {
-        String guildId = guild.getId();
-        Path tmpPath = Paths.get("tmp" + File.separator + guildId);
-        Path wavPath = Paths.get("wav" + File.separator + guildId);
+    @Throws(IOException::class)
+    fun clearGuildFolder(guild: Guild) {
+        val guildId = guild.id
+        val tmpPath = Paths.get("tmp" + File.separator + guildId)
+        val wavPath = Paths.get("wav" + File.separator + guildId)
         if (Files.exists(tmpPath)) {
-            FileUtils.cleanDirectory(tmpPath.toFile());
-            logger.info("Cleared temporary files for guild: " + guildId);
+            FileUtils.cleanDirectory(tmpPath.toFile())
+            logger.info("Cleared temporary files for guild: $guildId")
         }
-
         if (Files.exists(wavPath)) {
-            FileUtils.cleanDirectory(wavPath.toFile());
-            logger.info("Cleared WAV files for guild: " + guildId);
+            FileUtils.cleanDirectory(wavPath.toFile())
+            logger.info("Cleared WAV files for guild: $guildId")
         }
     }
 
-    // 利用可能な音声名を取得するメソッド
-    public ArrayList<String> getVoices() {
-        FilenameFilter filter = (file, str) -> str.endsWith("htsvoice");
-        File dir = new File(voiceDirectory);
-        File[] list = dir.listFiles(filter);
-        ArrayList<String> voices = new ArrayList<>();
-
-        for (File file : list) {
-            voices.add(file.getName().replace(".htsvoice", ""));
+    val voices: ArrayList<String>
+        // 利用可能な音声名を取得するメソッド
+        get() {
+            val filter = FilenameFilter { _: File?, str: String -> str.endsWith("htsvoice") }
+            val dir = File(voiceDirectory!!)
+            val list = dir.listFiles(filter)
+            val voices = ArrayList<String>()
+            for (file in list!!) {
+                voices.add(file.name.replace(".htsvoice", ""))
+            }
+            logger.debug("Available voices: $voices")
+            return voices
         }
 
-        logger.debug("Available voices: " + voices.toString());
-        return voices;
+    companion object {
+        private val logger = LoggerFactory.getLogger(VoiceCreation::class.java)
+        private val IS_WINDOWS = System.getProperty("os.name").lowercase(Locale.getDefault()).startsWith("win")
     }
 }

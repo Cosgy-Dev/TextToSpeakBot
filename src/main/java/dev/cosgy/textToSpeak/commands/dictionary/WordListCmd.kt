@@ -13,93 +13,86 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.dictionary
 
-package dev.cosgy.TextToSpeak.commands.dictionary;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommand
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import com.jagrosh.jdautilities.menu.Paginator
+import dev.cosgy.textToSpeak.Bot
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.exceptions.PermissionException
+import net.dv8tion.jda.api.interactions.InteractionHook
+import java.util.concurrent.TimeUnit
+import java.util.stream.Collectors
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import com.jagrosh.jdautilities.menu.Paginator;
-import dev.cosgy.TextToSpeak.Bot;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.exceptions.PermissionException;
+class WordListCmd(private val bot: Bot) : SlashCommand() {
+    private val builder: Paginator.Builder
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-public class WordListCmd extends SlashCommand {
-    private final Bot bot;
-    private final Paginator.Builder builder;
-
-    public WordListCmd(Bot bot) {
-        this.bot = bot;
-        this.name = "wdls";
-        this.help = "辞書に登録してある単語をリストアップします。";
-        this.category = new Category("辞書");
-        this.botPermissions = new Permission[]{Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS};
-        builder = new Paginator.Builder()
+    init {
+        name = "wdls"
+        help = "辞書に登録してある単語をリストアップします。"
+        this.category = Category("辞書")
+        botPermissions = arrayOf(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS)
+        builder = Paginator.Builder()
                 .setColumns(1)
-                .setFinalAction(m -> {
+                .setFinalAction { m: Message ->
                     try {
-                        m.clearReactions().queue();
-                    } catch (PermissionException ignore) {
+                        m.clearReactions().queue()
+                    } catch (ignore: PermissionException) {
                     }
-                })
+                }
                 .setItemsPerPage(10)
                 .waitOnSinglePage(false)
                 .useNumberedItems(true)
                 .showPageNumbers(true)
                 .wrapPageEnds(true)
-                .setEventWaiter(bot.getWaiter())
-                .setTimeout(1, TimeUnit.MINUTES);
-
+                .setEventWaiter(bot.waiter)
+                .setTimeout(1, TimeUnit.MINUTES)
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        event.reply("単語一覧を表示します。").queue(m -> {
-            List<String> wordList = bot.getDictionary().getWords(event.getGuild().getIdLong())
-                    .entrySet().stream()
-                    .map(entry -> entry.getKey() + "-" + entry.getValue())
-                    .collect(Collectors.toList());
-
-            if (wordList.isEmpty()) {
-                m.editOriginal("単語が登録されていません。").queue();
-                return;
+    override fun execute(event: SlashCommandEvent) {
+        event.reply("単語一覧を表示します。").queue { m: InteractionHook ->
+            val wordList = bot.dictionary?.getWords(event.guild!!.idLong)
+                    ?.entries?.stream()
+                    ?.map { (key, value): Map.Entry<String?, String?> -> "$key-$value" }
+                    ?.collect(Collectors.toList())
+            if (wordList != null) {
+                if (wordList.isEmpty()) {
+                    m.editOriginal("単語が登録されていません。").queue()
+                    return@queue
+                }
             }
-
-            m.deleteOriginal().queue();
+            m.deleteOriginal().queue()
             builder.setText("単語一覧")
-                    .setItems(wordList.toArray(new String[0]))
-                    .setUsers(event.getUser())
-                    .setColor(event.getGuild().getSelfMember().getColor());
-            builder.build().paginate(event.getChannel(), 1);
-        });
+                    .setItems(*wordList!!.toTypedArray())
+                    .setUsers(event.user)
+                    .setColor(event.guild!!.selfMember.color)
+            builder.build().paginate(event.channel, 1)
+        }
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
-        int pagenum = 1;
+    override fun execute(event: CommandEvent) {
+        var pagenum = 1
         try {
-            pagenum = Integer.parseInt(event.getArgs());
-        } catch (NumberFormatException ignore) {
+            pagenum = event.args.toInt()
+        } catch (ignore: NumberFormatException) {
         }
-
-        List<String> wordList = bot.getDictionary().getWords(event.getGuild().getIdLong())
-                .entrySet().stream()
-                .map(entry -> entry.getKey() + "-" + entry.getValue())
-                .collect(Collectors.toList());
-
-        if (wordList.isEmpty()) {
-            event.reply("単語が登録されていません。");
-            return;
+        val wordList = bot.dictionary?.getWords(event.guild.idLong)
+                ?.entries?.stream()
+                ?.map { (key, value): Map.Entry<String?, String?> -> "$key-$value" }
+                ?.collect(Collectors.toList())
+        if (wordList != null) {
+            if (wordList.isEmpty()) {
+                event.reply("単語が登録されていません。")
+                return
+            }
         }
-
         builder.setText("単語一覧")
-                .setItems(wordList.toArray(new String[0]))
-                .setUsers(event.getAuthor())
-                .setColor(event.getSelfMember().getColor());
-        builder.build().paginate(event.getChannel(), pagenum);
+                .setItems(*wordList!!.toTypedArray())
+                .setUsers(event.author)
+                .setColor(event.selfMember.color)
+        builder.build().paginate(event.channel, pagenum)
     }
 }

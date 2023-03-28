@@ -13,29 +13,28 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.gui
 
-package dev.cosgy.TextToSpeak.gui;
+import java.awt.Dimension
+import java.awt.GridLayout
+import java.io.PrintStream
+import javax.swing.JPanel
+import javax.swing.JScrollPane
+import javax.swing.JTextArea
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.PrintStream;
-
-public class ConsolePanel extends JPanel {
-    public ConsolePanel() {
-        super();
-        JTextArea text = new JTextArea();
-        text.setLineWrap(true);
-        text.setWrapStyleWord(true);
-        text.setEditable(false);
-        PrintStream con = new PrintStream(new TextAreaOutputStream(text));
-        System.setOut(con);
-        System.setErr(con);
-
-        JScrollPane pane = new JScrollPane();
-        pane.setViewportView(text);
-
-        super.setLayout(new GridLayout(1, 1));
-        super.add(pane);
-        super.setPreferredSize(new Dimension(400, 300));
+class ConsolePanel : JPanel() {
+    init {
+        val text = JTextArea()
+        text.lineWrap = true
+        text.wrapStyleWord = true
+        text.isEditable = false
+        val con = PrintStream(TextAreaOutputStream(text))
+        System.setOut(con)
+        System.setErr(con)
+        val pane = JScrollPane()
+        pane.setViewportView(text)
+        super.setLayout(GridLayout(1, 1))
+        super.add(pane)
+        super.setPreferredSize(Dimension(400, 300))
     }
 }

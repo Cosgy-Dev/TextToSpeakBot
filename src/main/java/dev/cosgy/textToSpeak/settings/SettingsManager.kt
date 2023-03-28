@@ -13,49 +13,47 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.settings
 
-package dev.cosgy.TextToSpeak.settings;
+import com.jagrosh.jdautilities.command.GuildSettingsManager
+import dev.cosgy.textToSpeak.utils.OtherUtil
+import net.dv8tion.jda.api.entities.Guild
+import org.json.JSONException
+import org.json.JSONObject
+import org.slf4j.LoggerFactory
+import java.io.IOException
+import java.nio.file.Files
+import java.util.function.Consumer
 
-import com.jagrosh.jdautilities.command.GuildSettingsManager;
-import dev.cosgy.TextToSpeak.utils.OtherUtil;
-import net.dv8tion.jda.api.entities.Guild;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.slf4j.LoggerFactory;
+class SettingsManager : GuildSettingsManager<Any?> {
+    private val settings: HashMap<Long, Settings> = HashMap()
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.HashMap;
-
-public class SettingsManager implements GuildSettingsManager {
-    private final HashMap<Long, Settings> settings;
-
-    public SettingsManager() {
-        this.settings = new HashMap<>();
+    init {
         try {
-            JSONObject loadedSettings = new JSONObject(new String(Files.readAllBytes(OtherUtil.getPath("serversettings.json"))));
-            loadedSettings.keySet().forEach((id) -> {
-                JSONObject o = loadedSettings.getJSONObject(id);
-                settings.put(Long.parseLong(id), new Settings(this,
-                        o.has("text_channel_id") ? o.getString("text_channel_id") : null,
-                        o.has("prefix") ? o.getString("prefix") : null,
-                        o.has("volume") ? o.getInt("volume") : 50,
+            val loadedSettings = JSONObject(Files.readAllBytes(OtherUtil.getPath("serversettings.json")))
+            loadedSettings.keySet().forEach(Consumer { id: String ->
+                val o = loadedSettings.getJSONObject(id)
+                settings[id.toLong()] = Settings(this,
+                        if (o.has("text_channel_id")) o.getString("text_channel_id") else null,
+                        if (o.has("prefix")) o.getString("prefix") else null,
+                        if (o.has("volume")) o.getInt("volume") else 50,
                         o.has("read_name") && o.getBoolean("read_name"),
                         o.has("join_and_leave_read") && o.getBoolean("join_and_leave_read")
-                ));
-            });
-        } catch (IOException | JSONException e) {
-            LoggerFactory.getLogger("Settings").warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): " + e);
+                )
+            })
+        } catch (e: IOException) {
+            LoggerFactory.getLogger("Settings").warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): $e")
+        } catch (e: JSONException) {
+            LoggerFactory.getLogger("Settings").warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): $e")
         }
     }
 
-    @Override
-    public Settings getSettings(Guild guild) {
-        return getSettings(guild.getIdLong());
+    override fun getSettings(guild: Guild): Settings? {
+        return getSettings(guild.idLong)
     }
 
-    public Settings getSettings(long guildId) {
-        return settings.computeIfAbsent(guildId, id -> createDefaultSettings());
+    fun getSettings(guildId: Long): Settings {
+        return settings.computeIfAbsent(guildId) { id: Long? -> createDefaultSettings() }
     }
 
     /**
@@ -63,34 +61,29 @@ public class SettingsManager implements GuildSettingsManager {
      *
      * @return 作成されたデフォルト設定
      */
-    private Settings createDefaultSettings() {
-        return new Settings(this, 0, null, 50, false, false);
+    private fun createDefaultSettings(): Settings {
+        return Settings(this, 0, null, 50, false, false)
     }
 
     /**
      * 設定をファイルに書き込む
      */
-    protected void writeSettings() {
-        JSONObject obj = new JSONObject();
-        settings.keySet().forEach(key -> {
-            JSONObject o = new JSONObject();
-            Settings s = settings.get(key);
-            if (s.textId != 0)
-                o.put("text_channel_id", Long.toString(s.textId));
-            if (s.getPrefix() != null)
-                o.put("prefix", s.getPrefix());
-            if (s.getVolume() != 50)
-                o.put("volume", s.getVolume());
-            if (s.isReadName())
-                o.put("read_name", s.isReadName());
-            if (s.isJoinAndLeaveRead())
-                o.put("join_and_leave_read", s.isJoinAndLeaveRead());
-            obj.put(Long.toString(key), o);
-        });
+    fun writeSettings() {
+        val obj = JSONObject()
+        settings.keys.forEach(Consumer { key: Long ->
+            val o = JSONObject()
+            val s = settings[key]
+            if (s!!.textId != 0L) o.put("text_channel_id", java.lang.Long.toString(s.textId))
+            if (s.prefix != null) o.put("prefix", s.prefix)
+            if (s.volume != 50) o.put("volume", s.volume)
+            if (s.isReadName()) o.put("read_name", s.isReadName())
+            if (s.isJoinAndLeaveRead()) o.put("join_and_leave_read", s.isJoinAndLeaveRead())
+            obj.put(java.lang.Long.toString(key), o)
+        })
         try {
-            Files.write(OtherUtil.getPath("serversettings.json"), obj.toString(4).getBytes());
-        } catch (IOException ex) {
-            LoggerFactory.getLogger("Settings").warn("ファイルへの書き込みに失敗しました： " + ex);
+            Files.write(OtherUtil.getPath("serversettings.json"), obj.toString(4).toByteArray())
+        } catch (ex: IOException) {
+            LoggerFactory.getLogger("Settings").warn("ファイルへの書き込みに失敗しました： $ex")
         }
     }
 }

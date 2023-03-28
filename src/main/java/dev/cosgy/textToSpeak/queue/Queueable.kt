@@ -13,9 +13,8 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.queue
 
-package dev.cosgy.TextToSpeak.queue;
-
-public interface Queueable {
-    long getIdentifier();
+interface Queueable {
+    val identifier: Long
 }

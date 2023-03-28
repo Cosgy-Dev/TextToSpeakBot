@@ -13,190 +13,159 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak
 
-package dev.cosgy.TextToSpeak;
+import com.typesafe.config.ConfigException
+import com.typesafe.config.ConfigFactory
+import dev.cosgy.textToSpeak.entities.Prompt
+import dev.cosgy.textToSpeak.utils.OtherUtil
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Activity
+import org.apache.commons.io.FileUtils
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.nio.file.Path
+import kotlin.system.exitProcess
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
-import com.typesafe.config.ConfigFactory;
-import dev.cosgy.TextToSpeak.entities.Prompt;
-import dev.cosgy.TextToSpeak.utils.OtherUtil;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
-import org.apache.commons.io.FileUtils;
+class BotConfig(private val prompt: Prompt) {
+    private var path: Path? = null
+    var token: String? = null
+        private set
+    var prefix: String? = null
+        private set
+    private var altprefix: String? = null
+    var dictionary: String? = null
+        private set
+    var voiceDirectory: String? = null
+        private set
+    var winJTalkDir: String? = null
+        private set
+    var ownerId: Long = 0
+        private set
+    var aloneTimeUntilStop: Long = 0
+        private set
+    var maxMessageCount = 0
+        private set
+    var status: OnlineStatus? = null
+        private set
+    var game: Activity? = null
+        private set
+    private var updatealerts = false
+    private var dBots = false
+    var helpToDm = false
+        private set
+    var isValid = false
+        private set
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-
-public class BotConfig {
-    private final static String CONTEXT = "Config";
-    private final static String START_TOKEN = "/// START OF YOMIAGEBOT CONFIG ///";
-    private final static String END_TOKEN = "/// END OF YOMIAGEBOT CONFIG ///";
-    private final Prompt prompt;
-    private Path path = null;
-
-    private String token, prefix, altprefix, dictionary, voiceDirectory, winjtalkdir;
-    private long owner, aloneTimeUntilStop;
-    private int maxMessageCount;
-    private OnlineStatus status;
-    private Activity game;
-    private boolean updatealerts, dbots, helpToDm;
-
-
-    private boolean valid = false;
-
-    public BotConfig(Prompt prompt) {
-        this.prompt = prompt;
-    }
-
-    public void load() {
-        valid = false;
-
+    fun load() {
+        isValid = false
         try {
-            path = OtherUtil.getPath(System.getProperty("config.file", System.getProperty("config", "config.txt")));
-            if (path.toFile().exists()) {
-                if (System.getProperty("config.file") == null)
-                    System.setProperty("config.file", System.getProperty("config", "config.txt"));
-                ConfigFactory.invalidateCaches();
+            path = OtherUtil.getPath(System.getProperty("config.file", System.getProperty("config", "config.txt")))
+            if (path!!.toFile().exists()) {
+                if (System.getProperty("config.file") == null) System.setProperty("config.file", System.getProperty("config", "config.txt"))
+                ConfigFactory.invalidateCaches()
             }
 
             // load in the config file, plus the default values
-            //Config config = ConfigFactory.parseFile(path.toFile()).withFallback(ConfigFactory.load());
-            Config config = ConfigFactory.load();
-
-
-            token = config.getString("token");
-            prefix = config.getString("prefix");
-            altprefix = config.getString("altprefix");
-            owner = (config.getAnyRef("owner") instanceof String ? 0L : config.getLong("owner"));
-            game = OtherUtil.parseGame(config.getString("game"));
-            status = OtherUtil.parseStatus(config.getString("status"));
-            updatealerts = config.getBoolean("updatealerts");
-            dictionary = config.getString("dictionary");
-            voiceDirectory = config.getString("voiceDirectory");
-            aloneTimeUntilStop = config.getLong("alonetimeuntilstop");
-            maxMessageCount = config.getInt("maxmessagecount");
-            winjtalkdir = config.getString("winjtalkdir");
-            helpToDm = config.getBoolean("helptodm");
-            dbots = owner == 334091398263341056L;
-
-
-            boolean write = false;
+            //Config = ConfigFactory.parseFile(path.toFile()).withFallback(ConfigFactory.load());
+            val config = ConfigFactory.load()
+            token = config.getString("token")
+            prefix = config.getString("prefix")
+            altprefix = config.getString("altprefix")
+            ownerId = if (config.getAnyRef("owner") is String) 0L else config.getLong("owner")
+            game = OtherUtil.parseGame(config.getString("game"))
+            status = OtherUtil.parseStatus(config.getString("status"))
+            updatealerts = config.getBoolean("updatealerts")
+            dictionary = config.getString("dictionary")
+            voiceDirectory = config.getString("voiceDirectory")
+            aloneTimeUntilStop = config.getLong("alonetimeuntilstop")
+            maxMessageCount = config.getInt("maxmessagecount")
+            winJTalkDir = config.getString("winjtalkdir")
+            helpToDm = config.getBoolean("helptodm")
+            dBots = ownerId == 334091398263341056L
+            var write = false
 
             // validate bot token
-            if (token == null || token.isEmpty() || token.matches("(BOT_TOKEN_HERE|Botトークンをここに貼り付け)")) {
-                token = prompt.prompt("BOTトークンを入力してください。"
-                        + "\nBOTトークン: ");
-                if (token == null) {
-                    prompt.alert(Prompt.Level.WARNING, CONTEXT, "トークンが入力されていません！終了します。\n\n設定ファイルの場所: " + path.toAbsolutePath().toString());
-                    return;
+            if (token == null || token!!.isEmpty() || token!!.matches("(BOT_TOKEN_HERE|Botトークンをここに貼り付け)".toRegex())) {
+                token = prompt.prompt("""
+    BOTトークンを入力してください。
+    BOTトークン: 
+    """.trimIndent())
+                write = if (token == null) {
+                    prompt.alert(Prompt.Level.WARNING, CONTEXT, """
+     トークンが入力されていません！終了します。
+     
+     設定ファイルの場所: ${path!!.toAbsolutePath()}
+     """.trimIndent())
+                    return
                 } else {
-                    write = true;
+                    true
                 }
             }
 
             // validate bot owner
-            if (owner <= 0) {
-                try {
-                    owner = Long.parseLong(prompt.prompt("所有者のユーザーIDが設定されていない、または有効なIDではありません。"
-                            + "\nBOTの所有者のユーザーIDを入力してください。"
-                            + "\n所有者のユーザーID: "));
-                } catch (NumberFormatException | NullPointerException ex) {
-                    owner = 0;
+            if (ownerId <= 0) {
+                ownerId = try {
+                    prompt.prompt("""
+            所有者のユーザーIDが設定されていない、または有効なIDではありません。
+            BOTの所有者のユーザーIDを入力してください。
+            所有者のユーザーID: 
+            """.trimIndent())!!.toLong()
+                } catch (ex: NumberFormatException) {
+                    0
+                } catch (ex: NullPointerException) {
+                    0
                 }
-                if (owner <= 0) {
-                    prompt.alert(Prompt.Level.ERROR, CONTEXT, "無効なユーザーIDです！終了します。\n\n設定ファイルの場所: " + path.toAbsolutePath().toString());
-                    System.exit(0);
+                if (ownerId <= 0) {
+                    prompt.alert(Prompt.Level.ERROR, CONTEXT, """
+     無効なユーザーIDです！終了します。
+     
+     設定ファイルの場所: ${path!!.toAbsolutePath()}
+     """.trimIndent())
+                    exitProcess(0)
                 } else {
-                    write = true;
+                    write = true
                 }
             }
-
             if (write) {
-                String original = OtherUtil.loadResource(this, "/reference.conf");
-                String mod;
-                if (original == null) {
-                    mod = ("token = " + token + "\r\nowner = " + owner);
-                } else {
-                    mod = original.substring(original.indexOf(START_TOKEN) + START_TOKEN.length(), original.indexOf(END_TOKEN))
-                            .replace("BOT_TOKEN_HERE", token).replace("Botトークンをここに貼り付け", token)
-                            .replace("0 // OWNER ID", Long.toString(owner)).replace("所有者IDをここに貼り付け", Long.toString(owner))
-                            .trim();
-                }
-
-                FileUtils.writeStringToFile(path.toFile(), mod, StandardCharsets.UTF_8);
+                val original = OtherUtil.loadResource(this, "/reference.conf")
+                val mod: String = original?.substring(original.indexOf(START_TOKEN) + START_TOKEN.length, original.indexOf(END_TOKEN))?.replace("BOT_TOKEN_HERE", token!!)?.replace("Botトークンをここに貼り付け", token!!)?.replace("0 // OWNER ID", ownerId.toString())?.replace("所有者IDをここに貼り付け", ownerId.toString())?.trim { it <= ' ' }
+                        ?: """
+     token = $token
+     owner = $ownerId
+     """.trimIndent()
+                FileUtils.writeStringToFile(path!!.toFile(), mod, StandardCharsets.UTF_8)
             }
 
             // if we get through the whole config, it's good to go
-            valid = true;
-        } catch (ConfigException |
-                 IOException ex) {
-            prompt.alert(Prompt.Level.ERROR, CONTEXT, ex + ": " + ex.getMessage() + "\n\n設定ファイルの場所: " + path.toAbsolutePath().toString());
+            isValid = true
+        } catch (ex: ConfigException) {
+            prompt.alert(Prompt.Level.ERROR, CONTEXT, """
+     $ex: ${ex.message}
+     
+     設定ファイルの場所: ${path!!.toAbsolutePath()}
+     """.trimIndent())
+        } catch (ex: IOException) {
+            prompt.alert(Prompt.Level.ERROR, CONTEXT, """
+     $ex: ${ex.message}
+     
+     設定ファイルの場所: ${path!!.toAbsolutePath()}
+     """.trimIndent())
         }
     }
 
-    public boolean isValid() {
-        return valid;
+    val configLocation: String
+        get() = path!!.toFile().absolutePath
+    val altPrefix: String?
+        get() = if ("NONE".equals(altprefix, ignoreCase = true)) null else altprefix
+
+    fun useUpdateAlerts(): Boolean {
+        return updatealerts
     }
 
-    public String getConfigLocation() {
-        return path.toFile().getAbsolutePath();
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public String getAltPrefix() {
-        return "NONE".equalsIgnoreCase(altprefix) ? null : altprefix;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public long getOwnerId() {
-        return owner;
-    }
-
-    public Activity getGame() {
-        return game;
-    }
-
-    public boolean getHelpToDm() {
-        return helpToDm;
-    }
-
-    public OnlineStatus getStatus() {
-        return status;
-    }
-
-    public boolean useUpdateAlerts() {
-        return updatealerts;
-    }
-
-    public String getDictionary() {
-        return dictionary;
-    }
-
-    public String getVoiceDirectory() {
-        return voiceDirectory;
-    }
-
-    public String getWinJTalkDir() {
-        return winjtalkdir;
-    }
-
-    public long getAloneTimeUntilStop() {
-        return aloneTimeUntilStop;
-    }
-
-    public int getMaxMessageCount() {
-        return maxMessageCount;
-    }
-
-    public boolean getDBots() {
-        return dbots;
+    companion object {
+        private const val CONTEXT = "Config"
+        private const val START_TOKEN = "/// START OF YOMIAGEBOT CONFIG ///"
+        private const val END_TOKEN = "/// END OF YOMIAGEBOT CONFIG ///"
     }
 }

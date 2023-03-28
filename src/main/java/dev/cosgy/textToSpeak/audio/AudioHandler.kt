@@ -13,115 +13,84 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.audio
 
-package dev.cosgy.TextToSpeak.audio;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
+import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame
+import dev.cosgy.textToSpeak.queue.FairQueue
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.audio.AudioSendHandler
+import net.dv8tion.jda.api.entities.Guild
+import java.nio.ByteBuffer
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import dev.cosgy.TextToSpeak.queue.FairQueue;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.audio.AudioSendHandler;
-import net.dv8tion.jda.api.entities.Guild;
+class AudioHandler(private val manager: PlayerManager, guild: Guild, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
+    val queue = FairQueue<QueuedTrack?>()
+    val votes: Set<String> = HashSet()
+    private val guildId: Long
+    private val stringGuildId: String
+    private var lastFrame: AudioFrame? = null
 
-import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.Set;
-
-public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
-    private final FairQueue<QueuedTrack> queue = new FairQueue<>();
-    private final Set<String> votes = new HashSet<>();
-
-    private final PlayerManager manager;
-    private final AudioPlayer audioPlayer;
-    private final long guildId;
-    private final String stringGuildId;
-
-    private AudioFrame lastFrame;
-
-    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player) {
-        this.manager = manager;
-        this.audioPlayer = player;
-        this.guildId = guild.getIdLong();
-        this.stringGuildId = guild.getId();
+    init {
+        guildId = guild.idLong
+        stringGuildId = guild.id
     }
 
-    public int addTrackToFront(QueuedTrack qtrack) {
-        if (audioPlayer.getPlayingTrack() == null) {
-            audioPlayer.playTrack(qtrack.getTrack());
-            return -1;
+    fun addTrackToFront(qtrack: QueuedTrack): Int {
+        return if (player.playingTrack == null) {
+            player.playTrack(qtrack.track)
+            -1
         } else {
-            queue.addAt(0, qtrack);
-            return 0;
+            queue.addAt(0, qtrack)
+            0
         }
     }
 
-    public int addTrack(QueuedTrack qtrack) {
-        if (audioPlayer.getPlayingTrack() == null) {
-            audioPlayer.playTrack(qtrack.getTrack());
-            return -1;
-        } else
-            return queue.add(qtrack);
+    fun addTrack(qtrack: QueuedTrack): Int {
+        return if (player.playingTrack == null) {
+            player.playTrack(qtrack.track)
+            -1
+        } else queue.add(qtrack)
     }
 
-    public FairQueue<QueuedTrack> getQueue() {
-        return queue;
+    fun stopAndClear() {
+        queue.clear()
+        player.stopTrack()
     }
 
-    public void stopAndClear() {
-        queue.clear();
-        audioPlayer.stopTrack();
+    fun isVoiceListening(jda: JDA): Boolean {
+        return guild(jda)!!.selfMember.voiceState!!.inAudioChannel() && player.playingTrack != null
     }
 
-    public boolean isVoiceListening(JDA jda) {
-        return guild(jda).getSelfMember().getVoiceState().inAudioChannel() && audioPlayer.getPlayingTrack() != null;
-    }
-
-    public Set<String> getVotes() {
-        return votes;
-    }
-
-    public AudioPlayer getPlayer() {
-        return audioPlayer;
-    }
-
-    public long getRequester() {
-        if (audioPlayer.getPlayingTrack() == null || audioPlayer.getPlayingTrack().getUserData(Long.class) == null)
-            return 0;
-        return audioPlayer.getPlayingTrack().getUserData(Long.class);
-    }
+    val requester: Long
+        get() = if (player.playingTrack == null || player.playingTrack.getUserData(Long::class.java) == null) 0 else player.playingTrack.getUserData(Long::class.java)
 
     // Audio Events
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        if (!queue.isEmpty()) {
-            QueuedTrack qt = queue.pull();
-            player.playTrack(qt.getTrack());
+    override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
+        if (!queue.isEmpty) {
+            val qt = queue.pull()
+            player.playTrack(qt!!.track)
         }
     }
 
     // Audio Send Handler methods
-    @Override
-    public boolean canProvide() {
-        lastFrame = audioPlayer.provide();
-        return lastFrame != null;
+    override fun canProvide(): Boolean {
+        lastFrame = player.provide()
+        return lastFrame != null
     }
 
-    @Override
-    public ByteBuffer provide20MsAudio() {
-        return ByteBuffer.wrap(lastFrame.getData());
+    override fun provide20MsAudio(): ByteBuffer? {
+        return ByteBuffer.wrap(lastFrame!!.data)
     }
 
-    @Override
-    public boolean isOpus() {
-        return true;
+    override fun isOpus(): Boolean {
+        return true
     }
-
 
     // Private methods
-    private Guild guild(JDA jda) {
-        return jda.getGuildById(guildId);
+    private fun guild(jda: JDA): Guild? {
+        return jda.getGuildById(guildId)
     }
 }

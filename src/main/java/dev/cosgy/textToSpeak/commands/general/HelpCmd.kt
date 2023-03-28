@@ -13,88 +13,74 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.general
 
-package dev.cosgy.TextToSpeak.commands.general;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommand
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.Bot
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
+import java.awt.Color
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.cosgy.TextToSpeak.Bot;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-
-import java.awt.*;
-import java.util.List;
-import java.util.Objects;
-
-public class HelpCmd extends SlashCommand {
-    public Bot bot;
-
-    public HelpCmd(Bot bot) {
-        this.bot = bot;
-        this.name = "help";
-        this.help = "コマンド一覧を表示します。";
+class HelpCmd(var bot: Bot) : SlashCommand() {
+    init {
+        name = "help"
+        help = "コマンド一覧を表示します。"
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        EmbedBuilder eBuilder = new EmbedBuilder();
-        eBuilder.setTitle("**" + event.getJDA().getSelfUser().getName() + "** コマンド一覧");
-        eBuilder.setColor(new Color(245, 229, 107));
-
-        StringBuilder builder = new StringBuilder();
-        Category category = null;
-        List<SlashCommand> commands = event.getClient().getSlashCommands();
-        for (SlashCommand command : commands) {
-            if (!command.isHidden() && (!command.isOwnerCommand() || event.getMember().isOwner())) {
-                if (!Objects.equals(category, command.getCategory())) {
-                    category = command.getCategory();
-                    builder.append("\n\n  __").append(category == null ? "カテゴリなし" : category.getName()).append("__:\n");
+    override fun execute(event: SlashCommandEvent) {
+        val eBuilder = EmbedBuilder()
+        eBuilder.setTitle("**" + event.jda.selfUser.name + "** コマンド一覧")
+        eBuilder.setColor(Color(245, 229, 107))
+        val builder = StringBuilder()
+        var category: Category? = null
+        val commands = event.client.slashCommands
+        for (command in commands) {
+            if (!command.isHidden && (!command.isOwnerCommand || event.member!!.isOwner)) {
+                if (category != command.category) {
+                    category = command.category
+                    builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name).append("__:\n")
                 }
-                builder.append("\n`").append("/").append(command.getName())
-                        .append(command.getArguments() == null ? "`" : " " + command.getArguments() + "`")
-                        .append(" - ").append(command.getHelp());
+                builder.append("\n`").append("/").append(command.name)
+                        .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
+                        .append(" - ").append(command.help)
             }
         }
-        if (event.getClient().getServerInvite() != null)
-            builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(client.getServerInvite());
-
-        eBuilder.setDescription(builder);
-
-        if (bot.getConfig().getHelpToDm()) {
-            event.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(eBuilder.build())).queue();
+        if (event.client.serverInvite != null) builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(event.client.serverInvite)
+        eBuilder.setDescription(builder)
+        if (bot.config.helpToDm) {
+            event.user.openPrivateChannel().flatMap { channel: PrivateChannel -> channel.sendMessageEmbeds(eBuilder.build()) }.queue()
         } else {
-            event.replyEmbeds(eBuilder.build()).queue();
+            event.replyEmbeds(eBuilder.build()).queue()
         }
     }
 
-    public void execute(CommandEvent event) {
-        StringBuilder builder = new StringBuilder("**" + event.getJDA().getSelfUser().getName() + "** コマンド一覧:\n");
-        Category category = null;
-        List<Command> commands = event.getClient().getCommands();
-        for (Command command : commands) {
-            if (!command.isHidden() && (!command.isOwnerCommand() || event.isOwner())) {
-                if (!Objects.equals(category, command.getCategory())) {
-                    category = command.getCategory();
-                    builder.append("\n\n  __").append(category == null ? "カテゴリなし" : category.getName()).append("__:\n");
+    public override fun execute(event: CommandEvent) {
+        val builder = StringBuilder("""
+    **${event.jda.selfUser.name}** コマンド一覧:
+    
+    """.trimIndent())
+        var category: Category? = null
+        val commands = event.client.commands
+        for (command in commands) {
+            if (!command.isHidden && (!command.isOwnerCommand || event.isOwner)) {
+                if (category != command.category) {
+                    category = command.category
+                    builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name).append("__:\n")
                 }
-                builder.append("\n`").append(event.getClient().getTextualPrefix()).append(event.getClient().getPrefix() == null ? " " : "").append(command.getName())
-                        .append(command.getArguments() == null ? "`" : " " + command.getArguments() + "`")
-                        .append(" - ").append(command.getHelp());
+                builder.append("\n`").append(event.client.textualPrefix).append(if (event.client.prefix == null) " " else "").append(command.name)
+                        .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
+                        .append(" - ").append(command.help)
             }
         }
-        if (event.getClient().getServerInvite() != null)
-            builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(event.getClient().getServerInvite());
-
-        if (bot.getConfig().getHelpToDm()) {
-            event.replyInDm(builder.toString(), unused ->
-            {
-                if (event.isFromType(ChannelType.TEXT))
-                    event.reactSuccess();
-            }, t -> event.replyWarning("ダイレクトメッセージをブロックしているため、ヘルプを送信できません。"));
+        if (event.client.serverInvite != null) builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(event.client.serverInvite)
+        if (bot.config.helpToDm) {
+            event.replyInDm(builder.toString(), { _: Message? -> if (event.isFromType(ChannelType.TEXT)) event.reactSuccess() }) { _: Throwable? -> event.replyWarning("ダイレクトメッセージをブロックしているため、ヘルプを送信できません。") }
         } else {
-            event.reply(builder.toString());
+            event.reply(builder.toString())
         }
     }
 }

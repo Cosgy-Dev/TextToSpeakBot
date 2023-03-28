@@ -13,20 +13,19 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.utils
 
-package dev.cosgy.TextToSpeak.utils;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-
-import java.util.List;
-
-public class FormatUtil {
-    public static String listOfTChannels(List<TextChannel> list, String query) {
-        StringBuilder out = new StringBuilder(" 複数のテキストチャンネルで\"" + query + "\"が一致しました。:");
-        for (int i = 0; i < 6 && i < list.size(); i++)
-            out.append("\n - ").append(list.get(i).getName()).append(" (<#").append(list.get(i).getId()).append(">)");
-        if (list.size() > 6)
-            out.append("\n**と ").append(list.size() - 6).append(" など...**");
-        return out.toString();
+object FormatUtil {
+    fun listOfTChannels(list: List<TextChannel>, query: String): String {
+        val out = StringBuilder(" 複数のテキストチャンネルで\"$query\"が一致しました。:")
+        var i = 0
+        while (i < 6 && i < list.size) {
+            out.append("\n - ").append(list[i].name).append(" (<#").append(list[i].id).append(">)")
+            i++
+        }
+        if (list.size > 6) out.append("\n**と ").append(list.size - 6).append(" など...**")
+        return out.toString()
     }
 }

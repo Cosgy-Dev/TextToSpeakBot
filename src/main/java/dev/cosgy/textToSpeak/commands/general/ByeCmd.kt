@@ -13,62 +13,53 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.general
 
-package dev.cosgy.TextToSpeak.commands.general;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommand
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.Bot
+import dev.cosgy.textToSpeak.audio.AudioHandler
+import net.dv8tion.jda.api.EmbedBuilder
+import java.awt.Color
+import java.io.IOException
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.audio.AudioHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
-
-import java.awt.*;
-import java.io.IOException;
-
-public class ByeCmd extends SlashCommand {
-    protected final Bot bot;
-
-    public ByeCmd(Bot bot) {
-        this.bot = bot;
-        this.name = "bye";
-        this.help = "ボイスチャンネルから退出します。";
-        this.guildOnly = true;
+class ByeCmd(private val bot: Bot) : SlashCommand() {
+    init {
+        name = "bye"
+        help = "ボイスチャンネルから退出します。"
+        guildOnly = true
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-        handler.stopAndClear();
+    override fun execute(event: SlashCommandEvent) {
+        val handler = event.guild!!.audioManager.sendingHandler as AudioHandler?
+        handler!!.stopAndClear()
         try {
-            bot.getVoiceCreation().clearGuildFolder(event.getGuild());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            bot.voiceCreation.clearGuildFolder(event.guild!!)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
         }
-        event.getGuild().getAudioManager().closeAudioConnection();
-
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(new Color(180, 76, 151));
-        builder.setTitle("VCから切断");
-        builder.setDescription("ボイスチャンネルから切断しました。");
-        event.replyEmbeds(builder.build()).queue();
+        event.guild!!.audioManager.closeAudioConnection()
+        val builder = EmbedBuilder()
+        builder.setColor(Color(180, 76, 151))
+        builder.setTitle("VCから切断")
+        builder.setDescription("ボイスチャンネルから切断しました。")
+        event.replyEmbeds(builder.build()).queue()
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
-        AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-        handler.stopAndClear();
+    override fun execute(event: CommandEvent) {
+        val handler = event.guild.audioManager.sendingHandler as AudioHandler?
+        handler!!.stopAndClear()
         try {
-            bot.getVoiceCreation().clearGuildFolder(event.getGuild());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            bot.voiceCreation.clearGuildFolder(event.guild)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
         }
-        event.getGuild().getAudioManager().closeAudioConnection();
-
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(new Color(180, 76, 151));
-        builder.setTitle("VCから切断");
-        builder.setDescription("ボイスチャンネルから切断しました。");
-        event.reply(builder.build());
+        event.guild.audioManager.closeAudioConnection()
+        val builder = EmbedBuilder()
+        builder.setColor(Color(180, 76, 151))
+        builder.setTitle("VCから切断")
+        builder.setDescription("ボイスチャンネルから切断しました。")
+        event.reply(builder.build())
     }
 }

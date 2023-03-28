@@ -13,72 +13,58 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.admin
 
-package dev.cosgy.TextToSpeak.commands.admin;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.Bot
+import dev.cosgy.textToSpeak.commands.AdminCommand
+import net.dv8tion.jda.api.EmbedBuilder
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.awt.Color
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.commands.AdminCommand;
-import dev.cosgy.TextToSpeak.settings.Settings;
-import net.dv8tion.jda.api.EmbedBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+class GuildSettings(private val bot: Bot) : AdminCommand() {
+    var log: Logger = LoggerFactory.getLogger(this.javaClass)
 
-import java.awt.*;
-import java.util.Objects;
-
-public class GuildSettings extends AdminCommand {
-    private final Bot bot;
-    Logger log = LoggerFactory.getLogger(this.getClass());
-
-    public GuildSettings(Bot bot) {
-        this.bot = bot;
-        this.name = "gsettings";
-        this.help = "ギルドの現在の設定を確認できます。";
+    init {
+        name = "gsettings"
+        help = "ギルドの現在の設定を確認できます。"
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        if (!checkAdminPermission(event.getClient(), event)) {
-            event.reply(event.getClient().getWarning() + "権限がないため実行できません。").queue();
-            return;
+    override fun execute(event: SlashCommandEvent) {
+        if (!checkAdminPermission(event.client, event)) {
+            event.reply(event.client.warning + "権限がないため実行できません。").queue()
+            return
         }
-
-        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
-
-        String text = "null";
-        if (settings.getTextChannel(event.getGuild()) != null) {
-            text = settings.getTextChannel(event.getGuild()).getName();
+        val settings = bot.settingsManager.getSettings(event.guild!!)
+        var text = "null"
+        if (settings!!.getTextChannel(event.guild) != null) {
+            text = settings.getTextChannel(event.guild)!!.name
         }
-
-        EmbedBuilder ebuilder = new EmbedBuilder()
+        val ebuilder = EmbedBuilder()
                 .setColor(Color.orange)
-                .setTitle(event.getGuild().getName() + "の設定")
-                .addField("ユーザー名読み上げ：", String.valueOf(Objects.requireNonNull(settings).isReadName()), false)
-                .addField("参加、退出時の読み上げ：", String.valueOf(settings.isJoinAndLeaveRead()), false)
-                //.addField("接頭語：", settings.getPrefix(), false)
+                .setTitle(event.guild!!.name + "の設定")
+                .addField("ユーザー名読み上げ：", settings.isReadName().toString(), false)
+                .addField("参加、退出時の読み上げ：", settings.isJoinAndLeaveRead().toString(), false) //.addField("接頭語：", settings.getPrefix(), false)
                 .addField("読み上げるチャンネル：", text, false)
-                .addField("読み上げの主音量：", String.valueOf(settings.getVolume()), false);
-        event.replyEmbeds(ebuilder.build()).queue();
+                .addField("読み上げの主音量：", settings.volume.toString(), false)
+        event.replyEmbeds(ebuilder.build()).queue()
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
-        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
-        String text = "null";
-        if (settings.getTextChannel(event.getGuild()) != null) {
-            text = settings.getTextChannel(event.getGuild()).getName();
+    override fun execute(event: CommandEvent) {
+        val settings = bot.settingsManager.getSettings(event.guild)
+        var text = "null"
+        if (settings!!.getTextChannel(event.guild) != null) {
+            text = settings.getTextChannel(event.guild)!!.name
         }
-
-        EmbedBuilder ebuilder = new EmbedBuilder()
+        val ebuilder = EmbedBuilder()
                 .setColor(Color.orange)
-                .setTitle(event.getGuild().getName() + "の設定")
-                .addField("ユーザー名読み上げ：", String.valueOf(Objects.requireNonNull(settings).isReadName()), false)
-                .addField("参加、退出時の読み上げ：", String.valueOf(settings.isJoinAndLeaveRead()), false)
-                //.addField("接頭語：", settings.getPrefix(), false)
+                .setTitle(event.guild.name + "の設定")
+                .addField("ユーザー名読み上げ：", settings.isReadName().toString(), false)
+                .addField("参加、退出時の読み上げ：", settings.isJoinAndLeaveRead().toString(), false) //.addField("接頭語：", settings.getPrefix(), false)
                 .addField("読み上げるチャンネル：", text, false)
-                .addField("読み上げの主音量：", String.valueOf(settings.getVolume()), false);
-        event.reply(ebuilder.build());
+                .addField("読み上げの主音量：", settings.volume.toString(), false)
+        event.reply(ebuilder.build())
     }
 }

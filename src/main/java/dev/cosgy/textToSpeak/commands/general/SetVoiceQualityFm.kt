@@ -13,105 +13,89 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.general
 
-package dev.cosgy.TextToSpeak.commands.general;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommand
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.Bot
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import java.math.BigDecimal
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.settings.UserSettings;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-public class SetVoiceQualityFm extends SlashCommand {
-    protected Bot bot;
-
-    public SetVoiceQualityFm(Bot bot) {
-        this.bot = bot;
-        this.name = "setqfm";
-        this.help = "追加ハーフトーンの設定を変更します。";
-        this.guildOnly = false;
-        this.category = new Category("設定");
-
-        List<OptionData> options = new ArrayList<>();
-        options.add(new OptionData(OptionType.STRING, "value", "0.1~100.0", true));
-
-        this.options = options;
+class SetVoiceQualityFm(private var bot: Bot) : SlashCommand() {
+    init {
+        name = "setqfm"
+        help = "追加ハーフトーンの設定を変更します。"
+        guildOnly = false
+        this.category = Category("設定")
+        val options: MutableList<OptionData> = ArrayList()
+        options.add(OptionData(OptionType.STRING, "value", "0.1~100.0", true))
+        this.options = options
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        String args = event.getOption("value").getAsString();
-        boolean result;
-        float value = 0.0f;
-        BigDecimal bd = null;
+    override fun execute(event: SlashCommandEvent) {
+        val args = event.getOption("value")!!.asString
+        var result: Boolean
+        var bd: BigDecimal? = null
         try {
             //value = Float.parseFloat(args);
-            bd = new BigDecimal(args);
-            result = true;
-        } catch (NumberFormatException e) {
-            result = false;
+            bd = BigDecimal(args)
+            result = true
+        } catch (e: NumberFormatException) {
+            result = false
         }
         if (!result) {
-            event.reply("数値を設定して下さい。").queue();
-            return;
+            event.reply("数値を設定して下さい。").queue()
+            return
         }
-
-        BigDecimal min = new BigDecimal("0.0");
-        BigDecimal max = new BigDecimal("100.0");
+        val min = BigDecimal("0.0")
+        val max = BigDecimal("100.0")
 
         //if(!(0.1f <= value && value <= 100.0f)){
-        if (!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)) {
-            event.reply("有効な数値を設定して下さい。0.1~100.0").queue();
-            return;
+        if (!(min < bd && max > bd)) {
+            event.reply("有効な数値を設定して下さい。0.1~100.0").queue()
+            return
         }
-        UserSettings settings = bot.getUserSettingsManager().getSettings(event.getUser().getIdLong());
-        settings.setVoiceQualityFm(bd.floatValue());
-        event.reply("追加ハーフトーンを" + bd + "に設定しました。").queue();
+        val settings = bot.userSettingsManager.getSettings(event.user.idLong)
+        settings.voiceQualityFm = bd!!.toFloat()
+        event.reply("追加ハーフトーンを" + bd + "に設定しました。").queue()
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
-        if (event.getArgs().isEmpty() && event.getMessage().getAttachments().isEmpty()) {
-            EmbedBuilder ebuilder = new EmbedBuilder()
+    override fun execute(event: CommandEvent) {
+        if (event.args.isEmpty() && event.message.attachments.isEmpty()) {
+            val ebuilder = EmbedBuilder()
                     .setTitle("setqfmコマンド")
-                    .addField("使用方法:", name + " <数値(0.0~)>", false)
-                    .addField("説明:", "追加ハーフトーンの設定を変更します。", false);
-            event.reply(ebuilder.build());
-            return;
+                    .addField("使用方法:", "$name <数値(0.0~)>", false)
+                    .addField("説明:", "追加ハーフトーンの設定を変更します。", false)
+            event.reply(ebuilder.build())
+            return
         }
-        String args = event.getArgs();
-        boolean result;
-        float value = 0.0f;
-        BigDecimal bd = null;
+        val args = event.args
+        var result: Boolean
+        var bd: BigDecimal? = null
         try {
             //value = Float.parseFloat(args);
-            bd = new BigDecimal(args);
-            result = true;
-        } catch (NumberFormatException e) {
-            result = false;
+            bd = BigDecimal(args)
+            result = true
+        } catch (e: NumberFormatException) {
+            result = false
         }
         if (!result) {
-            event.reply("数値を設定して下さい。");
-            return;
+            event.reply("数値を設定して下さい。")
+            return
         }
-
-        BigDecimal min = new BigDecimal("0.0");
-        BigDecimal max = new BigDecimal("100.0");
+        val min = BigDecimal("0.0")
+        val max = BigDecimal("100.0")
 
         //if(!(0.1f <= value && value <= 100.0f)){
-        if (!(min.compareTo(bd) < 0 && max.compareTo(bd) > 0)) {
-            event.reply("有効な数値を設定して下さい。0.1~100.0");
-            return;
+        if (!(min < bd && max > bd)) {
+            event.reply("有効な数値を設定して下さい。0.1~100.0")
+            return
         }
-        UserSettings settings = bot.getUserSettingsManager().getSettings(event.getAuthor().getIdLong());
-        settings.setVoiceQualityFm(bd.floatValue());
-        event.reply("追加ハーフトーンを" + bd + "に設定しました。");
+        val settings = bot.userSettingsManager.getSettings(event.author.idLong)
+        settings.voiceQualityFm = bd!!.toFloat()
+        event.reply("追加ハーフトーンを" + bd + "に設定しました。")
     }
 }

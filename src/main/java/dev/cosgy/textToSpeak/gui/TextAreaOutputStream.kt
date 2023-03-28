@@ -13,140 +13,129 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.gui
 
-package dev.cosgy.TextToSpeak.gui;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.awt.EventQueue
+import java.io.OutputStream
+import java.io.UnsupportedEncodingException
+import java.nio.charset.Charset
+import java.util.*
+import javax.swing.JTextArea
 
 /**
  * @author Kosugi_kun
  */
-public class TextAreaOutputStream extends OutputStream {
-    private final byte[] oneByte;
-    private Appender appender;
+class TextAreaOutputStream @JvmOverloads constructor(txtara: JTextArea, maxlin: Int = 1000) : OutputStream() {
+    private val oneByte: ByteArray
+    private var appender: Appender?
 
-    public TextAreaOutputStream(JTextArea txtara) {
-        this(txtara, 1000);
+    init {
+        require(maxlin >= 1) { "TextAreaOutputStreamの最大行数は正数でなければなりません(value=$maxlin)" }
+        oneByte = ByteArray(1)
+        appender = Appender(txtara, maxlin)
     }
 
-    public TextAreaOutputStream(JTextArea txtara, int maxlin) {
-        if (maxlin < 1) {
-            throw new IllegalArgumentException("TextAreaOutputStreamの最大行数は正数でなければなりません(value=" + maxlin + ")");
-        }
-        oneByte = new byte[1];
-        appender = new Appender(txtara, maxlin);
-    }
-
-    static private String bytesToString(byte[] ba, int str, int len) {
-        try {
-            return new String(ba, str, len, System.getProperty("file.encoding"));
-        } catch (UnsupportedEncodingException thr) {
-            return new String(ba, str, len);
-        }
-    }
-
-    public synchronized void clear() {
+    @Synchronized
+    fun clear() {
         if (appender != null) {
-            appender.clear();
+            appender!!.clear()
         }
     }
 
-    @Override
-    public synchronized void close() {
-        appender = null;
+    @Synchronized
+    override fun close() {
+        appender = null
     }
 
-    @Override
-    public synchronized void flush() {
+    @Synchronized
+    override fun flush() {
         /* empty */
     }
 
-    @Override
-    public synchronized void write(int val) {
-        oneByte[0] = (byte) val;
-        write(oneByte, 0, 1);
+    @Synchronized
+    override fun write(`val`: Int) {
+        oneByte[0] = `val`.toByte()
+        write(oneByte, 0, 1)
     }
 
-    @Override
-    public synchronized void write(byte[] ba) {
-        write(ba, 0, ba.length);
+    @Synchronized
+    override fun write(ba: ByteArray) {
+        write(ba, 0, ba.size)
     }
 
-    @Override
-    public synchronized void write(byte[] ba, int str, int len) {
+    @Synchronized
+    override fun write(ba: ByteArray, str: Int, len: Int) {
         if (appender != null) {
-            appender.append(bytesToString(ba, str, len));
+            appender!!.append(bytesToString(ba, str, len))
         }
     }
 
-    static class Appender
-            implements Runnable {
-        static private final String EOL1 = "\n";
-        static private final String EOL2 = System.getProperty("line.separator", EOL1);
+    internal class Appender(private val textArea: JTextArea, private val maxLines: Int) : Runnable {
+        private val lengths: LinkedList<Int> = LinkedList()
+        private val values: MutableList<String>
+        private var curLength = 0
+        private var clear = false
+        private var queue = true
 
-        private final JTextArea textArea;
-        private final int maxLines;
-        private final LinkedList<Integer> lengths;
-        private final List<String> values;
-
-        private int curLength = 0;
-        private boolean clear;
-        private boolean queue;
-
-        Appender(JTextArea txtara, int maxlin) {
-            textArea = txtara;
-            maxLines = maxlin;
-            lengths = new LinkedList<>();
-            values = new ArrayList<>();
-
-            clear = false;
-            queue = true;
+        init {
+            values = ArrayList()
         }
 
-        private synchronized void append(String val) {
-            values.add(val);
+        @Synchronized
+        fun append(`val`: String) {
+            values.add(`val`)
             if (queue) {
-                queue = false;
-                EventQueue.invokeLater(this);
+                queue = false
+                EventQueue.invokeLater(this)
             }
         }
 
-        private synchronized void clear() {
-            clear = true;
-            curLength = 0;
-            lengths.clear();
-            values.clear();
+        @Synchronized
+        fun clear() {
+            clear = true
+            curLength = 0
+            lengths.clear()
+            values.clear()
             if (queue) {
-                queue = false;
-                EventQueue.invokeLater(this);
+                queue = false
+                EventQueue.invokeLater(this)
             }
         }
 
-        @Override
-        public synchronized void run() {
+        @Synchronized
+        override fun run() {
             if (clear) {
-                textArea.setText("");
+                textArea.text = ""
             }
             values.stream()
-                    .peek((val) -> curLength += val.length())
-                    .peek((val) -> {
-                        if (val.endsWith(EOL1) || val.endsWith(EOL2)) {
-                            if (lengths.size() >= maxLines) {
-                                textArea.replaceRange("", 0, lengths.removeFirst());
+                    .peek { `val`: String -> curLength += `val`.length }
+                    .peek { `val`: String ->
+                        if (`val`.endsWith(EOL1) || `val`.endsWith(EOL2)) {
+                            if (lengths.size >= maxLines) {
+                                textArea.replaceRange("", 0, lengths.removeFirst())
                             }
-                            lengths.addLast(curLength);
-                            curLength = 0;
+                            lengths.addLast(curLength)
+                            curLength = 0
                         }
-                    }).forEach(textArea::append);
-            values.clear();
-            clear = false;
-            queue = true;
+                    }.forEach { str: String? -> textArea.append(str) }
+            values.clear()
+            clear = false
+            queue = true
+        }
+
+        companion object {
+            private const val EOL1 = "\n"
+            private val EOL2 = System.getProperty("line.separator", EOL1)
+        }
+    }
+
+    companion object {
+        private fun bytesToString(ba: ByteArray, str: Int, len: Int): String {
+            return try {
+                String(ba, str, len, Charset.defaultCharset())
+            } catch (thr: UnsupportedEncodingException) {
+                String(ba, str, len)
+            }
         }
     }
 }

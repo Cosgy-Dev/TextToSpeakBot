@@ -13,75 +13,54 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.audio
 
-package dev.cosgy.TextToSpeak.audio;
+import dev.cosgy.textToSpeak.Bot
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
+import java.time.Instant
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
 
-import dev.cosgy.TextToSpeak.Bot;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
-
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-public class AloneInVoiceHandler {
-    private final Bot bot;
-    private final HashMap<Long, Instant> aloneSince = new HashMap<>();
-    private long aloneTimeUntilStop = 0;
-
-    public AloneInVoiceHandler(Bot bot) {
-        this.bot = bot;
+class AloneInVoiceHandler(private val bot: Bot) {
+    private val aloneSince = HashMap<Long, Instant>()
+    private var aloneTimeUntilStop: Long = 0
+    fun init() {
+        aloneTimeUntilStop = bot.config.aloneTimeUntilStop
+        if (aloneTimeUntilStop > 0) bot.threadpool.scheduleWithFixedDelay({ this.check() }, 0, 5, TimeUnit.SECONDS)
     }
 
-    public void init() {
-        aloneTimeUntilStop = bot.getConfig().getAloneTimeUntilStop();
-        if (aloneTimeUntilStop > 0)
-            bot.getThreadpool().scheduleWithFixedDelay(this::check, 0, 5, TimeUnit.SECONDS);
-    }
-
-    private void check() {
-        Set<Long> toRemove = new HashSet<>();
-        for (Map.Entry<Long, Instant> entrySet : aloneSince.entrySet()) {
-            if (entrySet.getValue().getEpochSecond() > Instant.now().getEpochSecond() - aloneTimeUntilStop) continue;
-
-            Guild guild = bot.getJDA().getGuildById(entrySet.getKey());
-
+    private fun check() {
+        val toRemove: MutableSet<Long> = HashSet()
+        for ((key, value) in aloneSince) {
+            if (value.epochSecond > Instant.now().epochSecond - aloneTimeUntilStop) continue
+            val guild = bot.jda?.getGuildById(key)
             if (guild == null) {
-                toRemove.add(entrySet.getKey());
-                continue;
+                toRemove.add(key)
+                continue
             }
-
-            ((AudioHandler) guild.getAudioManager().getSendingHandler()).stopAndClear();
-            guild.getAudioManager().closeAudioConnection();
-
-            toRemove.add(entrySet.getKey());
+            (guild.audioManager.sendingHandler as AudioHandler?)!!.stopAndClear()
+            guild.audioManager.closeAudioConnection()
+            toRemove.add(key)
         }
-        toRemove.forEach(aloneSince::remove);
+        toRemove.forEach(Consumer { key: Long -> aloneSince.remove(key) })
     }
 
-    public void onVoiceUpdate(GuildVoiceUpdateEvent event) {
-        if (aloneTimeUntilStop <= 0) return;
-
-        Guild guild = event.getEntity().getGuild();
-        if (!bot.getPlayerManager().hasHandler(guild)) return;
-
-        boolean alone = isAlone(guild);
-        boolean inList = aloneSince.containsKey(guild.getIdLong());
-
-        if (!alone && inList)
-            aloneSince.remove(guild.getIdLong());
-        else if (alone && !inList)
-            aloneSince.put(guild.getIdLong(), Instant.now());
+    fun onVoiceUpdate(event: GuildVoiceUpdateEvent) {
+        if (aloneTimeUntilStop <= 0) return
+        val guild = event.entity.guild
+        if (!bot.playerManager.hasHandler(guild)) return
+        val alone = isAlone(guild)
+        val inList = aloneSince.containsKey(guild.idLong)
+        if (!alone && inList) aloneSince.remove(guild.idLong) else if (alone && !inList) aloneSince[guild.idLong] = Instant.now()
     }
 
-    private boolean isAlone(Guild guild) {
-        if (guild.getAudioManager().getConnectedChannel() == null) return false;
-        return guild.getAudioManager().getConnectedChannel().getMembers().stream()
-                .noneMatch(x ->
-                        !x.getVoiceState().isDeafened()
-                                && !x.getUser().isBot());
+    private fun isAlone(guild: Guild): Boolean {
+        return if (guild.audioManager.connectedChannel == null) false else guild.audioManager.connectedChannel!!.members.stream()
+                .noneMatch { x: Member ->
+                    (!x.voiceState!!.isDeafened
+                            && !x.user.isBot)
+                }
     }
 }

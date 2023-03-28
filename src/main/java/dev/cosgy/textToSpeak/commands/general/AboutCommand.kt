@@ -13,133 +13,117 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.general
 
-package dev.cosgy.TextToSpeak.commands.general;
-
-import com.jagrosh.jdautilities.command.CommandClient;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import com.jagrosh.jdautilities.commons.JDAUtilitiesInfo;
-import com.jagrosh.jdautilities.doc.standard.CommandInfo;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDAInfo;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ApplicationInfo;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.awt.*;
-import java.util.Objects;
+import com.jagrosh.jdautilities.command.CommandClient
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommand
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import com.jagrosh.jdautilities.commons.JDAUtilitiesInfo
+import com.jagrosh.jdautilities.doc.standard.CommandInfo
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.JDAInfo
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import org.slf4j.LoggerFactory
+import java.awt.Color
+import java.util.*
 
 /**
  * @author Kosugi_kun
  */
-@CommandInfo(
-        name = "About",
-        description = "ボットに関する情報を表示します"
-)
+@CommandInfo(name = ["About"], description = "ボットに関する情報を表示します")
+class AboutCommand(private val color: Color, private val description: String, vararg perms: Permission) : SlashCommand() {
+    private val perms: Array<out Permission>
+    private var isAuthor = true
+    private var replacementIcon = "+"
+    private var oauthLink: String? = null
 
-public class AboutCommand extends SlashCommand {
-    private final Color color;
-    private final String description;
-    private final Permission[] perms;
-    private boolean IS_AUTHOR = true;
-    private String REPLACEMENT_ICON = "+";
-    private String oauthLink;
-
-    public AboutCommand(Color color, String description, Permission... perms) {
-        this.color = color;
-        this.description = description;
-        this.name = "about";
-        this.help = "ボットに関する情報を表示します";
-        this.guildOnly = false;
-        this.perms = perms;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
+    init {
+        name = "about"
+        help = "ボットに関する情報を表示します"
+        guildOnly = false
+        this.perms = perms
+        botPermissions = arrayOf(Permission.MESSAGE_EMBED_LINKS)
     }
 
-    public void setIsAuthor(boolean value) {
-        this.IS_AUTHOR = value;
+    fun setIsAuthor(value: Boolean) {
+        isAuthor = value
     }
 
-    public void setReplacementCharacter(String value) {
-        this.REPLACEMENT_ICON = value;
+    fun setReplacementCharacter(value: String) {
+        replacementIcon = value
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        if (oauthLink == null) {
-            try {
-                ApplicationInfo info = event.getJDA().retrieveApplicationInfo().complete();
-                oauthLink = info.isBotPublic() ? info.getInviteUrl(0L, perms) : "";
-            } catch (Exception e) {
-                Logger log = LoggerFactory.getLogger("OAuth2");
-                log.error("招待リンクを生成できませんでした ", e);
-                oauthLink = "";
-            }
-        }
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(event.isFromType(ChannelType.TEXT) ? event.getGuild().getSelfMember().getColor() : color);
-        builder.setAuthor(event.getJDA().getSelfUser().getName() + "について!", null, event.getJDA().getSelfUser().getAvatarUrl());
-        String CosgyOwner = "Cosgy Devが運営、開発をしています。";
-        String author = event.getJDA().getUserById(event.getClient().getOwnerId()) == null ? "<@" + event.getClient().getOwnerId() + ">"
-                : Objects.requireNonNull(event.getJDA().getUserById(event.getClient().getOwnerId())).getName();
-        StringBuilder descr = new StringBuilder().append("こんにちは！ **").append(event.getJDA().getSelfUser().getName()).append("**です。 ")
+    override fun execute(event: SlashCommandEvent) {
+        getOauthLink(event.jda)
+        val builder = EmbedBuilder()
+        builder.setColor(if (event.isFromType(ChannelType.TEXT)) event.guild!!.selfMember.color else color)
+        builder.setAuthor(event.jda.selfUser.name + "について!", null, event.jda.selfUser.avatarUrl)
+        val cosgyOwner = "Cosgy Devが運営、開発をしています。"
+        val author = if (event.jda.getUserById(event.client.ownerId) == null) "<@" + event.client.ownerId + ">" else Objects.requireNonNull(event.jda.getUserById(event.client.ownerId))?.name
+        val descr = StringBuilder().append("こんにちは！ **").append(event.jda.selfUser.name).append("**です。 ")
                 .append(description).append("は、").append(JDAUtilitiesInfo.AUTHOR + "の[コマンド拡張](" + JDAUtilitiesInfo.GITHUB + ") (")
                 .append(JDAUtilitiesInfo.VERSION).append(")と[JDAライブラリ](https://github.com/DV8FromTheWorld/JDA) (")
-                .append(JDAInfo.VERSION).append(")を使用しており、").append((IS_AUTHOR ? CosgyOwner : author + "が所有しています。"))
-                .append(event.getJDA().getSelfUser().getName()).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
-                .append("\nこのボットの使用方法は`").append(event.getClient().getTextualPrefix()).append(event.getClient().getHelpWord())
-                .append("`で確認することができます。");
-        getMessage(builder, descr, event.getJDA(), event.getClient());
-        event.replyEmbeds(builder.build()).queue();
+                .append(JDAInfo.VERSION).append(")を使用しており、").append(if (isAuthor) cosgyOwner else author + "が所有しています。")
+                .append(event.jda.selfUser.name).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
+                .append("\nこのボットの使用方法は`").append(event.client.textualPrefix).append(event.client.helpWord)
+                .append("`で確認することができます。")
+        getMessage(builder, descr, event.jda, event.client)
+        event.replyEmbeds(builder.build()).queue()
     }
 
-    private void getMessage(EmbedBuilder builder, StringBuilder descr, JDA jda, CommandClient client) {
-        builder.setDescription(descr);
-
-        if (jda.getShardInfo().getShardTotal() == 1) {
-            builder.addField("ステータス", jda.getGuilds().size() + " サーバー\n1 シャード", true);
-            builder.addField("ユーザー", jda.getUsers().size() + " ユニーク\n" + jda.getGuilds().stream().mapToInt(g -> g.getMembers().size()).sum() + " 合計", true);
-            builder.addField("チャンネル", jda.getTextChannels().size() + " テキスト\n" + jda.getVoiceChannels().size() + " ボイス", true);
+    private fun getMessage(builder: EmbedBuilder, descr: StringBuilder, jda: JDA, client: CommandClient) {
+        builder.setDescription(descr)
+        if (jda.shardInfo.shardTotal == 1) {
+            builder.addField("ステータス", """${jda.guilds.size} サーバー
+1 シャード""", true)
+            builder.addField("ユーザー", """${jda.users.size} ユニーク
+${jda.guilds.stream().mapToInt { g: Guild -> g.members.size }.sum()} 合計""", true)
+            builder.addField("チャンネル", """${jda.textChannels.size} テキスト
+${jda.voiceChannels.size} ボイス""", true)
         } else {
-            builder.addField("ステータス", (client).getTotalGuilds() + " サーバー\nシャード " + (jda.getShardInfo().getShardId() + 1)
-                    + "/" + jda.getShardInfo().getShardTotal(), true);
-            builder.addField("", jda.getUsers().size() + " ユーザーのシャード\n" + jda.getGuilds().size() + " サーバー", true);
-            builder.addField("", jda.getTextChannels().size() + " テキストチャンネル\n" + jda.getVoiceChannels().size() + " ボイスチャンネル", true);
+            builder.addField("ステータス", """${client.totalGuilds} サーバー
+シャード ${jda.shardInfo.shardId + 1}/${jda.shardInfo.shardTotal}""", true)
+            builder.addField("", """${jda.users.size} ユーザーのシャード
+${jda.guilds.size} サーバー""", true)
+            builder.addField("", """${jda.textChannels.size} テキストチャンネル
+${jda.voiceChannels.size} ボイスチャンネル""", true)
         }
-        builder.setFooter("再起動が行われた時間", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg");
-        builder.setTimestamp(client.getStartTime());
+        builder.setFooter("再起動が行われた時間", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg")
+        builder.setTimestamp(client.startTime)
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
-        if (oauthLink == null) {
-            try {
-                ApplicationInfo info = event.getJDA().retrieveApplicationInfo().complete();
-                oauthLink = info.isBotPublic() ? info.getInviteUrl(0L, perms) : "";
-            } catch (Exception e) {
-                Logger log = LoggerFactory.getLogger("OAuth2");
-                log.error("招待リンクを生成できませんでした ", e);
-                oauthLink = "";
-            }
-        }
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(event.isFromType(ChannelType.TEXT) ? event.getGuild().getSelfMember().getColor() : color);
-        builder.setAuthor(event.getSelfUser().getName() + "について!", null, event.getSelfUser().getAvatarUrl());
-        String CosgyOwner = "Cosgy Devが運営、開発をしています。";
-        String author = event.getJDA().getUserById(event.getClient().getOwnerId()) == null ? "<@" + event.getClient().getOwnerId() + ">"
-                : Objects.requireNonNull(event.getJDA().getUserById(event.getClient().getOwnerId())).getName();
-        StringBuilder descr = new StringBuilder().append("こんにちは！ **").append(event.getSelfUser().getName()).append("**です。 ")
+    override fun execute(event: CommandEvent) {
+        getOauthLink(event.jda)
+        val builder = EmbedBuilder()
+        builder.setColor(if (event.isFromType(ChannelType.TEXT)) event.guild.selfMember.color else color)
+        builder.setAuthor(event.selfUser.name + "について!", null, event.selfUser.avatarUrl)
+        val cosgyOwner = "Cosgy Devが運営、開発をしています。"
+        val author = if (event.jda.getUserById(event.client.ownerId) == null) "<@" + event.client.ownerId + ">" else Objects.requireNonNull(event.jda.getUserById(event.client.ownerId))?.name
+        val descr = StringBuilder().append("こんにちは！ **").append(event.selfUser.name).append("**です。 ")
                 .append(description).append("は、").append(JDAUtilitiesInfo.AUTHOR + "の[コマンド拡張](" + JDAUtilitiesInfo.GITHUB + ") (")
                 .append(JDAUtilitiesInfo.VERSION).append(")と[JDAライブラリ](https://github.com/DV8FromTheWorld/JDA) (")
-                .append(JDAInfo.VERSION).append(")を使用しており、").append((IS_AUTHOR ? CosgyOwner : author + "が所有しています。"))
-                .append(event.getSelfUser().getName()).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
-                .append("\nこのボットの使用方法は`").append(event.getClient().getTextualPrefix()).append(event.getClient().getHelpWord())
-                .append("`で確認することができます。");
-        getMessage(builder, descr, event.getJDA(), event.getClient());
-        event.reply(builder.build());
+                .append(JDAInfo.VERSION).append(")を使用しており、").append(if (isAuthor) cosgyOwner else author + "が所有しています。")
+                .append(event.selfUser.name).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
+                .append("\nこのボットの使用方法は`").append(event.client.textualPrefix).append(event.client.helpWord)
+                .append("`で確認することができます。")
+        getMessage(builder, descr, event.jda, event.client)
+        event.reply(builder.build())
+    }
+
+    fun getOauthLink(jda: JDA){
+        if (oauthLink == null) {
+            oauthLink = try {
+                val info = jda.retrieveApplicationInfo().complete()
+                if (info.isBotPublic) info.getInviteUrl(0L, *perms) else ""
+            } catch (e: Exception) {
+                val log = LoggerFactory.getLogger("OAuth2")
+                log.error("招待リンクを生成できませんでした ", e)
+                ""
+            }
+        }
     }
 }

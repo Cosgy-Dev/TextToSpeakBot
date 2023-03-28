@@ -13,64 +13,56 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.gui
 
-package dev.cosgy.TextToSpeak.gui;
-
-import dev.cosgy.TextToSpeak.Bot;
-
-import javax.swing.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import dev.cosgy.textToSpeak.Bot
+import java.awt.event.WindowEvent
+import java.awt.event.WindowListener
+import javax.swing.JFrame
+import javax.swing.JTabbedPane
+import kotlin.system.exitProcess
 
 /**
  * @author Kosugi_kun
  */
-public class GUI extends JFrame {
-    private final ConsolePanel console;
-    private final Bot bot;
+class GUI(private val bot: Bot) : JFrame() {
+    private val console: ConsolePanel = ConsolePanel()
 
-    public GUI(Bot bot) {
-        super();
-        this.bot = bot;
-        console = new ConsolePanel();
-    }
+    fun init() {
+        defaultCloseOperation = EXIT_ON_CLOSE
+        title = bot.GetLang().getString("appName")
+        val tabs = JTabbedPane()
+        tabs.add("コンソール", console)
+        contentPane.add(tabs)
+        pack()
+        setLocationRelativeTo(null)
+        isVisible = true
+        addWindowListener(object : WindowListener {
+            override fun windowOpened(e: WindowEvent) { /* unused */
+            }
 
-    public void init() {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle(bot.GetLang().getString("appName"));
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.add("コンソール", console);
-        getContentPane().add(tabs);
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-        addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) { /* unused */ }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
+            override fun windowClosing(e: WindowEvent) {
                 try {
-                    bot.shutdown();
-                } catch (Exception ex) {
-                    System.exit(0);
+                    bot.shutdown()
+                } catch (ex: Exception) {
+                    exitProcess(0)
                 }
             }
 
-            @Override
-            public void windowClosed(WindowEvent e) { /* unused */ }
+            override fun windowClosed(e: WindowEvent) { /* unused */
+            }
 
-            @Override
-            public void windowIconified(WindowEvent e) { /* unused */ }
+            override fun windowIconified(e: WindowEvent) { /* unused */
+            }
 
-            @Override
-            public void windowDeiconified(WindowEvent e) { /* unused */ }
+            override fun windowDeiconified(e: WindowEvent) { /* unused */
+            }
 
-            @Override
-            public void windowActivated(WindowEvent e) { /* unused */ }
+            override fun windowActivated(e: WindowEvent) { /* unused */
+            }
 
-            @Override
-            public void windowDeactivated(WindowEvent e) { /* unused */ }
-        });
+            override fun windowDeactivated(e: WindowEvent) { /* unused */
+            }
+        })
     }
 }

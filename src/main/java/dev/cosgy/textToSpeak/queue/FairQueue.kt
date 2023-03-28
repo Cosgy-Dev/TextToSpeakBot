@@ -13,77 +13,67 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.queue
 
-package dev.cosgy.TextToSpeak.queue;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-public class FairQueue<T extends Queueable> {
-    private final List<T> list = new ArrayList<>();
-    private final Set<Long> set = new HashSet<>();
-
-    public int add(T item) {
-        int lastIndex;
-        for (lastIndex = list.size() - 1; lastIndex > -1; lastIndex--)
-            if (list.get(lastIndex).getIdentifier() == item.getIdentifier())
-                break;
-        lastIndex++;
-        set.clear();
-        for (; lastIndex < list.size(); lastIndex++) {
-            if (set.contains(list.get(lastIndex).getIdentifier()))
-                break;
-            set.add(list.get(lastIndex).getIdentifier());
+class FairQueue<T : Queueable?> {
+    private val list: MutableList<T> = ArrayList()
+    private val set: MutableSet<Long> = HashSet()
+    fun add(item: T): Int {
+        var lastIndex: Int = list.size - 1
+        while (lastIndex > -1) {
+            if (list[lastIndex]!!.identifier == item!!.identifier) break
+            lastIndex--
         }
-        list.add(lastIndex, item);
-        return lastIndex;
+        lastIndex++
+        set.clear()
+        while (lastIndex < list.size) {
+            if (set.contains(list[lastIndex]!!.identifier)) break
+            set.add(list[lastIndex]!!.identifier)
+            lastIndex++
+        }
+        list.add(lastIndex, item)
+        return lastIndex
     }
 
-    public void addAt(int index, T item) {
-        if (index >= list.size())
-            list.add(item);
-        else
-            list.add(index, item);
+    fun addAt(index: Int, item: T) {
+        if (index >= list.size) list.add(item) else list.add(index, item)
     }
 
-    public int size() {
-        return list.size();
+    fun size(): Int {
+        return list.size
     }
 
-    public T pull() {
-        return list.remove(0);
+    fun pull(): T {
+        return list.removeAt(0)
     }
 
-    public boolean isEmpty() {
-        return list.isEmpty();
+    val isEmpty: Boolean
+        get() = list.isEmpty()
+
+    fun getList(): List<T> {
+        return list
     }
 
-    public List<T> getList() {
-        return list;
+    operator fun get(index: Int): T {
+        return list[index]
     }
 
-    public T get(int index) {
-        return list.get(index);
+    fun remove(index: Int): T {
+        return list.removeAt(index)
     }
 
-    public T remove(int index) {
-        return list.remove(index);
-    }
-
-    public int removeAll(long identifier) {
-        int count = 0;
-        for (int i = list.size() - 1; i >= 0; i--) {
-            if (list.get(i).getIdentifier() == identifier) {
-                list.remove(i);
-                count++;
+    fun removeAll(identifier: Long): Int {
+        var count = 0
+        for (i in list.indices.reversed()) {
+            if (list[i]!!.identifier == identifier) {
+                list.removeAt(i)
+                count++
             }
         }
-        return count;
+        return count
     }
 
-    public void clear() {
-        list.clear();
+    fun clear() {
+        list.clear()
     }
 }

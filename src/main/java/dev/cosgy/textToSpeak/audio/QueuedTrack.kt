@@ -13,31 +13,20 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.audio
 
-package dev.cosgy.TextToSpeak.audio;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import dev.cosgy.textToSpeak.queue.Queueable
+import net.dv8tion.jda.api.entities.User
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import dev.cosgy.TextToSpeak.queue.Queueable;
-import net.dv8tion.jda.api.entities.User;
+class QueuedTrack(val track: AudioTrack, owner: Long) : Queueable {
 
-public class QueuedTrack implements Queueable {
-    private final AudioTrack track;
+    constructor(track: AudioTrack, owner: User) : this(track, owner.idLong)
 
-    public QueuedTrack(AudioTrack track, User owner) {
-        this(track, owner.getIdLong());
+    init {
+        track.userData = owner
     }
 
-    public QueuedTrack(AudioTrack track, long owner) {
-        this.track = track;
-        this.track.setUserData(owner);
-    }
-
-    @Override
-    public long getIdentifier() {
-        return track.getUserData(Long.class);
-    }
-
-    public AudioTrack getTrack() {
-        return track;
-    }
+    override val identifier: Long
+        get() = track.getUserData(Long::class.java)
 }

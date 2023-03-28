@@ -13,54 +13,45 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.admin
 
-package dev.cosgy.TextToSpeak.commands.admin;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.Bot
+import dev.cosgy.textToSpeak.commands.AdminCommand
+import org.slf4j.LoggerFactory
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.commands.AdminCommand;
-import dev.cosgy.TextToSpeak.settings.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+class SetReadNameCmd(private val bot: Bot) : AdminCommand() {
+    var log = LoggerFactory.getLogger(this.javaClass)
 
-public class SetReadNameCmd extends AdminCommand {
-    private final Bot bot;
-    Logger log = LoggerFactory.getLogger(this.getClass());
-
-    public SetReadNameCmd(Bot bot) {
-        this.bot = bot;
-        this.name = "setreadname";
-        this.help = "テキストを読み上げる際にユーザー名も読み上げるかを設定します。";
+    init {
+        name = "setreadname"
+        help = "テキストを読み上げる際にユーザー名も読み上げるかを設定します。"
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        if (!checkAdminPermission(event.getClient(), event)) {
-            event.reply(event.getClient().getWarning() + "権限がないため実行できません。").queue();
-            return;
+    override fun execute(event: SlashCommandEvent) {
+        if (!checkAdminPermission(event.client, event)) {
+            event.reply(event.client.warning + "権限がないため実行できません。").queue()
+            return
         }
-        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
-
-        if (settings.isReadName()) {
-            settings.setReadName(false);
-            event.reply("ユーザー名の読み上げを無効にしました。").queue();
+        val settings = bot.settingsManager.getSettings(event.guild!!)
+        if (settings!!.isReadName()) {
+            settings.setReadName(false)
+            event.reply("ユーザー名の読み上げを無効にしました。").queue()
         } else {
-            settings.setReadName(true);
-            event.reply("ユーザー名の読み上げを有効にしました。").queue();
+            settings.setReadName(true)
+            event.reply("ユーザー名の読み上げを有効にしました。").queue()
         }
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
-        Settings settings = bot.getSettingsManager().getSettings(event.getGuild());
-
-        if (settings.isReadName()) {
-            settings.setReadName(false);
-            event.reply("ユーザー名の読み上げを無効にしました。");
+    override fun execute(event: CommandEvent) {
+        val settings = bot.settingsManager.getSettings(event.guild)
+        if (settings!!.isReadName()) {
+            settings.setReadName(false)
+            event.reply("ユーザー名の読み上げを無効にしました。")
         } else {
-            settings.setReadName(true);
-            event.reply("ユーザー名の読み上げを有効にしました。");
+            settings.setReadName(true)
+            event.reply("ユーザー名の読み上げを有効にしました。")
         }
     }
 }

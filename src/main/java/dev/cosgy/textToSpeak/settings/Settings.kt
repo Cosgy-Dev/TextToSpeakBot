@@ -13,95 +13,89 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.settings
 
-package dev.cosgy.TextToSpeak.settings;
+import com.jagrosh.jdautilities.command.GuildSettingsProvider
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 
-import com.jagrosh.jdautilities.command.GuildSettingsProvider;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+class Settings : GuildSettingsProvider {
+    private val manager: SettingsManager
+    var textId: Long = 0
+    var prefix: String?
+    var volume: Int
+    private var readName: Boolean
+    private var joinAndLeaveRead: Boolean
 
-import java.util.Collection;
-import java.util.Collections;
-
-public class Settings implements GuildSettingsProvider {
-    private final SettingsManager manager;
-    protected long textId;
-    private String prefix;
-    private int volume;
-    private boolean readName;
-    private boolean joinAndLeaveRead;
-
-
-    public Settings(SettingsManager manager, String textId, String prefix, int volume, boolean readName, boolean joinAndLeaveRead) {
-        this.manager = manager;
+    constructor(manager: SettingsManager, textId: String?, prefix: String?, volume: Int, readName: Boolean, joinAndLeaveRead: Boolean) {
+        this.manager = manager
         try {
-            this.textId = Long.parseLong(textId);
-        } catch (NumberFormatException e) {
-            this.textId = 0;
+            this.textId = textId!!.toLong()
+        } catch (e: NumberFormatException) {
+            this.textId = 0
         }
-        this.prefix = prefix;
-        this.volume = volume;
-        this.readName = readName;
-        this.joinAndLeaveRead = joinAndLeaveRead;
+        this.prefix = prefix
+        this.volume = volume
+        this.readName = readName
+        this.joinAndLeaveRead = joinAndLeaveRead
     }
 
-    public Settings(SettingsManager manager, long textId, String prefix, int volume, boolean readName, boolean joinAndLeaveRead) {
-        this.manager = manager;
-        this.textId = textId;
-        this.prefix = prefix;
-        this.volume = volume;
-        this.readName = readName;
-        this.joinAndLeaveRead = joinAndLeaveRead;
+    constructor(manager: SettingsManager, textId: Long, prefix: String?, volume: Int, readName: Boolean, joinAndLeaveRead: Boolean) {
+        this.manager = manager
+        this.textId = textId
+        this.prefix = prefix
+        this.volume = volume
+        this.readName = readName
+        this.joinAndLeaveRead = joinAndLeaveRead
+    }
+
+    fun getTextChannel(guild: Guild?): TextChannel? {
+        return guild?.getTextChannelById(textId)
+    }
+
+    fun setTextChannel(tc: TextChannel?) {
+        textId = tc?.idLong ?: 0
+        manager.writeSettings()
+    }
+
+    fun getVolume(): Int {
+        return volume
+    }
+
+    fun setVolume(volume: Int) {
+        this.volume = volume
+        manager.writeSettings()
+    }
+
+    fun getPrefix(): String? {
+        return prefix
+    }
+
+    fun setPrefix(prefix: String?) {
+        this.prefix = prefix
+        manager.writeSettings()
+    }
+
+    override fun getPrefixes(): Collection<String?> {
+        return if (prefix == null) emptySet() else setOf(prefix)
     }
 
 
-    public TextChannel getTextChannel(Guild guild) {
-        return guild == null ? null : guild.getTextChannelById(textId);
+    fun isReadName(): Boolean {
+        return readName
     }
 
-    public void setTextChannel(TextChannel tc) {
-        this.textId = tc == null ? 0 : tc.getIdLong();
-        this.manager.writeSettings();
+    fun setReadName(readName: Boolean) {
+        this.readName = readName
+        manager.writeSettings()
     }
 
-    public int getVolume() {
-        return volume;
+    fun isJoinAndLeaveRead(): Boolean {
+        return joinAndLeaveRead
     }
 
-    public void setVolume(int volume) {
-        this.volume = volume;
-        this.manager.writeSettings();
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-        this.manager.writeSettings();
-    }
-
-    @Override
-    public Collection<String> getPrefixes() {
-        return prefix == null ? Collections.EMPTY_SET : Collections.singleton(prefix);
-    }
-
-    public boolean isReadName() {
-        return readName;
-    }
-
-    public void setReadName(boolean readName) {
-        this.readName = readName;
-        this.manager.writeSettings();
-    }
-
-    public boolean isJoinAndLeaveRead() {
-        return joinAndLeaveRead;
-    }
-
-    public void setJoinAndLeaveRead(boolean joinAndLeaveRead) {
-        this.joinAndLeaveRead = joinAndLeaveRead;
-        this.manager.writeSettings();
+    fun setJoinAndLeaveRead(joinAndLeaveRead: Boolean) {
+        this.joinAndLeaveRead = joinAndLeaveRead
+        manager.writeSettings()
     }
 }

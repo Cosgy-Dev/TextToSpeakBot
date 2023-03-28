@@ -13,19 +13,15 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.utils
 
-package dev.cosgy.TextToSpeak.utils;
-
-import java.util.HashMap;
-
-public class ReadChannel {
-    private static HashMap<Long, Long> chat = new HashMap<>();
-
-    public static void setChannel(Long guild, Long textChannel) {
-        chat.put(guild, textChannel);
+object ReadChannel {
+    private val chat = HashMap<Long, Long>()
+    fun setChannel(guild: Long, textChannel: Long) {
+        chat[guild] = textChannel
     }
 
-    public static Long getChannel(Long guild) {
-        return chat.get(guild);
+    fun getChannel(guild: Long): Long? {
+        return chat[guild]
     }
 }

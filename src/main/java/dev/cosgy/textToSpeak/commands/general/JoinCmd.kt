@@ -13,102 +13,86 @@
 //     See the License for the specific language governing permissions and               /
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
+package dev.cosgy.textToSpeak.commands.general
 
-package dev.cosgy.TextToSpeak.commands.general;
+import com.jagrosh.jdautilities.command.CommandEvent
+import com.jagrosh.jdautilities.command.SlashCommand
+import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.Bot
+import dev.cosgy.textToSpeak.settings.Settings
+import dev.cosgy.textToSpeak.utils.ReadChannel
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.exceptions.PermissionException
+import java.awt.Color
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.cosgy.TextToSpeak.Bot;
-import dev.cosgy.TextToSpeak.settings.Settings;
-import dev.cosgy.TextToSpeak.utils.ReadChannel;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.exceptions.PermissionException;
-
-import java.awt.*;
-
-public class JoinCmd extends SlashCommand {
-    protected Bot bot;
-
-    public JoinCmd(Bot bot) {
-        this.bot = bot;
-        this.name = "join";
-        this.help = "ボイスチャンネルに参加します。";
-        this.guildOnly = true;
+class JoinCmd(private var bot: Bot) : SlashCommand() {
+    init {
+        name = "join"
+        help = "ボイスチャンネルに参加します。"
+        guildOnly = true
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        event.deferReply().queue();
-        Settings settings = event.getClient().getSettingsFor(event.getGuild());
-        TextChannel channel = settings.getTextChannel(event.getGuild());
+    override fun execute(event: SlashCommandEvent) {
+        event.deferReply().queue()
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
+        val channel = settings.getTextChannel(event.guild)
         // VoiceChannel voiceChannel = settings.getVoiceChannel(event.getGuild());
-        bot.getPlayerManager().setUpHandler(event.getGuild());
-
-        GuildVoiceState userState = event.getMember().getVoiceState();
-        EmbedBuilder builder = new EmbedBuilder();
-
-        builder.setColor(new Color(76, 108, 179));
-        builder.setTitle("VCに接続");
-
-        if (!userState.inAudioChannel() || userState.isDeafened()) {
-            builder.setDescription(String.format("このコマンドを使用するには、%sに参加している必要があります。", "音声チャンネル"));
-            event.replyEmbeds(builder.build()).queue();
-            return;
-        }
-
-        builder.addField("読み上げ対象", "<#" + event.getChannel().getId() + ">", false);
-
-        try {
-            event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
-            builder.addField("ボイスチャンネル", String.format("**%s**", userState.getChannel().getName()), false);
-            builder.setDescription("ボイスチャンネルへの接続に成功しました。");
-
-            event.getHook().sendMessageEmbeds(builder.build()).queue();
-            ReadChannel.setChannel(event.getGuild().getIdLong(), event.getTextChannel().getIdLong());
-        } catch (PermissionException ex) {
-            builder.appendDescription(event.getClient().getError() + String.format("**%s**に接続できません!", userState.getChannel().getName()));
-            builder.addField("ボイスチャンネル", event.getClient().getError() + String.format("**%s**に接続できません!",
-                    userState.getChannel().getName()), false);
-            event.getHook().sendMessageEmbeds(builder.build()).queue();
-        }
-    }
-
-    @Override
-    protected void execute(CommandEvent event) {
-        Settings settings = event.getClient().getSettingsFor(event.getGuild());
-        TextChannel channel = settings.getTextChannel(event.getGuild());
-        bot.getPlayerManager().setUpHandler(event.getGuild());
-
-        GuildVoiceState userState = event.getMember().getVoiceState();
-
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setColor(new Color(76, 108, 179));
-        builder.setTitle("VCに接続");
-
-        if (!userState.inAudioChannel()) {
-            builder.setDescription("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。");
-            event.reply(builder.build());
-            return;
+        bot.playerManager.setUpHandler(event.guild!!)
+        val userState = event.member!!.voiceState
+        val builder = EmbedBuilder()
+        builder.setColor(Color(76, 108, 179))
+        builder.setTitle("VCに接続")
+        if (!userState!!.inAudioChannel() || userState.isDeafened) {
+            builder.setDescription(String.format("このコマンドを使用するには、%sに参加している必要があります。", "音声チャンネル"))
+            event.replyEmbeds(builder.build()).queue()
+            return
         }
         if (channel == null) {
-            builder.addField("読み上げ対象", event.getChannel().getName(), true);
+            builder.addField("読み上げ対象", event.channel.name, true)
         } else {
-            builder.addField("読み上げ対象", channel.getName(), true);
+            builder.addField("読み上げ対象", channel.name, true)
         }
         try {
-            event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
-            builder.addField("ボイスチャンネル", String.format("**%s**", userState.getChannel().getName()), false);
-            builder.setDescription("ボイスチャンネルへの接続に成功しました。");
+            event.guild!!.audioManager.openAudioConnection(userState.channel)
+            builder.addField("ボイスチャンネル", String.format("**%s**", userState.channel!!.name), false)
+            builder.setDescription("ボイスチャンネルへの接続に成功しました。")
+            event.hook.sendMessageEmbeds(builder.build()).queue()
+            ReadChannel.setChannel(event.guild!!.idLong, event.textChannel.idLong)
+        } catch (ex: PermissionException) {
+            builder.appendDescription(event.client.error + String.format("**%s**に接続できません!", userState.channel!!.name))
+            builder.addField("ボイスチャンネル", event.client.error + String.format("**%s**に接続できません!",
+                    userState.channel!!.name), false)
+            event.hook.sendMessageEmbeds(builder.build()).queue()
+        }
+    }
 
-
-            event.reply(builder.build());
-            ReadChannel.setChannel(event.getGuild().getIdLong(), event.getTextChannel().getIdLong());
-        } catch (PermissionException ex) {
-            builder.setDescription("ボイスチャンネルへの接続に失敗しました。");
-            event.reply(builder.build());
+    override fun execute(event: CommandEvent) {
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
+        val channel = settings.getTextChannel(event.guild)
+        bot.playerManager.setUpHandler(event.guild)
+        val userState = event.member.voiceState
+        val builder = EmbedBuilder()
+        builder.setColor(Color(76, 108, 179))
+        builder.setTitle("VCに接続")
+        if (!userState!!.inAudioChannel()) {
+            builder.setDescription("このコマンドを使用するには、ボイスチャンネルに参加している必要があります。")
+            event.reply(builder.build())
+            return
+        }
+        if (channel == null) {
+            builder.addField("読み上げ対象", event.channel.name, true)
+        } else {
+            builder.addField("読み上げ対象", channel.name, true)
+        }
+        try {
+            event.guild.audioManager.openAudioConnection(userState.channel)
+            builder.addField("ボイスチャンネル", String.format("**%s**", userState.channel!!.name), false)
+            builder.setDescription("ボイスチャンネルへの接続に成功しました。")
+            event.reply(builder.build())
+            ReadChannel.setChannel(event.guild.idLong, event.textChannel.idLong)
+        } catch (ex: PermissionException) {
+            builder.setDescription("ボイスチャンネルへの接続に失敗しました。")
+            event.reply(builder.build())
         }
     }
 }
