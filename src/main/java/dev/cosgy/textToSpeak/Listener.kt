@@ -22,7 +22,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import dev.cosgy.textToSpeak.audio.AudioHandler
 import dev.cosgy.textToSpeak.audio.QueuedTrack
 import dev.cosgy.textToSpeak.utils.OtherUtil
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 
 class Listener(private val bot: Bot) : ListenerAdapter() {
     var log: Logger = LoggerFactory.getLogger(this.javaClass)
@@ -70,7 +68,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                 } catch (e: InterruptedException) {
                     throw RuntimeException(e)
                 }
-                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(null, event))
+                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(event))
             }
             if (event.channelLeft!!.members.size == 1 && event.channelLeft!!.members.contains(botMember)) {
                 val handler = event.guild.audioManager.sendingHandler as AudioHandler?
@@ -91,7 +89,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                 } catch (e: InterruptedException) {
                     throw RuntimeException(e)
                 }
-                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(null, event))
+                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(event))
             }
         }
     }
@@ -100,22 +98,10 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
         bot.shutdown()
     }
 
-    private inner class ResultHandler(private val m: Message?, private val event: GuildVoiceUpdateEvent) : AudioLoadResultHandler {
+    private inner class ResultHandler(private val event: GuildVoiceUpdateEvent) : AudioLoadResultHandler {
         private fun loadSingle(track: AudioTrack) {
             val handler = event.guild.audioManager.sendingHandler as AudioHandler?
             handler!!.addTrack(QueuedTrack(track, event.member.user))
-        }
-
-        private fun loadPlaylist(playlist: AudioPlaylist, exclude: AudioTrack): Int {
-            val count = intArrayOf(0)
-            playlist.tracks.forEach(Consumer { track: AudioTrack ->
-                if (track != exclude) {
-                    val handler = event.guild.audioManager.sendingHandler as AudioHandler?
-                    handler!!.addTrack(QueuedTrack(track, event.member.user))
-                    count[0]++
-                }
-            })
-            return count[0]
         }
 
         override fun trackLoaded(track: AudioTrack) {

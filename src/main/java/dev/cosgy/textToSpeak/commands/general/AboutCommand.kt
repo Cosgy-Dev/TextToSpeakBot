@@ -114,7 +114,7 @@ ${jda.voiceChannels.size} ボイスチャンネル""", true)
         event.reply(builder.build())
     }
 
-    fun getOauthLink(jda: JDA){
+    private fun getOauthLink(jda: JDA){
         if (oauthLink == null) {
             oauthLink = try {
                 val info = jda.retrieveApplicationInfo().complete()
