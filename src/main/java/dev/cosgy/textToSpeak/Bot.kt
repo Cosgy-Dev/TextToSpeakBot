@@ -32,6 +32,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
+import kotlin.system.exitProcess
 
 class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: SettingsManager) {
     val threadpool: ScheduledExecutorService
@@ -111,7 +112,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
             }
         }
         if (gui != null) gui!!.dispose()
-        System.exit(0)
+        exitProcess(0)
     }
 
     fun setGUI(gui: GUI?) {
