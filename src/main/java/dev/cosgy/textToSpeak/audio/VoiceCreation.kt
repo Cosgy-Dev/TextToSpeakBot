@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.text.BreakIterator
 import java.util.*
 
 class VoiceCreation( // 各種設定の値を保持するためのフィールド
@@ -68,8 +69,26 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
     private fun sanitizeMessage(message: String): String {
         var sanitizedMsg = message.replace("[\\uD800-\\uDFFF]".toRegex(), " ")
         sanitizedMsg = sanitizedMsg.replace("Kosugi_kun".toRegex(), "コスギクン")
-        return sanitizedMsg
+        val sentences = BreakIterator.getSentenceInstance(Locale.JAPANESE)
+        sentences.setText(sanitizedMsg)
+        var messageCount = 0
+        var lastIndex = 0
+        val builder = StringBuilder()
+        while (sentences.next() != BreakIterator.DONE) {
+            val sentence = sanitizedMsg.substring(lastIndex, sentences.current())
+            if (sentence.length + builder.length > maxMessageCount) {
+                builder.append("以下略")
+                break
+            }
+            builder.append(sentence)
+            builder.append("\n")
+            messageCount++
+            lastIndex = sentences.current()
+        }
+        return builder.toString()
     }
+
+
 
     // テキストファイルを作成するメソッド
     @Throws(FileNotFoundException::class, UnsupportedEncodingException::class)

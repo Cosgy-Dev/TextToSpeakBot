@@ -26,7 +26,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiFunction
 
-class Dictionary private constructor(private val bot: Bot) {
+class Dictionary private constructor(bot: Bot) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val path: Path?
     private val create: Boolean
