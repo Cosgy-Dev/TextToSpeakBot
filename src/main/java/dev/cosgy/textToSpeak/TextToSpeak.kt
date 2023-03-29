@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.slf4j.LoggerFactory
+import sun.misc.Signal
 import java.awt.Color
 import java.io.IOException
 import java.util.*
@@ -169,6 +170,10 @@ System.exit(1);
      """.trimIndent())
             exitProcess(1)
         }
-        Runtime.getRuntime().addShutdownHook(Thread { bot.shutdown() })
+
+        Signal.handle(Signal("INT")) { _ ->
+            println("プログラムを終了しています...")
+            bot.shutdown()
+        }
     }
 }

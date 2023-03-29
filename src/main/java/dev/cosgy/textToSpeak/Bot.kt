@@ -33,6 +33,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
+import javax.swing.JOptionPane
 import kotlin.system.exitProcess
 
 class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: SettingsManager) {
@@ -74,45 +75,61 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     fun shutdown() {
         if (shuttingDown) return
         shuttingDown = true
-        threadpool.shutdownNow()
         if (jda!!.status != JDA.Status.SHUTTING_DOWN) {
             jda!!.guilds.forEach(Consumer { g: Guild ->
-                g.audioManager.closeAudioConnection()
-                val ah = g.audioManager.sendingHandler as AudioHandler?
-                if (ah != null) {
-                    ah.stopAndClear()
-                    ah.player.destroy()
+                val am = g.audioManager
+                if (am.isConnected) {
+                    am.closeAudioConnection()
+                    val ah = am.sendingHandler as AudioHandler?
+                    if (ah != null) {
+                        ah.stopAndClear()
+                        ah.player.destroy()
+                    }
                 }
             })
 
-            // ここからJDAの終了処理
-            jda!!.shutdown()
+            // Wait for any remaining tasks to complete before shutting down the thread pool
+            threadpool.shutdown()
             try {
-                if (!jda!!.awaitShutdown(10, TimeUnit.SECONDS)) {
-                    jda!!.shutdownNow()
-                    if (!jda!!.awaitShutdown(10, TimeUnit.SECONDS)) {
-                        log.warn("JDAのシャットダウンがタイムアウトしました。")
+                if (!threadpool.awaitTermination(10, TimeUnit.SECONDS)) {
+                    threadpool.shutdownNow()
+                    if (!threadpool.awaitTermination(10, TimeUnit.SECONDS)) {
+                        log.warn("Thread pool did not terminate")
                     }
                 }
             } catch (e: InterruptedException) {
-                jda!!.shutdownNow()
+                threadpool.shutdownNow()
                 Thread.currentThread().interrupt()
-                log.warn("JDAのシャットダウンが中断されました。")
-            }
-
-            dictionary?.close()
-            // 一時ファイルを削除
-            try {
-                FileUtils.cleanDirectory(File("tmp"))
-                FileUtils.cleanDirectory(File("wav"))
-                log.info("一時ファイルを削除しました。")
-            } catch (e: IOException) {
-                log.warn("一時ファイルの削除に失敗しました。")
+                log.warn("Thread pool shutdown was interrupted")
             }
         }
+
+        // Shutdown JDA
+        jda?.shutdown()
+        try {
+            if (!jda!!.awaitShutdown(10, TimeUnit.SECONDS)) {
+                log.warn("JDA did not shutdown properly")
+            }
+        } catch (e: InterruptedException) {
+            jda!!.shutdownNow()
+            Thread.currentThread().interrupt()
+            log.warn("JDA shutdown was interrupted")
+        }
+
+        dictionary?.close()
+        // Delete temporary files
+        try {
+            FileUtils.cleanDirectory(File("tmp"))
+            FileUtils.cleanDirectory(File("wav"))
+            log.info("Deleted temporary files")
+        } catch (e: IOException) {
+            log.warn("Failed to delete temporary files")
+        }
+
         if (gui != null) gui!!.dispose()
         exitProcess(0)
     }
+
 
     fun setGUI(gui: GUI?) {
         this.gui = gui

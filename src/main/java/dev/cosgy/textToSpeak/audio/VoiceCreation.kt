@@ -110,8 +110,6 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         return builder.toString()
     }
 
-
-
     // テキストファイルを作成するメソッド
     @Throws(FileNotFoundException::class, UnsupportedEncodingException::class)
     private fun createTmpTextFile(guildId: String, fileId: String, message: String): String {
