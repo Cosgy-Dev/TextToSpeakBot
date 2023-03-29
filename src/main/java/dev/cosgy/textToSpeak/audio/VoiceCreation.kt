@@ -19,6 +19,7 @@ import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.settings.UserSettings
 import net.dv8tion.jda.api.entities.*
 import org.apache.commons.io.FileUtils
+import com.ibm.icu.text.Transliterator
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.nio.file.Files
@@ -53,6 +54,9 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         for ((key, value) in words!!) {
             dicMsg = dicMsg.replace(key!!.toRegex(), value!!)
         }
+
+        toKatakanaIfEnglishExists(dicMsg)
+
         val tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg)
 
 
@@ -66,6 +70,23 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         return fileName
     }
 
+    // 英単語をカタカナに変換するメソッド
+    private fun toKatakanaIfEnglishExists(message: String): String {
+        var englishExists = false
+        for (c in message) {
+            if (c in 'a'..'z' || c in 'A'..'Z') {
+                englishExists = true
+                break
+            }
+        }
+        return if (englishExists) {
+            val latinToKatakana = Transliterator.getInstance("Latin-Katakana")
+            latinToKatakana.transliterate(message)
+        } else {
+            message
+        }
+    }
+
     // メッセージをサニタイズするメソッド
     private fun sanitizeMessage(message: String): String {
         var sanitizedMsg = message.replace("[\\uD800-\\uDFFF]".toRegex(), " ")
@@ -77,7 +98,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         val builder = StringBuilder()
         while (sentences.next() != BreakIterator.DONE) {
             val sentence = sanitizedMsg.substring(lastIndex, sentences.current())
-            if (sentence.length + builder.length > maxMessageCount) {
+            if (maxMessageCount > 0 && sentence.length + builder.length > maxMessageCount) {
                 builder.append("以下略")
                 break
             }

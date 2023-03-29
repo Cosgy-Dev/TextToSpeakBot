@@ -38,6 +38,9 @@ class AudioHandler(private val manager: PlayerManager, guild: Guild, val player:
         stringGuildId = guild.id
     }
 
+    /**
+     * 再生キューのトップに追加
+     */
     fun addTrackToFront(qtrack: QueuedTrack): Int {
         return if (player.playingTrack == null) {
             player.playTrack(qtrack.track)
@@ -48,6 +51,9 @@ class AudioHandler(private val manager: PlayerManager, guild: Guild, val player:
         }
     }
 
+    /**
+     * 再生キューに追加
+     */
     fun addTrack(qtrack: QueuedTrack): Int {
         return if (player.playingTrack == null) {
             player.playTrack(qtrack.track)

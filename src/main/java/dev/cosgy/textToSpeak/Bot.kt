@@ -36,12 +36,12 @@ import java.util.function.Consumer
 import kotlin.system.exitProcess
 
 class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: SettingsManager) {
-    val threadpool: ScheduledExecutorService
-    private val lang: ResourceBundle
-    val playerManager: PlayerManager
+    val threadpool: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+    private val lang: ResourceBundle = ResourceBundle.getBundle("lang.yomiage", Locale.JAPAN)
+    val playerManager: PlayerManager = PlayerManager(this)
     val voiceCreation: VoiceCreation
     val userSettingsManager: UserSettingsManager
-    val aloneInVoiceHandler: AloneInVoiceHandler
+    private val aloneInVoiceHandler: AloneInVoiceHandler
     var log: Logger = LoggerFactory.getLogger(this.javaClass)
     var dictionary: Dictionary? = null
         private set
@@ -50,9 +50,6 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     private var gui: GUI? = null
 
     init {
-        lang = ResourceBundle.getBundle("lang.yomiage", Locale.JAPAN)
-        threadpool = Executors.newSingleThreadScheduledExecutor()
-        playerManager = PlayerManager(this)
         playerManager.init()
         voiceCreation = VoiceCreation(this)
         userSettingsManager = UserSettingsManager()

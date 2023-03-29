@@ -22,7 +22,7 @@
 
     <groupId>dev.cosgy</groupId>
     <artifactId>TextToSpeak</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.0-beta.1</version>
     <packaging>jar</packaging>
 
     <repositories>
@@ -142,6 +142,11 @@
             <artifactId>kotlin-script-runtime</artifactId>
             <version>1.8.20-RC2</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>69.1</version>
         </dependency>
     </dependencies>
 
