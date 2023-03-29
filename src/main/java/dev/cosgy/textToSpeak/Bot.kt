@@ -103,6 +103,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
                 log.warn("JDAのシャットダウンが中断されました。")
             }
 
+            dictionary?.close()
             // 一時ファイルを削除
             try {
                 FileUtils.cleanDirectory(File("tmp"))

@@ -82,7 +82,7 @@ class BotConfig(private val prompt: Prompt) {
             maxMessageCount = config.getInt("maxmessagecount")
             winJTalkDir = config.getString("winjtalkdir")
             helpToDm = config.getBoolean("helptodm")
-            dBots = ownerId == 334091398263341056L
+            dBots = ownerId == 334091398263341056
             var write = false
 
             // validate bot token

@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.BreakIterator
 import java.util.*
@@ -93,8 +94,8 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
     // テキストファイルを作成するメソッド
     @Throws(FileNotFoundException::class, UnsupportedEncodingException::class)
     private fun createTmpTextFile(guildId: String, fileId: String, message: String): String {
-        val filePath = "tmp" + File.separator + guildId + File.separator + fileId + ".txt"
-        PrintWriter(filePath, characterCode).use { writer -> writer.write(message) }
+        val filePath = Paths.get("tmp", guildId, "$fileId.txt").toString()
+        PrintWriter(filePath, characterCode).use { it.write(message) }
         return filePath
     }
 
@@ -136,22 +137,13 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
     }
 
     // 必要なディレクトリを作成するメソッド
+
     @Throws(IOException::class)
     private fun createDirectories(guildId: String) {
-        createDirectory("tmp")
-        createDirectory("tmp" + File.separator + guildId)
-        createDirectory("wav")
-        createDirectory("wav" + File.separator + guildId)
-    }
-
-    // ディレクトリを作成するメゾット
-    @Throws(IOException::class)
-    private fun createDirectory(directory: String) {
-        val path = Paths.get(directory)
-        if (!Files.exists(path)) {
-            Files.createDirectory(path)
-            logger.info("Created directory: $directory")
-        }
+        val tmpPath: Path = Paths.get("tmp", guildId)
+        val wavPath: Path = Paths.get("wav", guildId)
+        Files.createDirectories(tmpPath)
+        Files.createDirectories(wavPath)
     }
 
     // ギルドに関連する一時ファイルや音声ファイルを削除するメソッド
@@ -170,19 +162,16 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         }
     }
 
-    val voices: ArrayList<String>
-        // 利用可能な音声名を取得するメソッド
+    val voices: List<String>
         get() {
-            val filter = FilenameFilter { _: File?, str: String -> str.endsWith("htsvoice") }
-            val dir = File(voiceDirectory!!)
-            val list = dir.listFiles(filter)
-            val voices = ArrayList<String>()
-            for (file in list!!) {
-                voices.add(file.name.replace(".htsvoice", ""))
-            }
-            logger.debug("Available voices: $voices")
-            return voices
+            val voiceDir = File(requireNotNull(voiceDirectory) { "voiceDirectory is null" })
+            return voiceDir.listFiles { _, name -> name.endsWith(".htsvoice") }
+                ?.map { file -> file.nameWithoutExtension }
+                ?.toList()
+                .orEmpty()
+                .also { logger.debug("Available voices: $it") }
         }
+
 
     companion object {
         private val logger = LoggerFactory.getLogger(VoiceCreation::class.java)
