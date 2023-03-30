@@ -124,6 +124,8 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
             log.info("Deleted temporary files")
         } catch (e: IOException) {
             log.warn("Failed to delete temporary files")
+        } catch (e: IllegalArgumentException){
+            log.warn("One or more directory paths were invalid.")
         }
 
         if (gui != null) gui!!.dispose()

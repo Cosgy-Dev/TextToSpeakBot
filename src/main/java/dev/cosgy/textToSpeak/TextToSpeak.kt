@@ -36,6 +36,7 @@ import dev.cosgy.textToSpeak.settings.SettingsManager
 import dev.cosgy.textToSpeak.utils.OtherUtil
 import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.exceptions.InvalidTokenException
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.slf4j.LoggerFactory
@@ -61,9 +62,9 @@ object TextToSpeak {
         val log = LoggerFactory.getLogger("Startup")
         try {
             println("""
-    ${FigletFont.convertOneLine("TextToSpeak Bot v" + OtherUtil.currentVersion)}
-    by Cosgy Dev
-    """.trimIndent())
+                    ${FigletFont.convertOneLine("TextToSpeak Bot v" + OtherUtil.currentVersion)}
+                    by Cosgy Dev
+                    """.trimIndent())
         } catch (ignored: IOException) {
         }
         val prompt = Prompt("TextToSpeak Bot", "noguiモードに切り替えます。  -Dnogui=trueフラグを含めると、手動でnoguiモードで起動できます。",
@@ -139,11 +140,11 @@ object TextToSpeak {
                 gui.init()
             } catch (e: Exception) {
                 log.error("""
-    GUIを開くことができませんでした。次の要因が考えられます:
-    サーバー上で実行している
-    画面がない環境下で実行している
-    このエラーを非表示にするには、 -Dnogui=true フラグを使用してGUIなしモードで実行してください。
-    """.trimIndent())
+                    GUIを開くことができませんでした。次の要因が考えられます:
+                    サーバー上で実行している
+                    画面がない環境下で実行している
+                    このエラーを非表示にするには、 -Dnogui=true フラグを使用してGUIなしモードで実行してください。
+                    """.trimIndent())
             }
         }
         log.info(config.configLocation + " から設定を読み込みました")
@@ -157,17 +158,20 @@ object TextToSpeak {
                     .setBulkDeleteSplittingEnabled(true)
                     .build()
             bot.jda = jda
-        } /*catch (LoginException ex) {
-prompt.alert(Prompt.Level.ERROR, bot.GetLang().getString("appName"), ex + "\n" +
-"正しい設定ファイルを編集していることを確認してください。Botトークンでのログインに失敗しました。" +
-"正しいBotトークンを入力してください。(CLIENT SECRET ではありません!)\n" +
-"設定ファイルの場所: " + config.getConfigLocation());
-System.exit(1);
-}*/ catch (ex: IllegalArgumentException) {
-            prompt.alert(Prompt.Level.ERROR, bot.GetLang().getString("appName"), """
-     設定の一部が無効です:$ex
-     設定ファイルの場所: ${config.configLocation}
-     """.trimIndent())
+        } catch (ex: InvalidTokenException) {
+            prompt.alert(Prompt.Level.ERROR, "TextToSpeak Bot",
+                    """
+                        Botトークンでのログインに失敗しました。
+                        正しいBotトークンが設定されていることを確認してください。(CLIENT SECRET ではありません!)
+                        設定ファイルの場所；${config.configLocation}
+                    """.trimIndent())
+            exitProcess(1);
+        } catch (ex: IllegalArgumentException) {
+            prompt.alert(Prompt.Level.ERROR, "TextToSpeak Bot",
+                """
+                    設定の一部が無効です:$ex
+                    設定ファイルの場所: ${config.configLocation}
+                """.trimIndent())
             exitProcess(1)
         }
 
