@@ -18,4 +18,29 @@ package dev.cosgy.textToSpeak.settings
 class UserSettings(private val manager: UserSettingsManager, // getter
                    private val userId: Long, var voice: String, var speed: Float, var intonation: Float, var voiceQualityA: Float, var voiceQualityFm: Float) {
 
+    fun setVoice(voice: String) {
+        this.voice = voice
+        manager.saveSetting(userId)
+    }
+
+    fun setSpeed(speed:Float){
+        this.speed = speed
+        manager.saveSetting(userId)
+    }
+
+    fun setIntonation(intonation: Float){
+        this.intonation = intonation
+        manager.saveSetting(userId)
+    }
+
+    fun setVoiceQualityA(voiceQualityA: Float){
+        this.voiceQualityA = voiceQualityA
+        manager.saveSetting(userId)
+    }
+
+    fun setVoiceQualityFm(voiceQualityFm: Float){
+        this.voiceQualityFm = voiceQualityFm
+        manager.saveSetting(userId)
+    }
+
 }

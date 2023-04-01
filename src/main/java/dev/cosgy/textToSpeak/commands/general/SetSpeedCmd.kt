@@ -48,7 +48,7 @@ class SetSpeedCmd(private val bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-        settings.speed = bd.toFloat()
+        settings.setSpeed(bd.toFloat())
         event.reply("速度を $bd に設定しました。").queue()
     }
 
@@ -73,15 +73,15 @@ class SetSpeedCmd(private val bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-        settings.speed = bd.toFloat()
+        settings.setSpeed(bd.toFloat())
         event.reply("速度を $bd に設定しました。")
     }
 
     fun help(event: CommandEvent?) {
-        val ebuilder = EmbedBuilder()
+        val builder = EmbedBuilder()
                 .setTitle("setspeedコマンド")
                 .addField("使用方法:", "$name <数値(0.0~)>", false)
                 .addField("説明:", "読み上げの速度を設定します。読み上げ速度は、0.0以上の数値で設定して下さい。", false)
-        event?.reply(ebuilder.build())
+        event?.reply(builder.build())
     }
 }

@@ -33,7 +33,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
-import javax.swing.JOptionPane
 import kotlin.system.exitProcess
 
 class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: SettingsManager) {
@@ -59,7 +58,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     }
 
     fun readyJDA() {
-        dictionary = Dictionary.Companion.getInstance(this)
+        dictionary = Dictionary.getInstance(this)
     }
 
     fun closeAudioConnection(guildId: Long) {

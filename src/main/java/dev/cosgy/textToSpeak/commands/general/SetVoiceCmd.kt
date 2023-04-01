@@ -44,17 +44,17 @@ class SetVoiceCmd(private var bot: Bot) : SlashCommand() {
 
     override fun execute(event: SlashCommandEvent) {
         if (event.getOption("name") == null) {
-            val ebuilder = EmbedBuilder()
+            val builder = EmbedBuilder()
                     .setTitle("setvoiceコマンド")
                     .addField("声データ一覧：", voices.contentToString(), false)
                     .addField("使用方法：", "$name <声データの名前>", false)
-            event.replyEmbeds(ebuilder.build()).queue()
+            event.replyEmbeds(builder.build()).queue()
             return
         }
         val viceName = event.getOption("name")!!.asString
         if (isValidVoice(viceName)) {
             val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-            settings.voice = viceName
+            settings.setVoice(viceName)
             event.reply("声データを`$viceName`に設定しました。").queue()
         } else {
             event.reply("有効な声データを選択して下さい。").queue()
@@ -64,17 +64,17 @@ class SetVoiceCmd(private var bot: Bot) : SlashCommand() {
     override fun execute(event: CommandEvent) {
         val voices = bot.voiceCreation.voices
         if (event.args.isEmpty() && event.message.attachments.isEmpty()) {
-            val ebuilder = EmbedBuilder()
+            val builder = EmbedBuilder()
                     .setTitle("setvoiceコマンド")
                     .addField("声データ一覧：", voices.toString(), false)
                     .addField("使用方法：", "$name <声データの名前>", false)
-            event.reply(ebuilder.build())
+            event.reply(builder.build())
             return
         }
         val args = event.args
         if (voices.contains(args)) {
             val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-            settings.voice = args
+            settings.setVoice(args)
             event.reply("声データを`$args`に設定しました。")
         } else {
             event.reply("有効な声データを選択して下さい。")

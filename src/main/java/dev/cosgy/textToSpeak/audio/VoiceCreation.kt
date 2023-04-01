@@ -188,7 +188,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
                 ?.map { file -> file.nameWithoutExtension }
                 ?.toList()
                 .orEmpty()
-                .also { logger.debug("Available voices: $it") }
+                .also { logger.debug("Available voices: {}", it) }
         }
 
 

@@ -27,6 +27,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.swing.*
+import kotlin.math.ln
+import kotlin.math.pow
 import kotlin.system.exitProcess
 
 
@@ -65,9 +67,8 @@ class GUI(private val bot: Bot) : JFrame() {
         botInfoPanel.layout = BoxLayout(botInfoPanel, BoxLayout.Y_AXIS)
         val scrollPane = JScrollPane(botInfoPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
 
-// Add bot info label to bot info panel
+        // Add bot info label to bot info panel
         val botInfoLabel = JLabel()
-        val systemInfoLabel = JLabel()
 
         val osName = sunOsMx?.name
         val osVersion = sunOsMx?.version
@@ -122,7 +123,7 @@ class GUI(private val bot: Bot) : JFrame() {
         Timer(1000) {
             val uptime = Duration.ofMillis(runtimeMx!!.uptime).toMinutes()
 
-// Convert start time to LocalDateTime
+            // Convert start time to LocalDateTime
             val start = LocalDateTime.ofInstant(Instant.ofEpochMilli(runtimeMx!!.startTime), ZoneId.systemDefault())
             val vmName = runtimeMx!!.name
             val vmVendor = runtimeMx!!.vmVendor
@@ -189,13 +190,13 @@ class GUI(private val bot: Bot) : JFrame() {
             """.trimIndent()
 
             val sysInfoText = """
-    :: System Information<br>
-        Operating system: %s, Version: %s, Arch: %s<br>
-        Number of processors: %d, Physical memory: %s, Virtual memory: %s<br><br>
-    :: VM Information<br>
-        VM: %s, Version: %s, Vendor: %s, JIT compiler: %s<br>
-        Arguments: %s<br><br><br>
-    """.trimIndent()
+            :: System Information<br>
+                Operating system: %s, Version: %s, Arch: %s<br>
+                Number of processors: %d, Physical memory: %s, Virtual memory: %s<br><br>
+            :: VM Information<br>
+                VM: %s, Version: %s, Vendor: %s, JIT compiler: %s<br>
+                Arguments: %s<br><br><br>
+            """.trimIndent()
 
             val systemInfo = sysInfoText.format(
                 osName, osVersion, osArch, processors,
@@ -219,16 +220,16 @@ class GUI(private val bot: Bot) : JFrame() {
 
     }
 
-    fun prettyBytes(bytes: Long): String {
+    private fun prettyBytes(bytes: Long): String {
         return prettyBytes(bytes, true)
     }
 
     private fun prettyBytes(bytes: Long, si: Boolean): String {
         val unit = if (si) 1000 else 1024
         if (bytes < unit) return "$bytes B"
-        val exp = (Math.log(bytes.toDouble()) / Math.log(unit.toDouble())).toInt()
+        val exp = (ln(bytes.toDouble()) / ln(unit.toDouble())).toInt()
         val pre = (if (si) "kMGTPE" else "KMGTPE")[exp - 1].toString() + if (si) "" else "i"
-        return String.format("%.1f %sB", bytes / Math.pow(unit.toDouble(), exp.toDouble()), pre)
+        return String.format("%.1f %sB", bytes / unit.toDouble().pow(exp.toDouble()), pre)
     }
 
 }

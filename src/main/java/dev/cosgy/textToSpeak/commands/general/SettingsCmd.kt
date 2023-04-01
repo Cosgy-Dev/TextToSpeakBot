@@ -32,7 +32,7 @@ class SettingsCmd(private var bot: Bot) : SlashCommand() {
 
     override fun execute(event: SlashCommandEvent) {
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-        val ebuilder = EmbedBuilder()
+        val builder = EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.user.name + "の設定")
                 .addField("声：", settings.voice, false)
@@ -40,12 +40,12 @@ class SettingsCmd(private var bot: Bot) : SlashCommand() {
                 .addField("F0系列内変動の重み：", settings.intonation.toString(), false)
                 .addField("オールパス値：", settings.voiceQualityA.toString(), false)
                 .addField("追加ハーフトーン：", settings.voiceQualityFm.toString(), false)
-        event.replyEmbeds(ebuilder.build()).queue()
+        event.replyEmbeds(builder.build()).queue()
     }
 
     override fun execute(event: CommandEvent) {
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-        val ebuilder = EmbedBuilder()
+        val builder = EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.author.name + "の設定")
                 .addField("声：", settings.voice, false)
@@ -53,6 +53,6 @@ class SettingsCmd(private var bot: Bot) : SlashCommand() {
                 .addField("抑揚：", settings.intonation.toString(), false)
                 .addField("声質a：", settings.voiceQualityA.toString(), false)
                 .addField("声質fm：", settings.voiceQualityFm.toString(), false)
-        event.reply(ebuilder.build())
+        event.reply(builder.build())
     }
 }

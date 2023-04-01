@@ -42,14 +42,14 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
         if (settings!!.getTextChannel(event.guild) != null) {
             text = settings.getTextChannel(event.guild)!!.name
         }
-        val ebuilder = EmbedBuilder()
+        val builder = EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.guild!!.name + "の設定")
                 .addField("ユーザー名読み上げ：", settings.isReadName().toString(), false)
                 .addField("参加、退出時の読み上げ：", settings.isJoinAndLeaveRead().toString(), false) //.addField("接頭語：", settings.getPrefix(), false)
                 .addField("読み上げるチャンネル：", text, false)
                 .addField("読み上げの主音量：", settings.volume.toString(), false)
-        event.replyEmbeds(ebuilder.build()).queue()
+        event.replyEmbeds(builder.build()).queue()
     }
 
     override fun execute(event: CommandEvent) {
@@ -58,13 +58,13 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
         if (settings!!.getTextChannel(event.guild) != null) {
             text = settings.getTextChannel(event.guild)!!.name
         }
-        val ebuilder = EmbedBuilder()
+        val builder = EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.guild.name + "の設定")
                 .addField("ユーザー名読み上げ：", settings.isReadName().toString(), false)
                 .addField("参加、退出時の読み上げ：", settings.isJoinAndLeaveRead().toString(), false) //.addField("接頭語：", settings.getPrefix(), false)
                 .addField("読み上げるチャンネル：", text, false)
                 .addField("読み上げの主音量：", settings.volume.toString(), false)
-        event.reply(ebuilder.build())
+        event.reply(builder.build())
     }
 }

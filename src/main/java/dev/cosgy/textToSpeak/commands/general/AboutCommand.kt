@@ -79,18 +79,18 @@ class AboutCommand(private val color: Color, private val description: String, va
         builder.setDescription(descr)
         if (jda.shardInfo.shardTotal == 1) {
             builder.addField("ステータス", """${jda.guilds.size} サーバー
-1 シャード""", true)
+                1 シャード""", true)
             builder.addField("ユーザー", """${jda.users.size} ユニーク
-${jda.guilds.stream().mapToInt { g: Guild -> g.members.size }.sum()} 合計""", true)
+                ${jda.guilds.stream().mapToInt { g: Guild -> g.members.size }.sum()} 合計""", true)
             builder.addField("チャンネル", """${jda.textChannels.size} テキスト
-${jda.voiceChannels.size} ボイス""", true)
+                ${jda.voiceChannels.size} ボイス""", true)
         } else {
             builder.addField("ステータス", """${client.totalGuilds} サーバー
-シャード ${jda.shardInfo.shardId + 1}/${jda.shardInfo.shardTotal}""", true)
+                シャード ${jda.shardInfo.shardId + 1}/${jda.shardInfo.shardTotal}""", true)
             builder.addField("", """${jda.users.size} ユーザーのシャード
-${jda.guilds.size} サーバー""", true)
+                ${jda.guilds.size} サーバー""", true)
             builder.addField("", """${jda.textChannels.size} テキストチャンネル
-${jda.voiceChannels.size} ボイスチャンネル""", true)
+                ${jda.voiceChannels.size} ボイスチャンネル""", true)
         }
         builder.setFooter("再起動が行われた時間", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg")
         builder.setTimestamp(client.startTime)

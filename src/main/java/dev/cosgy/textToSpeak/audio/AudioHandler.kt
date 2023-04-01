@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.audio.AudioSendHandler
 import net.dv8tion.jda.api.entities.Guild
 import java.nio.ByteBuffer
 
-class AudioHandler(private val manager: PlayerManager, guild: Guild, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
+class AudioHandler(guild: Guild, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
     val queue = FairQueue<QueuedTrack?>()
     val votes: Set<String> = HashSet()
     private val guildId: Long
@@ -36,19 +36,6 @@ class AudioHandler(private val manager: PlayerManager, guild: Guild, val player:
     init {
         guildId = guild.idLong
         stringGuildId = guild.id
-    }
-
-    /**
-     * 再生キューのトップに追加
-     */
-    fun addTrackToFront(qtrack: QueuedTrack): Int {
-        return if (player.playingTrack == null) {
-            player.playTrack(qtrack.track)
-            -1
-        } else {
-            queue.addAt(0, qtrack)
-            0
-        }
     }
 
     /**

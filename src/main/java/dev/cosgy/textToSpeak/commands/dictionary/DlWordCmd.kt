@@ -51,11 +51,11 @@ class DlWordCmd(private val bot: Bot) : SlashCommand() {
 
     override fun execute(event: CommandEvent) {
         if (event.args.isEmpty() && event.message.attachments.isEmpty()) {
-            val ebuilder = EmbedBuilder()
+            val builder = EmbedBuilder()
                     .setTitle("dlwordコマンド")
                     .addField("使用方法:", "$name <単語>", false)
                     .addField("説明:", help, false)
-            event.reply(ebuilder.build())
+            event.reply(builder.build())
             return
         }
         val words = bot.dictionary?.getWords(event.guild.idLong)

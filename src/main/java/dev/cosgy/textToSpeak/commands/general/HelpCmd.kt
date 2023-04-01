@@ -60,9 +60,9 @@ class HelpCmd(var bot: Bot) : SlashCommand() {
 
     public override fun execute(event: CommandEvent) {
         val builder = StringBuilder("""
-    **${event.jda.selfUser.name}** コマンド一覧:
+            **${event.jda.selfUser.name}** コマンド一覧:
     
-    """.trimIndent())
+            """.trimIndent())
         var category: Category? = null
         val commands = event.client.commands
         for (command in commands) {

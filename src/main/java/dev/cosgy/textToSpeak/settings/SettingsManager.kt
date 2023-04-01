@@ -78,7 +78,7 @@ class SettingsManager : GuildSettingsManager<Any?> {
             if (s.volume != 50) o.put("volume", s.volume)
             if (s.isReadName()) o.put("read_name", s.isReadName())
             if (s.isJoinAndLeaveRead()) o.put("join_and_leave_read", s.isJoinAndLeaveRead())
-            obj.put(java.lang.Long.toString(key), o)
+            obj.put(key.toString(), o)
         })
         try {
             Files.write(OtherUtil.getPath("serversettings.json"), obj.toString(4).toByteArray())

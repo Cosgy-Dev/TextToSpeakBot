@@ -59,17 +59,17 @@ class SetVoiceQualityFm(private var bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-        settings.voiceQualityFm = bd!!.toFloat()
+        bd?.let { settings.setVoiceQualityFm(it.toFloat()) }
         event.reply("追加ハーフトーンを" + bd + "に設定しました。").queue()
     }
 
     override fun execute(event: CommandEvent) {
         if (event.args.isEmpty() && event.message.attachments.isEmpty()) {
-            val ebuilder = EmbedBuilder()
+            val builder = EmbedBuilder()
                     .setTitle("setqfmコマンド")
                     .addField("使用方法:", "$name <数値(0.0~)>", false)
                     .addField("説明:", "追加ハーフトーンの設定を変更します。", false)
-            event.reply(ebuilder.build())
+            event.reply(builder.build())
             return
         }
         val args = event.args
@@ -95,7 +95,7 @@ class SetVoiceQualityFm(private var bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-        settings.voiceQualityFm = bd!!.toFloat()
+        bd?.let { settings.setVoiceQualityFm(it.toFloat()) }
         event.reply("追加ハーフトーンを" + bd + "に設定しました。")
     }
 }
