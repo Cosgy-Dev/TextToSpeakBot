@@ -59,7 +59,7 @@ class SetVoiceQualityFm(private var bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-        bd?.let { settings.setVoiceQualityFm(it.toFloat()) }
+        bd?.let { settings.voiceQualityFmSetting = it.toFloat() }
         event.reply("追加ハーフトーンを" + bd + "に設定しました。").queue()
     }
 
@@ -95,7 +95,7 @@ class SetVoiceQualityFm(private var bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-        bd?.let { settings.setVoiceQualityFm(it.toFloat()) }
+        bd?.let { settings.voiceQualityFmSetting = it.toFloat() }
         event.reply("追加ハーフトーンを" + bd + "に設定しました。")
     }
 }

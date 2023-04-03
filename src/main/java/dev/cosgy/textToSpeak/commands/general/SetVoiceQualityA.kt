@@ -58,7 +58,7 @@ class SetVoiceQualityA(private var bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-        settings.setVoiceQualityA(bd!!.toFloat())
+        settings.voiceQualityASetting = bd!!.toFloat()
         event.reply("オールパス値を" + bd + "に設定しました。").queue()
     }
 
@@ -67,7 +67,6 @@ class SetVoiceQualityA(private var bot: Bot) : SlashCommand() {
         var result: Boolean
         var bd: BigDecimal? = null
         try {
-            //value = Float.parseFloat(args);
             bd = BigDecimal(args)
             result = true
         } catch (e: NumberFormatException) {
@@ -80,13 +79,12 @@ class SetVoiceQualityA(private var bot: Bot) : SlashCommand() {
         val min = BigDecimal("0.0")
         val max = BigDecimal("1.0")
 
-        //if(!(0.1f <= value && value <= 1.0f)){
         if (!(min < bd && max > bd)) {
             event.reply("有効な数値を設定して下さい。0.1~1.0")
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-        settings.setVoiceQualityA(bd!!.toFloat())
+        settings.voiceQualityASetting = bd!!.toFloat()
         event.reply("オールパス値を" + bd + "に設定しました。")
     }
 }

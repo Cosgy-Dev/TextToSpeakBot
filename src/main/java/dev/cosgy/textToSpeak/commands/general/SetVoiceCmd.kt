@@ -51,11 +51,11 @@ class SetVoiceCmd(private var bot: Bot) : SlashCommand() {
             event.replyEmbeds(builder.build()).queue()
             return
         }
-        val viceName = event.getOption("name")!!.asString
-        if (isValidVoice(viceName)) {
+        val voiceName = event.getOption("name")!!.asString
+        if (isValidVoice(voiceName)) {
             val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-            settings.setVoice(viceName)
-            event.reply("声データを`$viceName`に設定しました。").queue()
+            settings.voiceSetting = voiceName
+            event.reply("声データを`$voiceName`に設定しました。").queue()
         } else {
             event.reply("有効な声データを選択して下さい。").queue()
         }
@@ -74,7 +74,7 @@ class SetVoiceCmd(private var bot: Bot) : SlashCommand() {
         val args = event.args
         if (voices.contains(args)) {
             val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-            settings.setVoice(args)
+            settings.voiceSetting = args
             event.reply("声データを`$args`に設定しました。")
         } else {
             event.reply("有効な声データを選択して下さい。")

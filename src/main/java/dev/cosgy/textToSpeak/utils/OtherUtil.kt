@@ -62,7 +62,7 @@ object OtherUtil {
      */
     fun loadResource(clazz: Any, name: String?): String? {
         return try {
-            readString(clazz.javaClass.getResourceAsStream(name))
+            name?.let { clazz.javaClass.getResourceAsStream(it)?.let { readString(it) } }
         } catch (ex: Exception) {
             null
         }
@@ -121,8 +121,8 @@ object OtherUtil {
         return Activity.playing(game)
     }
 
-    fun makeNonEmpty(str: String?): String {
-        return if (str == null || str.isEmpty()) "\u200B" else str
+    private fun makeNonEmpty(str: String?): String {
+        return if (str.isNullOrEmpty()) "\u200B" else str
     }
 
     fun parseStatus(status: String?): OnlineStatus {

@@ -35,11 +35,11 @@ class SettingsCmd(private var bot: Bot) : SlashCommand() {
         val builder = EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.user.name + "の設定")
-                .addField("声：", settings.voice, false)
-                .addField("読み上げ速度：", settings.speed.toString(), false)
-                .addField("F0系列内変動の重み：", settings.intonation.toString(), false)
-                .addField("オールパス値：", settings.voiceQualityA.toString(), false)
-                .addField("追加ハーフトーン：", settings.voiceQualityFm.toString(), false)
+                .addField("声：", settings.voiceSetting, false)
+                .addField("読み上げ速度：", settings.speedSetting.toString(), false)
+                .addField("F0系列内変動の重み：", settings.intonationSetting.toString(), false)
+                .addField("オールパス値：", settings.voiceQualityASetting.toString(), false)
+                .addField("追加ハーフトーン：", settings.voiceQualityFmSetting.toString(), false)
         event.replyEmbeds(builder.build()).queue()
     }
 
@@ -48,11 +48,11 @@ class SettingsCmd(private var bot: Bot) : SlashCommand() {
         val builder = EmbedBuilder()
                 .setColor(Color.orange)
                 .setTitle(event.author.name + "の設定")
-                .addField("声：", settings.voice, false)
-                .addField("速度：", settings.speed.toString(), false)
-                .addField("抑揚：", settings.intonation.toString(), false)
-                .addField("声質a：", settings.voiceQualityA.toString(), false)
-                .addField("声質fm：", settings.voiceQualityFm.toString(), false)
+                .addField("声：", settings.voiceSetting, false)
+                .addField("速度：", settings.speedSetting.toString(), false)
+                .addField("抑揚：", settings.intonationSetting.toString(), false)
+                .addField("声質a：", settings.voiceQualityASetting.toString(), false)
+                .addField("声質fm：", settings.voiceQualityFmSetting.toString(), false)
         event.reply(builder.build())
     }
 }

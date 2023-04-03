@@ -68,11 +68,11 @@ class UserSettingsManager {
         try {
             connection!!.prepareStatement(sql).use { ps ->
                 ps.setLong(1, userId)
-                ps.setString(2, settings!!.voice)
-                ps.setFloat(3, settings.speed)
-                ps.setFloat(4, settings.intonation)
-                ps.setFloat(5, settings.voiceQualityA)
-                ps.setFloat(6, settings.voiceQualityFm)
+                ps.setString(2, settings!!.voiceSetting)
+                ps.setFloat(3, settings.speedSetting)
+                ps.setFloat(4, settings.intonationSetting)
+                ps.setFloat(5, settings.voiceQualityASetting)
+                ps.setFloat(6, settings.voiceQualityFmSetting)
                 logger.debug(ps.toString())
                 ps.executeUpdate()
             }

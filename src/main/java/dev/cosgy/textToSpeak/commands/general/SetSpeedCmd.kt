@@ -48,7 +48,7 @@ class SetSpeedCmd(private val bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-        settings.setSpeed(bd.toFloat())
+        settings.speedSetting = bd.toFloat()
         event.reply("速度を $bd に設定しました。").queue()
     }
 
@@ -73,7 +73,7 @@ class SetSpeedCmd(private val bot: Bot) : SlashCommand() {
             return
         }
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-        settings.setSpeed(bd.toFloat())
+        settings.speedSetting = bd.toFloat()
         event.reply("速度を $bd に設定しました。")
     }
 

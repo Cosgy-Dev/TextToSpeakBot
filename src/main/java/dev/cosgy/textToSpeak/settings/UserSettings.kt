@@ -15,32 +15,47 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.settings
 
-class UserSettings(private val manager: UserSettingsManager, // getter
-                   private val userId: Long, var voice: String, var speed: Float, var intonation: Float, var voiceQualityA: Float, var voiceQualityFm: Float) {
+class UserSettings(
+    private val manager: UserSettingsManager,
+    private val userId: Long,
+    private var voice: String,
+    private var speed: Float,
+    private var intonation: Float,
+    private var voiceQualityA: Float,
+    private var voiceQualityFm: Float
+) {
+    var voiceSetting: String
+        get() = voice
+        set(value) {
+            voice = value
+            manager.saveSetting(userId)
+        }
 
-    fun setVoice(voice: String) {
-        this.voice = voice
-        manager.saveSetting(userId)
-    }
+    var speedSetting: Float
+        get() = speed
+        set(value) {
+            speed = value
+            manager.saveSetting(userId)
+        }
 
-    fun setSpeed(speed:Float){
-        this.speed = speed
-        manager.saveSetting(userId)
-    }
+    var intonationSetting: Float
+        get() = intonation
+        set(value) {
+            intonation = value
+            manager.saveSetting(userId)
+        }
 
-    fun setIntonation(intonation: Float){
-        this.intonation = intonation
-        manager.saveSetting(userId)
-    }
+    var voiceQualityASetting: Float
+        get() = voiceQualityA
+        set(value) {
+            voiceQualityA = value
+            manager.saveSetting(userId)
+        }
 
-    fun setVoiceQualityA(voiceQualityA: Float){
-        this.voiceQualityA = voiceQualityA
-        manager.saveSetting(userId)
-    }
-
-    fun setVoiceQualityFm(voiceQualityFm: Float){
-        this.voiceQualityFm = voiceQualityFm
-        manager.saveSetting(userId)
-    }
-
+    var voiceQualityFmSetting: Float
+        get() = voiceQualityFm
+        set(value) {
+            voiceQualityFm = value
+            manager.saveSetting(userId)
+        }
 }

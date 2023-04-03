@@ -107,10 +107,10 @@ class BotConfig(private val prompt: Prompt) {
             if (ownerId <= 0) {
                 ownerId = try {
                     prompt.prompt("""
-            所有者のユーザーIDが設定されていない、または有効なIDではありません。
-            BOTの所有者のユーザーIDを入力してください。
-            所有者のユーザーID: 
-            """.trimIndent())!!.toLong()
+                        所有者のユーザーIDが設定されていない、または有効なIDではありません。
+                        BOTの所有者のユーザーIDを入力してください。
+                        所有者のユーザーID: 
+                    """.trimIndent())!!.toLong()
                 } catch (ex: NumberFormatException) {
                     0
                 } catch (ex: NullPointerException) {
@@ -118,10 +118,10 @@ class BotConfig(private val prompt: Prompt) {
                 }
                 if (ownerId <= 0) {
                     prompt.alert(Prompt.Level.ERROR, CONTEXT, """
-     無効なユーザーIDです！終了します。
+                        無効なユーザーIDです！終了します。
      
-     設定ファイルの場所: ${path!!.toAbsolutePath()}
-     """.trimIndent())
+                        設定ファイルの場所: ${path!!.toAbsolutePath()}
+                    """.trimIndent())
                     exitProcess(0)
                 } else {
                     write = true
@@ -131,9 +131,9 @@ class BotConfig(private val prompt: Prompt) {
                 val original = OtherUtil.loadResource(this, "/reference.conf")
                 val mod: String = original?.substring(original.indexOf(START_TOKEN) + START_TOKEN.length, original.indexOf(END_TOKEN))?.replace("BOT_TOKEN_HERE", token!!)?.replace("Botトークンをここに貼り付け", token!!)?.replace("0 // OWNER ID", ownerId.toString())?.replace("所有者IDをここに貼り付け", ownerId.toString())?.trim { it <= ' ' }
                         ?: """
-     token = $token
-     owner = $ownerId
-     """.trimIndent()
+                            token = $token
+                            owner = $ownerId
+                        """.trimIndent()
                 FileUtils.writeStringToFile(path!!.toFile(), mod, StandardCharsets.UTF_8)
             }
 
@@ -141,16 +141,16 @@ class BotConfig(private val prompt: Prompt) {
             isValid = true
         } catch (ex: ConfigException) {
             prompt.alert(Prompt.Level.ERROR, CONTEXT, """
-     $ex: ${ex.message}
+                $ex: ${ex.message}
      
-     設定ファイルの場所: ${path!!.toAbsolutePath()}
-     """.trimIndent())
+                設定ファイルの場所: ${path!!.toAbsolutePath()}
+            """.trimIndent())
         } catch (ex: IOException) {
             prompt.alert(Prompt.Level.ERROR, CONTEXT, """
-     $ex: ${ex.message}
+                $ex: ${ex.message}
      
-     設定ファイルの場所: ${path!!.toAbsolutePath()}
-     """.trimIndent())
+                設定ファイルの場所: ${path!!.toAbsolutePath()}
+            """.trimIndent())
         }
     }
 

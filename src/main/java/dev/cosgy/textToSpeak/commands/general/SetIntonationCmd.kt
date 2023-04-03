@@ -42,7 +42,7 @@ class SetIntonationCmd(private val bot: Bot) : SlashCommand() {
         }
 
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
-        settings.setIntonation(bd.toFloat())
+        settings.intonationSetting = bd.toFloat()
         event.reply("F0系列内変動の重みを$bd に設定しました。").queue()
     }
 
@@ -64,7 +64,7 @@ class SetIntonationCmd(private val bot: Bot) : SlashCommand() {
         }
 
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
-        settings.setIntonation(bd.toFloat())
+        settings.intonationSetting = bd.toFloat()
         event.reply("F0系列内変動の重みを$bd に設定しました。")
     }
 }
