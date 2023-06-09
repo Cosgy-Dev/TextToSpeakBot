@@ -67,7 +67,9 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     }
 
     fun resetGame() {
-        val game = if (config.game == null || config.game!!.name.lowercase(Locale.getDefault()).matches("(none|なし)".toRegex())) null else config.game
+        val game = if (config.game == null || config.game!!.name.lowercase(Locale.getDefault())
+                .matches("(none|なし)".toRegex())
+        ) null else config.game
         if (jda!!.presence.activity != game) jda!!.presence.activity = game
     }
 
@@ -123,7 +125,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
             log.info("Deleted temporary files")
         } catch (e: IOException) {
             log.warn("Failed to delete temporary files")
-        } catch (e: IllegalArgumentException){
+        } catch (e: IllegalArgumentException) {
             log.warn("One or more directory paths were invalid.")
         }
 

@@ -66,9 +66,9 @@ class SetVoiceQualityFm(private var bot: Bot) : SlashCommand() {
     override fun execute(event: CommandEvent) {
         if (event.args.isEmpty() && event.message.attachments.isEmpty()) {
             val builder = EmbedBuilder()
-                    .setTitle("setqfmコマンド")
-                    .addField("使用方法:", "$name <数値(0.0~)>", false)
-                    .addField("説明:", "追加ハーフトーンの設定を変更します。", false)
+                .setTitle("setqfmコマンド")
+                .addField("使用方法:", "$name <数値(0.0~)>", false)
+                .addField("説明:", "追加ハーフトーンの設定を変更します。", false)
             event.reply(builder.build())
             return
         }

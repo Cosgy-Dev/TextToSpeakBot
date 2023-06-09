@@ -47,7 +47,11 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                 if (owner != null) {
                     val currentVersion = OtherUtil.currentVersion
                     val latestVersion = OtherUtil.latestVersion
-                    if (latestVersion != null && !currentVersion.equals(latestVersion, ignoreCase = true) && TextToSpeak.CHECK_UPDATE) {
+                    if (latestVersion != null && !currentVersion.equals(
+                            latestVersion,
+                            ignoreCase = true
+                        ) && TextToSpeak.CHECK_UPDATE
+                    ) {
                         val msg = String.format(OtherUtil.NEW_VERSION_AVAILABLE, currentVersion, latestVersion)
                         owner.openPrivateChannel().queue { pc: PrivateChannel -> pc.sendMessage(msg).queue() }
                     }
@@ -62,7 +66,11 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
         if (event.channelLeft != null) {
             if (settings!!.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelLeft && event.channelLeft!!.members.size > 1) {
                 val file: String? = try {
-                    bot.voiceCreation.createVoice(event.guild, event.member.user, event.member.user.name + "がボイスチャンネルから退出しました。")
+                    bot.voiceCreation.createVoice(
+                        event.guild,
+                        event.member.user,
+                        event.member.user.name + "がボイスチャンネルから退出しました。"
+                    )
                 } catch (e: IOException) {
                     throw RuntimeException(e)
                 } catch (e: InterruptedException) {
@@ -83,7 +91,11 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
         if (event.channelJoined != null) {
             if (settings!!.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelJoined) {
                 val file: String? = try {
-                    bot.voiceCreation.createVoice(event.guild, event.member.user, event.member.user.name + "がボイスチャンネルに参加しました。")
+                    bot.voiceCreation.createVoice(
+                        event.guild,
+                        event.member.user,
+                        event.member.user.name + "がボイスチャンネルに参加しました。"
+                    )
                 } catch (e: IOException) {
                     throw RuntimeException(e)
                 } catch (e: InterruptedException) {

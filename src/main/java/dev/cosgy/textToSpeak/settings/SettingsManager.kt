@@ -33,12 +33,13 @@ class SettingsManager : GuildSettingsManager<Any?> {
             val loadedSettings = JSONObject(Files.readAllBytes(OtherUtil.getPath("serversettings.json")))
             loadedSettings.keySet().forEach(Consumer { id: String ->
                 val o = loadedSettings.getJSONObject(id)
-                settings[id.toLong()] = Settings(this,
-                        if (o.has("text_channel_id")) o.getString("text_channel_id") else null,
-                        if (o.has("prefix")) o.getString("prefix") else null,
-                        if (o.has("volume")) o.getInt("volume") else 50,
-                        o.has("read_name") && o.getBoolean("read_name"),
-                        o.has("join_and_leave_read") && o.getBoolean("join_and_leave_read")
+                settings[id.toLong()] = Settings(
+                    this,
+                    if (o.has("text_channel_id")) o.getString("text_channel_id") else null,
+                    if (o.has("prefix")) o.getString("prefix") else null,
+                    if (o.has("volume")) o.getInt("volume") else 50,
+                    o.has("read_name") && o.getBoolean("read_name"),
+                    o.has("join_and_leave_read") && o.getBoolean("join_and_leave_read")
                 )
             })
         } catch (e: IOException) {

@@ -27,7 +27,14 @@ class Settings : GuildSettingsProvider {
     private var readName: Boolean
     private var joinAndLeaveRead: Boolean
 
-    constructor(manager: SettingsManager, textId: String?, prefix: String?, volume: Int, readName: Boolean, joinAndLeaveRead: Boolean) {
+    constructor(
+        manager: SettingsManager,
+        textId: String?,
+        prefix: String?,
+        volume: Int,
+        readName: Boolean,
+        joinAndLeaveRead: Boolean
+    ) {
         this.manager = manager
         try {
             this.textId = textId!!.toLong()
@@ -40,7 +47,14 @@ class Settings : GuildSettingsProvider {
         this.joinAndLeaveRead = joinAndLeaveRead
     }
 
-    constructor(manager: SettingsManager, textId: Long, prefix: String?, volume: Int, readName: Boolean, joinAndLeaveRead: Boolean) {
+    constructor(
+        manager: SettingsManager,
+        textId: Long,
+        prefix: String?,
+        volume: Int,
+        readName: Boolean,
+        joinAndLeaveRead: Boolean
+    ) {
         this.manager = manager
         this.textId = textId
         this.prefix = prefix

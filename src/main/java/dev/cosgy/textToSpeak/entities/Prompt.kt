@@ -19,7 +19,14 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import javax.swing.JOptionPane
 
-class Prompt @JvmOverloads constructor(private val title: String, noguiMessage: String? = null, var isNoGUI: Boolean = "true".equals(System.getProperty("nogui"), ignoreCase = true)) {
+class Prompt @JvmOverloads constructor(
+    private val title: String,
+    noguiMessage: String? = null,
+    var isNoGUI: Boolean = "true".equals(
+        System.getProperty("nogui"),
+        ignoreCase = true
+    )
+) {
     private val noguiMessage: String
     private var scanner: Scanner? = null
 

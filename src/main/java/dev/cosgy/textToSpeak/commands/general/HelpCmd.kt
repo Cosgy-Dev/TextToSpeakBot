@@ -45,24 +45,28 @@ class HelpCmd(var bot: Bot) : SlashCommand() {
                     builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name).append("__:\n")
                 }
                 builder.append("\n`").append("/").append(command.name)
-                        .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
-                        .append(" - ").append(command.help)
+                    .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
+                    .append(" - ").append(command.help)
             }
         }
-        if (event.client.serverInvite != null) builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(event.client.serverInvite)
+        if (event.client.serverInvite != null) builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ")
+            .append(event.client.serverInvite)
         eBuilder.setDescription(builder)
         if (bot.config.helpToDm) {
-            event.user.openPrivateChannel().flatMap { channel: PrivateChannel -> channel.sendMessageEmbeds(eBuilder.build()) }.queue()
+            event.user.openPrivateChannel()
+                .flatMap { channel: PrivateChannel -> channel.sendMessageEmbeds(eBuilder.build()) }.queue()
         } else {
             event.replyEmbeds(eBuilder.build()).queue()
         }
     }
 
     public override fun execute(event: CommandEvent) {
-        val builder = StringBuilder("""
+        val builder = StringBuilder(
+            """
             **${event.jda.selfUser.name}** コマンド一覧:
     
-            """.trimIndent())
+            """.trimIndent()
+        )
         var category: Category? = null
         val commands = event.client.commands
         for (command in commands) {
@@ -71,14 +75,22 @@ class HelpCmd(var bot: Bot) : SlashCommand() {
                     category = command.category
                     builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name).append("__:\n")
                 }
-                builder.append("\n`").append(event.client.textualPrefix).append(if (event.client.prefix == null) " " else "").append(command.name)
-                        .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
-                        .append(" - ").append(command.help)
+                builder.append("\n`").append(event.client.textualPrefix)
+                    .append(if (event.client.prefix == null) " " else "").append(command.name)
+                    .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
+                    .append(" - ").append(command.help)
             }
         }
-        if (event.client.serverInvite != null) builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ").append(event.client.serverInvite)
+        if (event.client.serverInvite != null) builder.append("\n\nさらにヘルプが必要な場合は、公式サーバーに参加することもできます: ")
+            .append(event.client.serverInvite)
         if (bot.config.helpToDm) {
-            event.replyInDm(builder.toString(), { _: Message? -> if (event.isFromType(ChannelType.TEXT)) event.reactSuccess() }) { _: Throwable? -> event.replyWarning("ダイレクトメッセージをブロックしているため、ヘルプを送信できません。") }
+            event.replyInDm(
+                builder.toString(),
+                { _: Message? -> if (event.isFromType(ChannelType.TEXT)) event.reactSuccess() }) { _: Throwable? ->
+                event.replyWarning(
+                    "ダイレクトメッセージをブロックしているため、ヘルプを送信できません。"
+                )
+            }
         } else {
             event.reply(builder.toString())
         }

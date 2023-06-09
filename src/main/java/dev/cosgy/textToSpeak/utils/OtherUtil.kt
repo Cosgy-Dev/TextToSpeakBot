@@ -46,7 +46,8 @@ object OtherUtil {
         if (path.lowercase(Locale.getDefault()).startsWith(WINDOWS_INVALID_PATH)) {
             val filename = path.substring(WINDOWS_INVALID_PATH.length)
             try {
-                path = File(TextToSpeak::class.java.protectionDomain.codeSource.location.toURI()).parentFile.path + File.separator + filename
+                path =
+                    File(TextToSpeak::class.java.protectionDomain.codeSource.location.toURI()).parentFile.path + File.separator + filename
             } catch (ignored: URISyntaxException) {
             }
         }
@@ -91,7 +92,10 @@ object OtherUtil {
         try {
             val u = URL(url)
             val urlConnection = u.openConnection()
-            urlConnection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36")
+            urlConnection.setRequestProperty(
+                "user-agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
+            )
             return urlConnection.getInputStream()
         } catch (ignore: IOException) {
         } catch (ignore: IllegalArgumentException) {
@@ -106,10 +110,14 @@ object OtherUtil {
      * @return the parsed activity
      */
     fun parseGame(game: String?): Activity? {
-        if (game == null || game.trim { it <= ' ' }.isEmpty() || game.trim { it <= ' ' }.equals("default", ignoreCase = true)) return null
+        if (game == null || game.trim { it <= ' ' }.isEmpty() || game.trim { it <= ' ' }
+                .equals("default", ignoreCase = true)) return null
         val lower = game.lowercase(Locale.getDefault())
         if (lower.startsWith("playing")) return Activity.playing(makeNonEmpty(game.substring(7).trim { it <= ' ' }))
-        if (lower.startsWith("listening to")) return Activity.listening(makeNonEmpty(game.substring(12).trim { it <= ' ' }))
+        if (lower.startsWith("listening to")) return Activity.listening(
+            makeNonEmpty(
+                game.substring(12).trim { it <= ' ' })
+        )
         if (lower.startsWith("listening")) return Activity.listening(makeNonEmpty(game.substring(9).trim { it <= ' ' }))
         if (lower.startsWith("watching")) return Activity.watching(makeNonEmpty(game.substring(8).trim { it <= ' ' }))
         if (lower.startsWith("streaming")) {
@@ -153,8 +161,8 @@ object OtherUtil {
                 val client = OkHttpClient()
 
                 val request = Request.Builder()
-                        .url("https://api.github.com/repos/Cosgy-Dev/TextToSpeakBot/releases/latest")
-                        .build()
+                    .url("https://api.github.com/repos/Cosgy-Dev/TextToSpeakBot/releases/latest")
+                    .build()
 
                 val response = client.newCall(request).execute()
                 val body = response.body?.string()

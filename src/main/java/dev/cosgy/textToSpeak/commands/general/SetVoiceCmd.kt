@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
@@ -45,9 +44,9 @@ class SetVoiceCmd(private var bot: Bot) : SlashCommand() {
     override fun execute(event: SlashCommandEvent) {
         if (event.getOption("name") == null) {
             val builder = EmbedBuilder()
-                    .setTitle("setvoiceコマンド")
-                    .addField("声データ一覧：", voices.contentToString(), false)
-                    .addField("使用方法：", "$name <声データの名前>", false)
+                .setTitle("setvoiceコマンド")
+                .addField("声データ一覧：", voices.contentToString(), false)
+                .addField("使用方法：", "$name <声データの名前>", false)
             event.replyEmbeds(builder.build()).queue()
             return
         }
@@ -65,9 +64,9 @@ class SetVoiceCmd(private var bot: Bot) : SlashCommand() {
         val voices = bot.voiceCreation.voices
         if (event.args.isEmpty() && event.message.attachments.isEmpty()) {
             val builder = EmbedBuilder()
-                    .setTitle("setvoiceコマンド")
-                    .addField("声データ一覧：", voices.toString(), false)
-                    .addField("使用方法：", "$name <声データの名前>", false)
+                .setTitle("setvoiceコマンド")
+                .addField("声データ一覧：", voices.toString(), false)
+                .addField("使用方法：", "$name <声データの名前>", false)
             event.reply(builder.build())
             return
         }
@@ -84,9 +83,9 @@ class SetVoiceCmd(private var bot: Bot) : SlashCommand() {
     override fun onAutoComplete(event: CommandAutoCompleteInteractionEvent) {
         if (event.name == "setvoice" && event.focusedOption.name == "name") {
             val options = Stream.of(*voices)
-                    .filter { word: String? -> word!!.startsWith(event.focusedOption.value) } // only display words that start with the user's current input
-                    .map { word: String? -> Command.Choice(word!!, word) } // map the words to choices
-                    .collect(Collectors.toList())
+                .filter { word: String? -> word!!.startsWith(event.focusedOption.value) } // only display words that start with the user's current input
+                .map { word: String? -> Command.Choice(word!!, word) } // map the words to choices
+                .collect(Collectors.toList())
             event.replyChoices(options).queue()
         }
         super.onAutoComplete(event)

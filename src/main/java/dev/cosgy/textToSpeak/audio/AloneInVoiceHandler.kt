@@ -53,14 +53,15 @@ class AloneInVoiceHandler(private val bot: Bot) {
         if (!bot.playerManager.hasHandler(guild)) return
         val alone = isAlone(guild)
         val inList = aloneSince.containsKey(guild.idLong)
-        if (!alone && inList) aloneSince.remove(guild.idLong) else if (alone && !inList) aloneSince[guild.idLong] = Instant.now()
+        if (!alone && inList) aloneSince.remove(guild.idLong) else if (alone && !inList) aloneSince[guild.idLong] =
+            Instant.now()
     }
 
     private fun isAlone(guild: Guild): Boolean {
         return if (guild.audioManager.connectedChannel == null) false else guild.audioManager.connectedChannel!!.members.stream()
-                .noneMatch { x: Member ->
-                    (!x.voiceState!!.isDeafened
-                            && !x.user.isBot)
-                }
+            .noneMatch { x: Member ->
+                (!x.voiceState!!.isDeafened
+                        && !x.user.isBot)
+            }
     }
 }

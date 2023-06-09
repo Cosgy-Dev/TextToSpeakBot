@@ -52,7 +52,9 @@ class SettcCmd(bot: Bot?) : AdminCommand() {
             event.reply(event.client.success + "読み上げをするチャンネルの設定を無効にしました。")
         } else {
             val list = FinderUtil.findTextChannels(event.args, event.guild)
-            if (list.isEmpty()) event.reply(event.client.warning + "一致するチャンネルが見つかりませんでした \"" + event.args + "\"") else if (list.size > 1) event.reply(event.client.warning + FormatUtil.listOfTChannels(list, event.args)) else {
+            if (list.isEmpty()) event.reply(event.client.warning + "一致するチャンネルが見つかりませんでした \"" + event.args + "\"") else if (list.size > 1) event.reply(
+                event.client.warning + FormatUtil.listOfTChannels(list, event.args)
+            ) else {
                 s.setTextChannel(list[0])
                 log.info("読み上げを行うチャンネルを設定しました。")
                 event.reply(event.client.success + "読み上げるチャンネルを<#" + list[0].id + ">に設定しました。")

@@ -60,8 +60,12 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
             ReadChannel.setChannel(event.guild!!.idLong, event.textChannel.idLong)
         } catch (ex: PermissionException) {
             builder.appendDescription(event.client.error + String.format("**%s**に接続できません!", userState.channel!!.name))
-            builder.addField("ボイスチャンネル", event.client.error + String.format("**%s**に接続できません!",
-                    userState.channel!!.name), false)
+            builder.addField(
+                "ボイスチャンネル", event.client.error + String.format(
+                    "**%s**に接続できません!",
+                    userState.channel!!.name
+                ), false
+            )
             event.hook.sendMessageEmbeds(builder.build()).queue()
         }
     }

@@ -34,7 +34,9 @@ import dev.cosgy.textToSpeak.listeners.CommandAudit
 import dev.cosgy.textToSpeak.listeners.MessageListener
 import dev.cosgy.textToSpeak.settings.SettingsManager
 import dev.cosgy.textToSpeak.utils.OtherUtil
-import net.dv8tion.jda.api.*
+import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.exceptions.InvalidTokenException
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -47,10 +49,28 @@ import java.util.*
 import kotlin.system.exitProcess
 
 object TextToSpeak {
-    val RECOMMENDED_PERMS = arrayOf(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION,
-            Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EXT_EMOJI, Permission.USE_APPLICATION_COMMANDS,
-            Permission.MANAGE_CHANNEL, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.NICKNAME_CHANGE)
-    private val INTENTS = arrayOf(GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT)
+    val RECOMMENDED_PERMS = arrayOf(
+        Permission.VIEW_CHANNEL,
+        Permission.MESSAGE_SEND,
+        Permission.MESSAGE_HISTORY,
+        Permission.MESSAGE_ADD_REACTION,
+        Permission.MESSAGE_EMBED_LINKS,
+        Permission.MESSAGE_ATTACH_FILES,
+        Permission.MESSAGE_MANAGE,
+        Permission.MESSAGE_EXT_EMOJI,
+        Permission.USE_APPLICATION_COMMANDS,
+        Permission.MANAGE_CHANNEL,
+        Permission.VOICE_CONNECT,
+        Permission.VOICE_SPEAK,
+        Permission.NICKNAME_CHANGE
+    )
+    private val INTENTS = arrayOf(
+        GatewayIntent.DIRECT_MESSAGES,
+        GatewayIntent.GUILD_MESSAGES,
+        GatewayIntent.GUILD_MESSAGE_REACTIONS,
+        GatewayIntent.GUILD_VOICE_STATES,
+        GatewayIntent.MESSAGE_CONTENT
+    )
     var CHECK_UPDATE = true
     var COMMAND_AUDIT_ENABLED = false
 
@@ -61,19 +81,25 @@ object TextToSpeak {
     fun main(args: Array<String>) {
         val log = LoggerFactory.getLogger("Startup")
         try {
-            println("""
+            println(
+                """
                     ${FigletFont.convertOneLine("TextToSpeak Bot v" + OtherUtil.currentVersion)}
                     by Cosgy Dev
-                    """.trimIndent())
+                    """.trimIndent()
+            )
         } catch (ignored: IOException) {
         }
-        val prompt = Prompt("TextToSpeak Bot", "noguiモードに切り替えます。  -Dnogui=trueフラグを含めると、手動でnoguiモードで起動できます。",
-                "true".equals(System.getProperty("nogui", "false"), ignoreCase = true))
+        val prompt = Prompt(
+            "TextToSpeak Bot", "noguiモードに切り替えます。  -Dnogui=trueフラグを含めると、手動でnoguiモードで起動できます。",
+            "true".equals(System.getProperty("nogui", "false"), ignoreCase = true)
+        )
 
         // check deprecated nogui mode (new way of setting it is -Dnogui=true)
         for (arg in args) if ("-nogui".equals(arg, ignoreCase = true)) {
-            prompt.alert(Prompt.Level.WARNING, "GUI", "-noguiフラグは廃止予定です。 "
-                    + "jarの名前の前に-Dnogui = trueフラグを使用してください。 例：java -jar -Dnogui=true JMusicBot.jar")
+            prompt.alert(
+                Prompt.Level.WARNING, "GUI", "-noguiフラグは廃止予定です。 "
+                        + "jarの名前の前に-Dnogui = trueフラグを使用してください。 例：java -jar -Dnogui=true JMusicBot.jar"
+            )
         } else if ("-nocheckupdates".equals(arg, ignoreCase = true)) {
             CHECK_UPDATE = false
             log.info("アップデートチェックを無効にしました")
@@ -82,7 +108,11 @@ object TextToSpeak {
             log.info("実行されたコマンドの記録を有効にしました。")
         }
         val version = OtherUtil.checkVersion(prompt)
-        if (!System.getProperty("java.vm.name").contains("64")) prompt.alert(Prompt.Level.WARNING, "Java Version", "サポートされていないJavaバージョンを使用しています。64ビット版のJavaを使用してください。")
+        if (!System.getProperty("java.vm.name").contains("64")) prompt.alert(
+            Prompt.Level.WARNING,
+            "Java Version",
+            "サポートされていないJavaバージョンを使用しています。64ビット版のJavaを使用してください。"
+        )
         val config = BotConfig(prompt)
         config.load()
         if (!config.isValid) return
@@ -90,19 +120,21 @@ object TextToSpeak {
         val settings = SettingsManager()
         val bot = Bot(waiter, config, settings)
         Bot.INSTANCE = bot
-        val aboutCommand = AboutCommand(Color.BLUE.brighter(),
-                bot.GetLang().getString("appName") + "(v" + version + ")",
-                *RECOMMENDED_PERMS)
+        val aboutCommand = AboutCommand(
+            Color.BLUE.brighter(),
+            bot.GetLang().getString("appName") + "(v" + version + ")",
+            *RECOMMENDED_PERMS
+        )
         aboutCommand.setIsAuthor(false)
         aboutCommand.setReplacementCharacter("🎶")
         val cb = CommandClientBuilder()
-                .setPrefix(config.prefix)
-                .setAlternativePrefix(config.altPrefix)
-                .setOwnerId(config.ownerId.toString()) //.setEmojis(config.getSuccess(), config.getWarning(), config.getError())
-                .setHelpWord("help")
-                .setLinkedCacheSize(200)
-                .setGuildSettingsManager(settings)
-                .setListener(CommandAudit())
+            .setPrefix(config.prefix)
+            .setAlternativePrefix(config.altPrefix)
+            .setOwnerId(config.ownerId.toString()) //.setEmojis(config.getSuccess(), config.getWarning(), config.getError())
+            .setHelpWord("help")
+            .setLinkedCacheSize(200)
+            .setGuildSettingsManager(settings)
+            .setListener(CommandAudit())
         val slashCommandList: ArrayList<SlashCommand?> = object : ArrayList<SlashCommand?>() {
             init {
                 add(aboutCommand)
@@ -129,7 +161,10 @@ object TextToSpeak {
         cb.addCommands(*slashCommandList.toTypedArray())
         var nogame = false
         if (config.status != OnlineStatus.UNKNOWN) cb.setStatus(config.status)
-        if (config.game == null) cb.setActivity(Activity.playing("/helpでヘルプを確認")) else if (config.game!!.name.lowercase(Locale.getDefault()).matches("(none|なし)".toRegex())) {
+        if (config.game == null) cb.setActivity(Activity.playing("/helpでヘルプを確認")) else if (config.game!!.name.lowercase(
+                Locale.getDefault()
+            ).matches("(none|なし)".toRegex())
+        ) {
             cb.setActivity(null)
             nogame = true
         } else cb.setActivity(config.game)
@@ -139,39 +174,51 @@ object TextToSpeak {
                 bot.setGUI(gui)
                 gui.init()
             } catch (e: Exception) {
-                log.error("""
+                log.error(
+                    """
                     GUIを開くことができませんでした。次の要因が考えられます:
                     サーバー上で実行している
                     画面がない環境下で実行している
                     このエラーを非表示にするには、 -Dnogui=true フラグを使用してGUIなしモードで実行してください。
-                    """.trimIndent())
+                    """.trimIndent()
+                )
             }
         }
         log.info(config.configLocation + " から設定を読み込みました")
         try {
             val jda = JDABuilder.create(config.token, listOf(*INTENTS))
-                    .enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
-                    .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOJI, CacheFlag.ONLINE_STATUS, CacheFlag.STICKER)
-                    .setActivity(if (nogame) null else Activity.playing("準備中..."))
-                    .setStatus(if (config.status == OnlineStatus.INVISIBLE || config.status == OnlineStatus.OFFLINE) OnlineStatus.INVISIBLE else OnlineStatus.DO_NOT_DISTURB)
-                    .addEventListeners(cb.build(), waiter, Listener(bot), MessageListener(bot))
-                    .setBulkDeleteSplittingEnabled(true)
-                    .build()
+                .enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
+                .disableCache(
+                    CacheFlag.ACTIVITY,
+                    CacheFlag.CLIENT_STATUS,
+                    CacheFlag.EMOJI,
+                    CacheFlag.ONLINE_STATUS,
+                    CacheFlag.STICKER
+                )
+                .setActivity(if (nogame) null else Activity.playing("準備中..."))
+                .setStatus(if (config.status == OnlineStatus.INVISIBLE || config.status == OnlineStatus.OFFLINE) OnlineStatus.INVISIBLE else OnlineStatus.DO_NOT_DISTURB)
+                .addEventListeners(cb.build(), waiter, Listener(bot), MessageListener(bot))
+                .setBulkDeleteSplittingEnabled(true)
+                .build()
             bot.jda = jda
         } catch (ex: InvalidTokenException) {
-            prompt.alert(Prompt.Level.ERROR, "TextToSpeak Bot",
-                    """
+            prompt.alert(
+                Prompt.Level.ERROR, "TextToSpeak Bot",
+                """
                         Botトークンでのログインに失敗しました。
                         正しいBotトークンが設定されていることを確認してください。(CLIENT SECRET ではありません!)
                         設定ファイルの場所；${config.configLocation}
-                    """.trimIndent())
+                    """.trimIndent()
+            )
             exitProcess(1);
         } catch (ex: IllegalArgumentException) {
-            prompt.alert(Prompt.Level.ERROR, "TextToSpeak Bot",
+            prompt.alert(
+                Prompt.Level.ERROR, "TextToSpeak Bot",
                 """
                     設定の一部が無効です:$ex
                     設定ファイルの場所: ${config.configLocation}
-                """.trimIndent())
+                """.trimIndent()
+            )
             exitProcess(1)
         }
 

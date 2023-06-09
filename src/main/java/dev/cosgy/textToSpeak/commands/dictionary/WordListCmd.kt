@@ -36,28 +36,28 @@ class WordListCmd(private val bot: Bot) : SlashCommand() {
         this.category = Category("辞書")
         botPermissions = arrayOf(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS)
         builder = Paginator.Builder()
-                .setColumns(1)
-                .setFinalAction { m: Message ->
-                    try {
-                        m.clearReactions().queue()
-                    } catch (ignore: PermissionException) {
-                    }
+            .setColumns(1)
+            .setFinalAction { m: Message ->
+                try {
+                    m.clearReactions().queue()
+                } catch (ignore: PermissionException) {
                 }
-                .setItemsPerPage(10)
-                .waitOnSinglePage(false)
-                .useNumberedItems(true)
-                .showPageNumbers(true)
-                .wrapPageEnds(true)
-                .setEventWaiter(bot.waiter)
-                .setTimeout(1, TimeUnit.MINUTES)
+            }
+            .setItemsPerPage(10)
+            .waitOnSinglePage(false)
+            .useNumberedItems(true)
+            .showPageNumbers(true)
+            .wrapPageEnds(true)
+            .setEventWaiter(bot.waiter)
+            .setTimeout(1, TimeUnit.MINUTES)
     }
 
     override fun execute(event: SlashCommandEvent) {
         event.reply("単語一覧を表示します。").queue { m: InteractionHook ->
             val wordList = bot.dictionary?.getWords(event.guild!!.idLong)
-                    ?.entries?.stream()
-                    ?.map { (key, value): Map.Entry<String?, String?> -> "$key-$value" }
-                    ?.collect(Collectors.toList())
+                ?.entries?.stream()
+                ?.map { (key, value): Map.Entry<String?, String?> -> "$key-$value" }
+                ?.collect(Collectors.toList())
             if (wordList != null) {
                 if (wordList.isEmpty()) {
                     m.editOriginal("単語が登録されていません。").queue()
@@ -66,9 +66,9 @@ class WordListCmd(private val bot: Bot) : SlashCommand() {
             }
             m.deleteOriginal().queue()
             builder.setText("単語一覧")
-                    .setItems(*wordList!!.toTypedArray())
-                    .setUsers(event.user)
-                    .setColor(event.guild!!.selfMember.color)
+                .setItems(*wordList!!.toTypedArray())
+                .setUsers(event.user)
+                .setColor(event.guild!!.selfMember.color)
             builder.build().paginate(event.channel, 1)
         }
     }
@@ -80,9 +80,9 @@ class WordListCmd(private val bot: Bot) : SlashCommand() {
         } catch (ignore: NumberFormatException) {
         }
         val wordList = bot.dictionary?.getWords(event.guild.idLong)
-                ?.entries?.stream()
-                ?.map { (key, value): Map.Entry<String?, String?> -> "$key-$value" }
-                ?.collect(Collectors.toList())
+            ?.entries?.stream()
+            ?.map { (key, value): Map.Entry<String?, String?> -> "$key-$value" }
+            ?.collect(Collectors.toList())
         if (wordList != null) {
             if (wordList.isEmpty()) {
                 event.reply("単語が登録されていません。")
@@ -90,9 +90,9 @@ class WordListCmd(private val bot: Bot) : SlashCommand() {
             }
         }
         builder.setText("単語一覧")
-                .setItems(*wordList!!.toTypedArray())
-                .setUsers(event.author)
-                .setColor(event.selfMember.color)
+            .setItems(*wordList!!.toTypedArray())
+            .setUsers(event.author)
+            .setColor(event.selfMember.color)
         builder.build().paginate(event.channel, pagenum)
     }
 }

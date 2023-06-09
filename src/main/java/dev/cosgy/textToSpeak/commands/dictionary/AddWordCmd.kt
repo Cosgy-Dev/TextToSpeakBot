@@ -49,25 +49,25 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
             val no = "❌"
             val ok = "✔"
             ButtonMenu.Builder()
-                    .setText("単語が既に存在します。上書きしますか？")
-                    .addChoices(no, ok)
-                    .setEventWaiter(bot.waiter)
-                    .setTimeout(30, TimeUnit.SECONDS)
-                    .setAction { re: Emoji ->
-                        if (re.name == ok) {
-                            dictionary.updateDictionary(guildId, word, reading)
-                            sendSuccessMessage(event)
-                        } else {
+                .setText("単語が既に存在します。上書きしますか？")
+                .addChoices(no, ok)
+                .setEventWaiter(bot.waiter)
+                .setTimeout(30, TimeUnit.SECONDS)
+                .setAction { re: Emoji ->
+                    if (re.name == ok) {
+                        dictionary.updateDictionary(guildId, word, reading)
+                        sendSuccessMessage(event)
+                    } else {
 
-                            event.hook.sendMessage("辞書登録をキャンセルしました。").queue()
-                        }
-                    }.setFinalAction { m: Message ->
-                        try {
-                            m.clearReactions().queue()
-                            m.delete().queue()
-                        } catch (ignore: PermissionException) {
-                        }
-                    }.build().display(event.messageChannel)
+                        event.hook.sendMessage("辞書登録をキャンセルしました。").queue()
+                    }
+                }.setFinalAction { m: Message ->
+                    try {
+                        m.clearReactions().queue()
+                        m.delete().queue()
+                    } catch (ignore: PermissionException) {
+                    }
+                }.build().display(event.messageChannel)
         } else {
             dictionary.updateDictionary(guildId, word, reading)
             sendSuccessMessage(event)
@@ -76,10 +76,10 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
 
     private fun sendSuccessMessage(event: SlashCommandEvent) {
         val builder = EmbedBuilder()
-                .setColor(SUCCESS_COLOR)
-                .setTitle("単語を追加しました。")
-                .addField("単語", "```" + event.getOption("word")!!.asString + "```", false)
-                .addField("読み", "```" + event.getOption("reading")!!.asString + "```", false)
+            .setColor(SUCCESS_COLOR)
+            .setTitle("単語を追加しました。")
+            .addField("単語", "```" + event.getOption("word")!!.asString + "```", false)
+            .addField("読み", "```" + event.getOption("reading")!!.asString + "```", false)
         event.hook.sendMessageEmbeds(builder.build()).queue()
     }
 

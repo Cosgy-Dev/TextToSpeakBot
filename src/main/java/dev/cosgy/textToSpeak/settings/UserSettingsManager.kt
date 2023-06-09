@@ -43,11 +43,20 @@ class UserSettingsManager {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite")
             val statement = connection!!.createStatement()
-            val sql = "create table if not exists settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)"
+            val sql =
+                "create table if not exists settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)"
             statement.execute(sql)
             val rs = statement.executeQuery("select * from settings")
             while (rs.next()) {
-                settings[rs.getLong(1)] = UserSettings(this, rs.getLong(1), rs.getString(2), rs.getFloat(3), rs.getFloat(4), rs.getFloat(5), rs.getFloat(6))
+                settings[rs.getLong(1)] = UserSettings(
+                    this,
+                    rs.getLong(1),
+                    rs.getString(2),
+                    rs.getFloat(3),
+                    rs.getFloat(4),
+                    rs.getFloat(5),
+                    rs.getFloat(6)
+                )
             }
         } catch (throwables: SQLException) {
             logger.error("データベースに接続できませんでした。", throwables)
@@ -63,7 +72,8 @@ class UserSettingsManager {
     }
 
     fun saveSetting(userId: Long) {
-        val sql = "REPLACE INTO settings (id, voice, speed, intonation, voiceQualityA, voiceQualityFm) VALUES (?,?,?,?,?,?)"
+        val sql =
+            "REPLACE INTO settings (id, voice, speed, intonation, voiceQualityA, voiceQualityFm) VALUES (?,?,?,?,?,?)"
         val settings = settings[userId]
         try {
             connection!!.prepareStatement(sql).use { ps ->

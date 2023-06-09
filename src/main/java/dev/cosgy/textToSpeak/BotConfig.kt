@@ -62,7 +62,10 @@ class BotConfig(private val prompt: Prompt) {
         try {
             path = OtherUtil.getPath(System.getProperty("config.file", System.getProperty("config", "config.txt")))
             if (path!!.toFile().exists()) {
-                if (System.getProperty("config.file") == null) System.setProperty("config.file", System.getProperty("config", "config.txt"))
+                if (System.getProperty("config.file") == null) System.setProperty(
+                    "config.file",
+                    System.getProperty("config", "config.txt")
+                )
                 ConfigFactory.invalidateCaches()
             }
 
@@ -87,16 +90,20 @@ class BotConfig(private val prompt: Prompt) {
 
             // validate bot token
             if (token == null || token!!.isEmpty() || token!!.matches("(BOT_TOKEN_HERE|Botトークンをここに貼り付け)".toRegex())) {
-                token = prompt.prompt("""
+                token = prompt.prompt(
+                    """
     BOTトークンを入力してください。
     BOTトークン: 
-    """.trimIndent())
+    """.trimIndent()
+                )
                 write = if (token == null) {
-                    prompt.alert(Prompt.Level.WARNING, CONTEXT, """
+                    prompt.alert(
+                        Prompt.Level.WARNING, CONTEXT, """
      トークンが入力されていません！終了します。
      
      設定ファイルの場所: ${path!!.toAbsolutePath()}
-     """.trimIndent())
+     """.trimIndent()
+                    )
                     return
                 } else {
                     true
@@ -106,22 +113,26 @@ class BotConfig(private val prompt: Prompt) {
             // validate bot owner
             if (ownerId <= 0) {
                 ownerId = try {
-                    prompt.prompt("""
+                    prompt.prompt(
+                        """
                         所有者のユーザーIDが設定されていない、または有効なIDではありません。
                         BOTの所有者のユーザーIDを入力してください。
                         所有者のユーザーID: 
-                    """.trimIndent())!!.toLong()
+                    """.trimIndent()
+                    )!!.toLong()
                 } catch (ex: NumberFormatException) {
                     0
                 } catch (ex: NullPointerException) {
                     0
                 }
                 if (ownerId <= 0) {
-                    prompt.alert(Prompt.Level.ERROR, CONTEXT, """
+                    prompt.alert(
+                        Prompt.Level.ERROR, CONTEXT, """
                         無効なユーザーIDです！終了します。
      
                         設定ファイルの場所: ${path!!.toAbsolutePath()}
-                    """.trimIndent())
+                    """.trimIndent()
+                    )
                     exitProcess(0)
                 } else {
                     write = true
@@ -129,7 +140,11 @@ class BotConfig(private val prompt: Prompt) {
             }
             if (write) {
                 val original = OtherUtil.loadResource(this, "/reference.conf")
-                val mod: String = original?.substring(original.indexOf(START_TOKEN) + START_TOKEN.length, original.indexOf(END_TOKEN))?.replace("BOT_TOKEN_HERE", token!!)?.replace("Botトークンをここに貼り付け", token!!)?.replace("0 // OWNER ID", ownerId.toString())?.replace("所有者IDをここに貼り付け", ownerId.toString())?.trim { it <= ' ' }
+                val mod: String =
+                    original?.substring(original.indexOf(START_TOKEN) + START_TOKEN.length, original.indexOf(END_TOKEN))
+                        ?.replace("BOT_TOKEN_HERE", token!!)?.replace("Botトークンをここに貼り付け", token!!)
+                        ?.replace("0 // OWNER ID", ownerId.toString())
+                        ?.replace("所有者IDをここに貼り付け", ownerId.toString())?.trim { it <= ' ' }
                         ?: """
                             token = $token
                             owner = $ownerId
@@ -140,17 +155,21 @@ class BotConfig(private val prompt: Prompt) {
             // if we get through the whole config, it's good to go
             isValid = true
         } catch (ex: ConfigException) {
-            prompt.alert(Prompt.Level.ERROR, CONTEXT, """
+            prompt.alert(
+                Prompt.Level.ERROR, CONTEXT, """
                 $ex: ${ex.message}
      
                 設定ファイルの場所: ${path!!.toAbsolutePath()}
-            """.trimIndent())
+            """.trimIndent()
+            )
         } catch (ex: IOException) {
-            prompt.alert(Prompt.Level.ERROR, CONTEXT, """
+            prompt.alert(
+                Prompt.Level.ERROR, CONTEXT, """
                 $ex: ${ex.message}
      
                 設定ファイルの場所: ${path!!.toAbsolutePath()}
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
     }
 

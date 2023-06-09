@@ -35,7 +35,8 @@ import java.util.*
  * @author Kosugi_kun
  */
 @CommandInfo(name = ["About"], description = "ボットに関する情報を表示します")
-class AboutCommand(private val color: Color, private val description: String, vararg perms: Permission) : SlashCommand() {
+class AboutCommand(private val color: Color, private val description: String, vararg perms: Permission) :
+    SlashCommand() {
     private val perms: Array<out Permission>
     private var isAuthor = true
     private var replacementIcon = "+"
@@ -63,14 +64,19 @@ class AboutCommand(private val color: Color, private val description: String, va
         builder.setColor(if (event.isFromType(ChannelType.TEXT)) event.guild!!.selfMember.color else color)
         builder.setAuthor(event.jda.selfUser.name + "について!", null, event.jda.selfUser.avatarUrl)
         val cosgyOwner = "Cosgy Devが運営、開発をしています。"
-        val author = if (event.jda.getUserById(event.client.ownerId) == null) "<@" + event.client.ownerId + ">" else Objects.requireNonNull(event.jda.getUserById(event.client.ownerId))?.name
+        val author =
+            if (event.jda.getUserById(event.client.ownerId) == null) "<@" + event.client.ownerId + ">" else Objects.requireNonNull(
+                event.jda.getUserById(event.client.ownerId)
+            )?.name
         val descr = StringBuilder().append("こんにちは！ **").append(event.jda.selfUser.name).append("**です。 ")
-                .append(description).append("は、").append(JDAUtilitiesInfo.AUTHOR + "の[コマンド拡張](" + JDAUtilitiesInfo.GITHUB + ") (")
-                .append(JDAUtilitiesInfo.VERSION).append(")と[JDAライブラリ](https://github.com/DV8FromTheWorld/JDA) (")
-                .append(JDAInfo.VERSION).append(")を使用しており、").append(if (isAuthor) cosgyOwner else author + "が所有しています。")
-                .append(event.jda.selfUser.name).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
-                .append("\nこのボットの使用方法は`").append(event.client.textualPrefix).append(event.client.helpWord)
-                .append("`で確認することができます。")
+            .append(description).append("は、")
+            .append(JDAUtilitiesInfo.AUTHOR + "の[コマンド拡張](" + JDAUtilitiesInfo.GITHUB + ") (")
+            .append(JDAUtilitiesInfo.VERSION).append(")と[JDAライブラリ](https://github.com/DV8FromTheWorld/JDA) (")
+            .append(JDAInfo.VERSION).append(")を使用しており、").append(if (isAuthor) cosgyOwner else author + "が所有しています。")
+            .append(event.jda.selfUser.name)
+            .append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
+            .append("\nこのボットの使用方法は`").append(event.client.textualPrefix).append(event.client.helpWord)
+            .append("`で確認することができます。")
         getMessage(builder, descr, event.jda, event.client)
         event.replyEmbeds(builder.build()).queue()
     }
@@ -78,19 +84,30 @@ class AboutCommand(private val color: Color, private val description: String, va
     private fun getMessage(builder: EmbedBuilder, descr: StringBuilder, jda: JDA, client: CommandClient) {
         builder.setDescription(descr)
         if (jda.shardInfo.shardTotal == 1) {
-            builder.addField("ステータス", """${jda.guilds.size} サーバー
-                1 シャード""", true)
+            builder.addField(
+                "ステータス", """${jda.guilds.size} サーバー
+                1 シャード""", true
+            )
             builder.addField("ユーザー", """${jda.users.size} ユニーク
-                ${jda.guilds.stream().mapToInt { g: Guild -> g.members.size }.sum()} 合計""", true)
-            builder.addField("チャンネル", """${jda.textChannels.size} テキスト
-                ${jda.voiceChannels.size} ボイス""", true)
+                ${jda.guilds.stream().mapToInt { g: Guild -> g.members.size }.sum()} 合計""", true
+            )
+            builder.addField(
+                "チャンネル", """${jda.textChannels.size} テキスト
+                ${jda.voiceChannels.size} ボイス""", true
+            )
         } else {
-            builder.addField("ステータス", """${client.totalGuilds} サーバー
-                シャード ${jda.shardInfo.shardId + 1}/${jda.shardInfo.shardTotal}""", true)
-            builder.addField("", """${jda.users.size} ユーザーのシャード
-                ${jda.guilds.size} サーバー""", true)
-            builder.addField("", """${jda.textChannels.size} テキストチャンネル
-                ${jda.voiceChannels.size} ボイスチャンネル""", true)
+            builder.addField(
+                "ステータス", """${client.totalGuilds} サーバー
+                シャード ${jda.shardInfo.shardId + 1}/${jda.shardInfo.shardTotal}""", true
+            )
+            builder.addField(
+                "", """${jda.users.size} ユーザーのシャード
+                ${jda.guilds.size} サーバー""", true
+            )
+            builder.addField(
+                "", """${jda.textChannels.size} テキストチャンネル
+                ${jda.voiceChannels.size} ボイスチャンネル""", true
+            )
         }
         builder.setFooter("再起動が行われた時間")
         builder.setTimestamp(client.startTime)
@@ -102,19 +119,23 @@ class AboutCommand(private val color: Color, private val description: String, va
         builder.setColor(if (event.isFromType(ChannelType.TEXT)) event.guild.selfMember.color else color)
         builder.setAuthor(event.selfUser.name + "について!", null, event.selfUser.avatarUrl)
         val cosgyOwner = "Cosgy Devが運営、開発をしています。"
-        val author = if (event.jda.getUserById(event.client.ownerId) == null) "<@" + event.client.ownerId + ">" else Objects.requireNonNull(event.jda.getUserById(event.client.ownerId))?.name
+        val author =
+            if (event.jda.getUserById(event.client.ownerId) == null) "<@" + event.client.ownerId + ">" else Objects.requireNonNull(
+                event.jda.getUserById(event.client.ownerId)
+            )?.name
         val descr = StringBuilder().append("こんにちは！ **").append(event.selfUser.name).append("**です。 ")
-                .append(description).append("は、").append(JDAUtilitiesInfo.AUTHOR + "の[コマンド拡張](" + JDAUtilitiesInfo.GITHUB + ") (")
-                .append(JDAUtilitiesInfo.VERSION).append(")と[JDAライブラリ](https://github.com/DV8FromTheWorld/JDA) (")
-                .append(JDAInfo.VERSION).append(")を使用しており、").append(if (isAuthor) cosgyOwner else author + "が所有しています。")
-                .append(event.selfUser.name).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
-                .append("\nこのボットの使用方法は`").append(event.client.textualPrefix).append(event.client.helpWord)
-                .append("`で確認することができます。")
+            .append(description).append("は、")
+            .append(JDAUtilitiesInfo.AUTHOR + "の[コマンド拡張](" + JDAUtilitiesInfo.GITHUB + ") (")
+            .append(JDAUtilitiesInfo.VERSION).append(")と[JDAライブラリ](https://github.com/DV8FromTheWorld/JDA) (")
+            .append(JDAInfo.VERSION).append(")を使用しており、").append(if (isAuthor) cosgyOwner else author + "が所有しています。")
+            .append(event.selfUser.name).append("についての質問などは[Cosgy Dev公式チャンネル](https://discord.gg/RBpkHxf)へお願いします。")
+            .append("\nこのボットの使用方法は`").append(event.client.textualPrefix).append(event.client.helpWord)
+            .append("`で確認することができます。")
         getMessage(builder, descr, event.jda, event.client)
         event.reply(builder.build())
     }
 
-    private fun getOauthLink(jda: JDA){
+    private fun getOauthLink(jda: JDA) {
         if (oauthLink == null) {
             oauthLink = try {
                 val info = jda.retrieveApplicationInfo().complete()
