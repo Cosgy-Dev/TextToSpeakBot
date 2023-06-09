@@ -108,16 +108,16 @@ class TextAreaOutputStream @JvmOverloads constructor(txtara: JTextArea, maxlin: 
                 textArea.text = ""
             }
             values.stream()
-                    .peek { `val`: String -> curLength += `val`.length }
-                    .peek { `val`: String ->
-                        if (`val`.endsWith(EOL1) || `val`.endsWith(EOL2)) {
-                            if (lengths.size >= maxLines) {
-                                textArea.replaceRange("", 0, lengths.removeFirst())
-                            }
-                            lengths.addLast(curLength)
-                            curLength = 0
+                .peek { `val`: String -> curLength += `val`.length }
+                .peek { `val`: String ->
+                    if (`val`.endsWith(EOL1) || `val`.endsWith(EOL2)) {
+                        if (lengths.size >= maxLines) {
+                            textArea.replaceRange("", 0, lengths.removeFirst())
                         }
-                    }.forEach { str: String? -> textArea.append(str) }
+                        lengths.addLast(curLength)
+                        curLength = 0
+                    }
+                }.forEach { str: String? -> textArea.append(str) }
             values.clear()
             clear = false
             queue = true

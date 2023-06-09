@@ -65,7 +65,8 @@ class GUI(private val bot: Bot) : JFrame() {
         val botInfoPanel = JPanel()
 
         botInfoPanel.layout = BoxLayout(botInfoPanel, BoxLayout.Y_AXIS)
-        val scrollPane = JScrollPane(botInfoPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
+        val scrollPane =
+            JScrollPane(botInfoPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
 
         // Add bot info label to bot info panel
         val botInfoLabel = JLabel()
@@ -92,7 +93,7 @@ class GUI(private val bot: Bot) : JFrame() {
         isVisible = true
         addWindowListener(object : WindowListener {
             override fun windowOpened(e: WindowEvent) {
-            /* unused */
+                /* unused */
             }
 
             override fun windowClosing(e: WindowEvent) {
@@ -206,14 +207,33 @@ class GUI(private val bot: Bot) : JFrame() {
             )
 
             botInfoLabel.text = "<html>$systemInfo" + botInfoText.format(
-                cpuUsage, loadAverage,
-                physicalMemory, freePhysicalMemory, usedPhysicalMemory,
-                swapSpace, freeSwapSpace,
-                uptime, start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), systemCpuUsage, sunOsMx!!.processCpuTime / 1000000, compilationMx!!.totalCompilationTime,
-                heapUsed, heapCommitted, heapInit, heapMax,
-                nonHeapUsed, nonHeapCommitted, nonHeapInit, nonHeapMax,
-                threadCount, peakThreadCount, daemonThreadCount, totalStartedThreadCount,
-                loadedClassCount, totalLoadedClassCount, unloadedClassCount
+                cpuUsage,
+                loadAverage,
+                physicalMemory,
+                freePhysicalMemory,
+                usedPhysicalMemory,
+                swapSpace,
+                freeSwapSpace,
+                uptime,
+                start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                systemCpuUsage,
+                sunOsMx!!.processCpuTime / 1000000,
+                compilationMx!!.totalCompilationTime,
+                heapUsed,
+                heapCommitted,
+                heapInit,
+                heapMax,
+                nonHeapUsed,
+                nonHeapCommitted,
+                nonHeapInit,
+                nonHeapMax,
+                threadCount,
+                peakThreadCount,
+                daemonThreadCount,
+                totalStartedThreadCount,
+                loadedClassCount,
+                totalLoadedClassCount,
+                unloadedClassCount
             ) + "</html>"
 
         }.start()

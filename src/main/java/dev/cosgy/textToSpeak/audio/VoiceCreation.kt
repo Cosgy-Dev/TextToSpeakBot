@@ -15,11 +15,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.audio
 
+import com.ibm.icu.text.Transliterator
 import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.settings.UserSettings
 import net.dv8tion.jda.api.entities.*
 import org.apache.commons.io.FileUtils
-import com.ibm.icu.text.Transliterator
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.nio.file.Files
@@ -29,7 +29,8 @@ import java.text.BreakIterator
 import java.util.*
 
 class VoiceCreation( // 各種設定の値を保持するためのフィールド
-        private val bot: Bot) {
+    private val bot: Bot
+) {
     private val dictionary: String? = bot.config.dictionary
     private val voiceDirectory: String? = bot.config.voiceDirectory
     private val winJTalkDir: String? = bot.config.winJTalkDir

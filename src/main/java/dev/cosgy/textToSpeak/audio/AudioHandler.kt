@@ -58,7 +58,9 @@ class AudioHandler(guild: Guild, val player: AudioPlayer) : AudioEventAdapter(),
     }
 
     val requester: Long
-        get() = if (player.playingTrack == null || player.playingTrack.getUserData(Long::class.java) == null) 0 else player.playingTrack.getUserData(Long::class.java)
+        get() = if (player.playingTrack == null || player.playingTrack.getUserData(Long::class.java) == null) 0 else player.playingTrack.getUserData(
+            Long::class.java
+        )
 
     // Audio Events
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
