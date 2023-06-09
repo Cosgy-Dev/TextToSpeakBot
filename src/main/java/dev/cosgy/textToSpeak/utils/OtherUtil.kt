@@ -42,16 +42,16 @@ object OtherUtil {
     private const val WINDOWS_INVALID_PATH = "c:\\windows\\system32\\"
     fun getPath(path: String): Path {
         // special logic to prevent trying to access system32
-        var path = path
-        if (path.lowercase(Locale.getDefault()).startsWith(WINDOWS_INVALID_PATH)) {
-            val filename = path.substring(WINDOWS_INVALID_PATH.length)
+        var returnPath = path
+        if (returnPath.lowercase(Locale.getDefault()).startsWith(WINDOWS_INVALID_PATH)) {
+            val filename = returnPath.substring(WINDOWS_INVALID_PATH.length)
             try {
-                path =
+                returnPath =
                     File(TextToSpeak::class.java.protectionDomain.codeSource.location.toURI()).parentFile.path + File.separator + filename
             } catch (ignored: URISyntaxException) {
             }
         }
-        return Paths.get(path)
+        return Paths.get(returnPath)
     }
 
     /**
