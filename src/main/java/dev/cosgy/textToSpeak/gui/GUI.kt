@@ -201,7 +201,7 @@ class GUI(private val bot: Bot) : JFrame() {
 
             val systemInfo = sysInfoText.format(
                 osName, osVersion, osArch, processors,
-                prettyBytes(sunOsMx!!.totalPhysicalMemorySize), prettyBytes(sunOsMx!!.committedVirtualMemorySize),
+                prettyBytes(sunOsMx!!.totalMemorySize), prettyBytes(sunOsMx!!.committedVirtualMemorySize),
                 vmName, vmVersion, vmVendor, compilationMx?.name,
                 vmArguments
             )
