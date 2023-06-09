@@ -39,7 +39,7 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
         }
         val settings = bot.settingsManager.getSettings(event.guild!!)
         var text = "null"
-        if (settings!!.getTextChannel(event.guild) != null) {
+        if (settings.getTextChannel(event.guild) != null) {
             text = settings.getTextChannel(event.guild)!!.name
         }
         val builder = EmbedBuilder()
@@ -55,7 +55,7 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
     override fun execute(event: CommandEvent) {
         val settings = bot.settingsManager.getSettings(event.guild)
         var text = "null"
-        if (settings!!.getTextChannel(event.guild) != null) {
+        if (settings.getTextChannel(event.guild) != null) {
             text = settings.getTextChannel(event.guild)!!.name
         }
         val builder = EmbedBuilder()

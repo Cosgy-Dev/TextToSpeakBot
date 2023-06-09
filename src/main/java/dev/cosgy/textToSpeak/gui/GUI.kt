@@ -54,7 +54,7 @@ class GUI(private val bot: Bot) : JFrame() {
         memoryMx = ManagementFactory.getMemoryMXBean()
         classLoadingMx = ManagementFactory.getClassLoadingMXBean()
         sunOsMx = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
-        garbageCollectors = ManagementFactory.getGarbageCollectorMXBeans() as List<*> as List<GarbageCollectorMXBean>?
+        garbageCollectors = ManagementFactory.getGarbageCollectorMXBeans().filterIsInstance<GarbageCollectorMXBean>()
 
 
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -75,9 +75,9 @@ class GUI(private val bot: Bot) : JFrame() {
         val osArch = sunOsMx?.arch
         val processors = sunOsMx?.availableProcessors
 
-        val vmName = runtimeMx?.name
-        val vmVersion = runtimeMx?.vmVersion
-        val vmVendor = runtimeMx?.vmVendor
+        //val vmName = runtimeMx?.name
+        //val vmVersion = runtimeMx?.vmVersion
+        //val vmVendor = runtimeMx?.vmVendor
         val vmArguments = runtimeMx?.inputArguments?.joinToString(" ")
 
         //botInfoPanel.add(systemInfoLabel)
@@ -128,7 +128,7 @@ class GUI(private val bot: Bot) : JFrame() {
             val vmName = runtimeMx!!.name
             val vmVendor = runtimeMx!!.vmVendor
             val vmVersion = runtimeMx!!.vmVersion
-            val gcCount = garbageCollectors!!.sumOf { it.collectionCount }
+            //val gcCount = garbageCollectors!!.sumOf { it.collectionCount }
 
             val cpuUsage = sunOsMx!!.processCpuLoad * 100
             val systemCpuUsage = sunOsMx!!.systemCpuLoad * 100
@@ -162,12 +162,12 @@ class GUI(private val bot: Bot) : JFrame() {
             val totalLoadedClassCount = classLoadingMx!!.totalLoadedClassCount
             val unloadedClassCount = classLoadingMx!!.unloadedClassCount
 
-            val gcStats = garbageCollectors!!.map { gc ->
+            val gcStats = garbageCollectors!!.joinToString("\n") { gc ->
                 val name = gc.name
                 val count = gc.collectionCount
                 val time = gc.collectionTime / 1000
                 "$name: Count=$count, Time=$time sec"
-            }.joinToString("\n")
+            }
 
             val botInfoText = """
                 :: System<br>

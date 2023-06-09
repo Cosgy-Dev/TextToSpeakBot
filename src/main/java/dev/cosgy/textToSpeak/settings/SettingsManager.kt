@@ -48,12 +48,12 @@ class SettingsManager : GuildSettingsManager<Any?> {
         }
     }
 
-    override fun getSettings(guild: Guild): Settings? {
+    override fun getSettings(guild: Guild): Settings {
         return getSettings(guild.idLong)
     }
 
     fun getSettings(guildId: Long): Settings {
-        return settings.computeIfAbsent(guildId) { id: Long? -> createDefaultSettings() }
+        return settings.computeIfAbsent(guildId) { _: Long? -> createDefaultSettings() }
     }
 
     /**
@@ -62,7 +62,7 @@ class SettingsManager : GuildSettingsManager<Any?> {
      * @return 作成されたデフォルト設定
      */
     private fun createDefaultSettings(): Settings {
-        return Settings(this, 0, null, 50, false, false)
+        return Settings(this, 0, null, 50, readName = false, joinAndLeaveRead = false)
     }
 
     /**
@@ -73,7 +73,7 @@ class SettingsManager : GuildSettingsManager<Any?> {
         settings.keys.forEach(Consumer { key: Long ->
             val o = JSONObject()
             val s = settings[key]
-            if (s!!.textId != 0L) o.put("text_channel_id", java.lang.Long.toString(s.textId))
+            if (s!!.textId != 0L) o.put("text_channel_id", s.textId.toString())
             if (s.prefix != null) o.put("prefix", s.prefix)
             if (s.volume != 50) o.put("volume", s.volume)
             if (s.isReadName()) o.put("read_name", s.isReadName())

@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -59,7 +58,8 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
                             dictionary.updateDictionary(guildId, word, reading)
                             sendSuccessMessage(event)
                         } else {
-                            event.reply("辞書登録をキャンセルしました。").queue()
+
+                            event.hook.sendMessage("辞書登録をキャンセルしました。").queue()
                         }
                     }.setFinalAction { m: Message ->
                         try {
@@ -80,7 +80,7 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
                 .setTitle("単語を追加しました。")
                 .addField("単語", "```" + event.getOption("word")!!.asString + "```", false)
                 .addField("読み", "```" + event.getOption("reading")!!.asString + "```", false)
-        event.replyEmbeds(builder.build()).queue()
+        event.hook.sendMessageEmbeds(builder.build()).queue()
     }
 
     override fun execute(event: SlashCommandEvent) {

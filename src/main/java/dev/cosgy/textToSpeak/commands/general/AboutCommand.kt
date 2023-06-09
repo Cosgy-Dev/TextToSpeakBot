@@ -92,7 +92,7 @@ class AboutCommand(private val color: Color, private val description: String, va
             builder.addField("", """${jda.textChannels.size} テキストチャンネル
                 ${jda.voiceChannels.size} ボイスチャンネル""", true)
         }
-        builder.setFooter("再起動が行われた時間", "https://www.cosgy.dev/wp-content/uploads/2020/03/restart.jpg")
+        builder.setFooter("再起動が行われた時間")
         builder.setTimestamp(client.startTime)
     }
 

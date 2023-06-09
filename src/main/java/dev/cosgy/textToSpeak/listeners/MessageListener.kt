@@ -23,24 +23,21 @@ import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.audio.AudioHandler
 import dev.cosgy.textToSpeak.audio.QueuedTrack
 import dev.cosgy.textToSpeak.utils.ReadChannel
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.io.IOException
-import java.util.function.Consumer
 
 class MessageListener(private val bot: Bot) : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        val jda = event.jda
-        val responseNumber = event.responseNumber
+        event.jda
+        event.responseNumber
 
         //イベント固有の情報
         val author = event.author //メッセージを送信したユーザー
         val message = event.message //受信したメッセージ。
-        val channel: MessageChannel = event.channel //メッセージが送信されたMessageChannel
+        event.channel //メッセージが送信されたMessageChannel
         var msg = message.contentDisplay
         //人間が読める形式のメッセージが返されます。 クライアントに表示されるものと同様。
         val isBot = author.isBot
@@ -50,7 +47,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             if (isBot) return
             val guild = event.guild
             val textChannel = event.guildChannel.asTextChannel()
-            var settingText = bot.settingsManager.getSettings(event.guild)?.getTextChannel(event.guild)
+            var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
             if (!guild.audioManager.isConnected) {
                 return
             }
@@ -67,7 +64,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             // URLを置き換え
             msg = msg.replace("(http://|https://)[\\w.\\-/:#?=&;%~+]+".toRegex(), "ゆーあーるえる")
             if (textChannel === settingText) {
-                if (bot.settingsManager.getSettings(guild)!!.isReadName()) {
+                if (bot.settingsManager.getSettings(guild).isReadName()) {
                     msg = author.name + "  " + msg
                 }
                 val vc = bot.voiceCreation
@@ -78,7 +75,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
                 } catch (e: InterruptedException) {
                     throw RuntimeException(e)
                 }
-                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(null, event))
+                bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(event))
 
                 //textChannel.sendMessage(author.getName() + "が、「"+ msg +"」と送信しました。").queue();
             }
@@ -89,7 +86,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
         bot.readyJDA()
     }
 
-    private class ResultHandler(m: Message?, private val event: MessageReceivedEvent) : AudioLoadResultHandler {
+    private class ResultHandler(private val event: MessageReceivedEvent) : AudioLoadResultHandler {
         private fun loadSingle(track: AudioTrack) {
             val handler = event.guild.audioManager.sendingHandler as AudioHandler?
             handler!!.addTrack(QueuedTrack(track, event.author))
