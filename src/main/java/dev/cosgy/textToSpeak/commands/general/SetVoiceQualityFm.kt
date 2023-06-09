@@ -96,6 +96,6 @@ class SetVoiceQualityFm(private var bot: Bot) : SlashCommand() {
         }
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
         bd?.let { settings.voiceQualityFmSetting = it.toFloat() }
-        event.reply("追加ハーフトーンを" + bd + "に設定しました。")
+        event.reply("追加ハーフトーンを $bd に設定しました。")
     }
 }

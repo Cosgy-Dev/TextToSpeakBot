@@ -59,7 +59,7 @@ class SetVoiceQualityA(private var bot: Bot) : SlashCommand() {
         }
         val settings = bot.userSettingsManager.getSettings(event.user.idLong)
         settings.voiceQualityASetting = bd!!.toFloat()
-        event.reply("オールパス値を" + bd + "に設定しました。").queue()
+        event.reply("オールパス値を $bd に設定しました。").queue()
     }
 
     override fun execute(event: CommandEvent) {
@@ -85,6 +85,6 @@ class SetVoiceQualityA(private var bot: Bot) : SlashCommand() {
         }
         val settings = bot.userSettingsManager.getSettings(event.author.idLong)
         settings.voiceQualityASetting = bd!!.toFloat()
-        event.reply("オールパス値を" + bd + "に設定しました。")
+        event.reply("オールパス値を $bd に設定しました。")
     }
 }
