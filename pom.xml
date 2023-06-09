@@ -22,7 +22,7 @@
 
     <groupId>dev.cosgy</groupId>
     <artifactId>TextToSpeak</artifactId>
-    <version>0.4.0-beta.2</version>
+    <version>0.4.0-beta.3</version>
     <packaging>jar</packaging>
 
     <repositories>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.6</version>
+            <version>5.0.0-beta.10</version>
         </dependency>
         <dependency>
             <groupId>com.github.walkyst</groupId>
@@ -158,6 +158,21 @@
             <artifactId>javafx-fxml</artifactId>
             <version>17</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.15.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -228,6 +243,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -245,8 +261,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>14</source>
+                    <target>14</target>
                 </configuration>
             </plugin>
         </plugins>

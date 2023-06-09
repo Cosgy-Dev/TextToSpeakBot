@@ -89,6 +89,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
                 }
             })
 
+            userSettingsManager.closeConnection()
             // Wait for any remaining tasks to complete before shutting down the thread pool
             threadpool.shutdown()
             try {
@@ -138,7 +139,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
         this.gui = gui
     }
 
-    fun GetLang(): ResourceBundle {
+    fun getLang(): ResourceBundle {
         return lang
     }
 

@@ -95,9 +95,9 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
 
     companion object {
         private val SUCCESS_COLOR = Color(0, 163, 129)
-        private val ERROR_COLOR = Color.RED
-        private const val INVALID_ARGS_MESSAGE = "コマンドが無効です。単語と読み方の２つを入力して実行して下さい。"
-        private const val USAGE_MESSAGE = "使用方法: /addword <単語> <読み方>"
+        //private val ERROR_COLOR = Color.RED
+        //private const val INVALID_ARGS_MESSAGE = "コマンドが無効です。単語と読み方の２つを入力して実行して下さい。"
+        //private const val USAGE_MESSAGE = "使用方法: /addword <単語> <読み方>"
         private const val KATAKANA_REGEX = "^[ァ-ヶー]*$"
         private fun isKatakana(str: String): Boolean {
             return Pattern.matches(KATAKANA_REGEX, str)

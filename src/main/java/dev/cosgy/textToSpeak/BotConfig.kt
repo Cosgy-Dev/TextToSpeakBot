@@ -118,7 +118,7 @@ class BotConfig(private val prompt: Prompt) {
                         所有者のユーザーIDが設定されていない、または有効なIDではありません。
                         BOTの所有者のユーザーIDを入力してください。
                         所有者のユーザーID: 
-                    """.trimIndent()
+                        """.trimIndent()
                     )!!.toLong()
                 } catch (ex: NumberFormatException) {
                     0
@@ -127,11 +127,12 @@ class BotConfig(private val prompt: Prompt) {
                 }
                 if (ownerId <= 0) {
                     prompt.alert(
-                        Prompt.Level.ERROR, CONTEXT, """
+                        Prompt.Level.ERROR, CONTEXT,
+                        """
                         無効なユーザーIDです！終了します。
      
                         設定ファイルの場所: ${path!!.toAbsolutePath()}
-                    """.trimIndent()
+                        """.trimIndent()
                     )
                     exitProcess(0)
                 } else {

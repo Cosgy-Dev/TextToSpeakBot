@@ -58,7 +58,7 @@ class GUI(private val bot: Bot) : JFrame() {
 
 
         defaultCloseOperation = EXIT_ON_CLOSE
-        title = bot.GetLang().getString("appName")
+        title = bot.getLang().getString("appName")
         val tabs = JTabbedPane()
         tabs.add("コンソール", console)
 
@@ -132,11 +132,11 @@ class GUI(private val bot: Bot) : JFrame() {
             //val gcCount = garbageCollectors!!.sumOf { it.collectionCount }
 
             val cpuUsage = sunOsMx!!.processCpuLoad * 100
-            val systemCpuUsage = sunOsMx!!.systemCpuLoad * 100
+            val systemCpuUsage = sunOsMx!!.cpuLoad * 100
             val loadAverage = sunOsMx!!.systemLoadAverage
 
-            val physicalMemory = sunOsMx!!.totalPhysicalMemorySize / 1024 / 1024
-            val freePhysicalMemory = sunOsMx!!.freePhysicalMemorySize / 1024 / 1024
+            val physicalMemory = sunOsMx!!.totalMemorySize / 1024 / 1024
+            val freePhysicalMemory = sunOsMx!!.freeMemorySize / 1024 / 1024
             val usedPhysicalMemory = physicalMemory - freePhysicalMemory
 
             val swapSpace = sunOsMx!!.totalSwapSpaceSize / 1024 / 1024

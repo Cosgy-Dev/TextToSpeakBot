@@ -122,7 +122,7 @@ object TextToSpeak {
         Bot.INSTANCE = bot
         val aboutCommand = AboutCommand(
             Color.BLUE.brighter(),
-            bot.GetLang().getString("appName") + "(v" + version + ")",
+            bot.getLang().getString("appName") + "(v" + version + ")",
             *RECOMMENDED_PERMS
         )
         aboutCommand.setIsAuthor(false)
@@ -210,7 +210,7 @@ object TextToSpeak {
                         設定ファイルの場所；${config.configLocation}
                     """.trimIndent()
             )
-            exitProcess(1);
+            exitProcess(1)
         } catch (ex: IllegalArgumentException) {
             prompt.alert(
                 Prompt.Level.ERROR, "TextToSpeak Bot",

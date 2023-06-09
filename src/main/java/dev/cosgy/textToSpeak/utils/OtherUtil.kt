@@ -63,7 +63,7 @@ object OtherUtil {
      */
     fun loadResource(clazz: Any, name: String?): String? {
         return try {
-            name?.let { clazz.javaClass.getResourceAsStream(it)?.let { readString(it) } }
+            name?.let { clazz.javaClass.getResourceAsStream(it)?.let { it -> readString(it) } }
         } catch (ex: Exception) {
             null
         }
