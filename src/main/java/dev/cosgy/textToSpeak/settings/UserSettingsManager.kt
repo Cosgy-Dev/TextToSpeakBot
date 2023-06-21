@@ -64,7 +64,7 @@ class UserSettingsManager {
     }
 
     fun getSettings(userId: Long): UserSettings {
-        return settings.computeIfAbsent(userId) { _ : Long -> createDefaultSettings(userId) }
+        return settings.computeIfAbsent(userId) { _: Long -> createDefaultSettings(userId) }
     }
 
     private fun createDefaultSettings(userId: Long): UserSettings {

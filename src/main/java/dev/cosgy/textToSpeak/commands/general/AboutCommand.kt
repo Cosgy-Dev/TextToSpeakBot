@@ -88,7 +88,8 @@ class AboutCommand(private val color: Color, private val description: String, va
                 "ステータス", """${jda.guilds.size} サーバー
                     |1シャード""".trimMargin(), true
             )
-            builder.addField("ユーザー", """${jda.users.size} ユニーク
+            builder.addField(
+                "ユーザー", """${jda.users.size} ユニーク
                 |${jda.guilds.stream().mapToInt { g: Guild -> g.members.size }.sum()} 合計""".trimMargin(), true
             )
             builder.addField(

@@ -45,12 +45,12 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
         val builder = EmbedBuilder()
             .setColor(Color.orange)
             .setTitle(event.guild!!.name + "の設定")
-            .addField("ユーザー名読み上げ：", settings.isReadName().toString(), false)
+            .addField("ユーザー名読み上げ：", if (settings.isReadName()) "有効" else "無効", false)
             .addField(
                 "参加、退出時の読み上げ：",
-                settings.isJoinAndLeaveRead().toString(),
+                if (settings.isJoinAndLeaveRead()) "有効" else "無効",
                 false
-            ) //.addField("接頭語：", settings.getPrefix(), false)
+            )
             .addField("読み上げるチャンネル：", text, false)
             .addField("読み上げの主音量：", settings.volume.toString(), false)
         event.replyEmbeds(builder.build()).queue()
@@ -65,10 +65,10 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
         val builder = EmbedBuilder()
             .setColor(Color.orange)
             .setTitle(event.guild.name + "の設定")
-            .addField("ユーザー名読み上げ：", settings.isReadName().toString(), false)
+            .addField("ユーザー名読み上げ：", if (settings.isReadName()) "有効" else "無効", false)
             .addField(
                 "参加、退出時の読み上げ：",
-                settings.isJoinAndLeaveRead().toString(),
+                if (settings.isJoinAndLeaveRead()) "有効" else "無効",
                 false
             ) //.addField("接頭語：", settings.getPrefix(), false)
             .addField("読み上げるチャンネル：", text, false)
