@@ -47,7 +47,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             if (isBot) return
             val guild = event.guild
             val textChannel = event.guildChannel.asTextChannel()
-            var settingText = bot.settingsManager.getSettings(event.guild)!!.getTextChannel(event.guild)
+            var settingText = bot.settingsManager.getSettings(event.guild).getTextChannel(event.guild)
             if (!guild.audioManager.isConnected) {
                 return
             }
@@ -64,7 +64,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             // URLを置き換え
             msg = msg.replace("(http://|https://)[\\w.\\-/:#?=&;%~+]+".toRegex(), "ゆーあーるえる")
             if (textChannel === settingText) {
-                if (bot.settingsManager.getSettings(guild)!!.isReadName()) {
+                if (bot.settingsManager.getSettings(guild).isReadName()) {
                     msg = author.name + "  " + msg
                 }
                 val vc = bot.voiceCreation

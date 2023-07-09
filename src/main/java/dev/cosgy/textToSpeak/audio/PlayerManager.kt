@@ -44,7 +44,7 @@ class PlayerManager(val bot: Bot) : DefaultAudioPlayerManager() {
         val handler: AudioHandler?
         if (guild.audioManager.sendingHandler == null) {
             val player = createPlayer()
-            player.volume = bot.settingsManager.getSettings(guild)!!.volume
+            player.volume = bot.settingsManager.getSettings(guild).volume
             handler = AudioHandler(guild, player)
             player.addListener(handler)
             guild.audioManager.sendingHandler = handler
