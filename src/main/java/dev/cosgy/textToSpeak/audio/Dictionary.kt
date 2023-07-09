@@ -124,13 +124,12 @@ class Dictionary private constructor(bot: Bot) {
     }
 
     private fun executeUpdate(guildId: Long, word: String?, reading: String?) {
-        val sql = "INSERT INTO Dictionary VALUES (?,?,?) ON CONFLICT (guild_id, word) DO UPDATE SET reading = ?"
+        val sql = "INSERT OR REPLACE INTO Dictionary(guild_id, word, reading) VALUES (?,?,?)"
         try {
             connection.prepareStatement(sql).use { ps ->
                 ps.setLong(1, guildId)
                 ps.setString(2, word)
                 ps.setString(3, reading)
-                ps.setString(4, reading)
                 ps.executeUpdate()
             }
         } catch (throwables: SQLException) {
