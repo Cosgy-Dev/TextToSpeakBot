@@ -89,7 +89,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
             }
         }
         if (event.channelJoined != null) {
-            if (settings!!.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelJoined) {
+            if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelJoined) {
                 val file: String? = try {
                     bot.voiceCreation.createVoice(
                         event.guild,
