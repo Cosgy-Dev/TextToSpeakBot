@@ -53,9 +53,13 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
             builder.addField("読み上げ対象", channel.name, true)
         }
         try {
+            // ボイスチャンネル接続完了のメッセージに現在の設定を表示
             event.guild!!.audioManager.openAudioConnection(userState.channel)
             builder.addField("ボイスチャンネル", String.format("**%s**", userState.channel!!.name), false)
             builder.setDescription("ボイスチャンネルへの接続に成功しました。")
+            builder.addField("設定",
+                "ユーザー名読み上げ:${if (settings.isReadName()) "有効" else "無効"}\n" +
+                    "参加、退出読み上げ:${if (settings.isJoinAndLeaveRead()) "有効" else "無効"}", true)
             event.hook.sendMessageEmbeds(builder.build()).queue()
             ReadChannel.setChannel(event.guild!!.idLong, event.textChannel.idLong)
         } catch (ex: PermissionException) {
