@@ -130,7 +130,6 @@ class BotConfig(private val prompt: Prompt) {
                         Prompt.Level.ERROR, CONTEXT,
                         """
                         無効なユーザーIDです！終了します。
-     
                         設定ファイルの場所: ${path!!.toAbsolutePath()}
                         """.trimIndent()
                     )

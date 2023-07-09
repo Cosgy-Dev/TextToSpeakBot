@@ -37,7 +37,7 @@ class Settings : GuildSettingsProvider {
     ) {
         this.manager = manager
         try {
-            this.textId = textId!!.toLong()
+            this.textId = textId?.toLong() ?: 0
         } catch (e: NumberFormatException) {
             this.textId = 0
         }

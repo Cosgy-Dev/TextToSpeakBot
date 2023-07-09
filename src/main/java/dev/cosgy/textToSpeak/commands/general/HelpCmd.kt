@@ -63,8 +63,9 @@ class HelpCmd(var bot: Bot) : SlashCommand() {
     public override fun execute(event: CommandEvent) {
         val builder = StringBuilder(
             """
+            
             **${event.jda.selfUser.name}** コマンド一覧:
-    
+            
             """.trimIndent()
         )
         var category: Category? = null

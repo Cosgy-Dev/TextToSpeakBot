@@ -30,18 +30,18 @@ class SettingsManager : GuildSettingsManager<Any?> {
 
     init {
         try {
-            val loadedSettings = JSONObject(Files.readAllBytes(OtherUtil.getPath("serversettings.json")))
-            loadedSettings.keySet().forEach(Consumer { id: String ->
-                val o = loadedSettings.getJSONObject(id)
+            val loadedSettings = JSONObject(String(Files.readAllBytes(OtherUtil.getPath("serversettings.json"))))
+            loadedSettings.keySet().forEach { id ->
+                val value = loadedSettings.getJSONObject(id)
                 settings[id.toLong()] = Settings(
                     this,
-                    if (o.has("text_channel_id")) o.getString("text_channel_id") else null,
-                    if (o.has("prefix")) o.getString("prefix") else null,
-                    if (o.has("volume")) o.getInt("volume") else 50,
-                    o.has("read_name") && o.getBoolean("read_name"),
-                    o.has("join_and_leave_read") && o.getBoolean("join_and_leave_read")
+                    if (value.has("text_channel_id")) value.getString("text_channel_id") else null,
+                    if (value.has("prefix")) value.getString("prefix") else null,
+                    if (value.has("volume")) value.getInt("volume") else 50,
+                    value.has("read_name") && value.getBoolean("read_name"),
+                    value.has("join_and_leave_read") && value.getBoolean("join_and_leave_read")
                 )
-            })
+            }
         } catch (e: IOException) {
             LoggerFactory.getLogger("Settings").warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): $e")
         } catch (e: JSONException) {

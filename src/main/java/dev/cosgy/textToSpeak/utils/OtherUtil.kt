@@ -48,7 +48,8 @@ object OtherUtil {
             try {
                 returnPath =
                     File(TextToSpeak::class.java.protectionDomain.codeSource.location.toURI()).parentFile.path + File.separator + filename
-            } catch (ignored: URISyntaxException) {
+            } catch (ex: URISyntaxException) {
+                ex.printStackTrace()
             }
         }
         return Paths.get(returnPath)

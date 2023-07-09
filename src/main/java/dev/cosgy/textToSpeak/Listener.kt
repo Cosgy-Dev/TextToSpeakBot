@@ -64,7 +64,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
         val botMember = event.guild.selfMember
         val settings = bot.settingsManager.getSettings(event.guild)
         if (event.channelLeft != null) {
-            if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelLeft && event.channelLeft!!.members.size > 1) {
+            if (settings!!.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelLeft && event.channelLeft!!.members.size > 1) {
                 val file: String? = try {
                     bot.voiceCreation.createVoice(
                         event.guild,
@@ -89,7 +89,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
             }
         }
         if (event.channelJoined != null) {
-            if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelJoined) {
+            if (settings!!.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelJoined) {
                 val file: String? = try {
                     bot.voiceCreation.createVoice(
                         event.guild,
