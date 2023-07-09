@@ -33,12 +33,17 @@ import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import org.json.JSONArray
 
 object OtherUtil {
     const val NEW_VERSION_AVAILABLE = ("利用可能な新しいバージョンがあります!\n"
             + "現在のバージョン: %s\n"
             + "最新のバージョン: %s\n\n"
             + " https://github.com/Cosgy-Dev/TextToSpeakBot/releases/latest から最新バージョンをダウンロードして下さい。")
+    const val NEW_BETA_VERSION_AVAILABLE = ("利用可能な新しいベータバージョンがあります!\n"
+            + "現在のバージョン: %s\n"
+            + "最新のバージョン: %s\n\n"
+            + " https://github.com/Cosgy-Dev/TextToSpeakBot/releases から最新バージョンをダウンロードして下さい。")
     private const val WINDOWS_INVALID_PATH = "c:\\windows\\system32\\"
     fun getPath(path: String): Path {
         // special logic to prevent trying to access system32
@@ -144,10 +149,27 @@ object OtherUtil {
         // Get current version number
         val version = currentVersion
 
-        // Check for new version
-        val latestVersion = latestVersion
-        if (latestVersion != null && latestVersion != version && TextToSpeak.CHECK_UPDATE) {
-            prompt.alert(Prompt.Level.WARNING, "Version", String.format(NEW_VERSION_AVAILABLE, version, latestVersion))
+        if(!isBetaVersion(version)) {
+            // Check for new version
+            val latestVersion = latestVersion
+            if (latestVersion != null && latestVersion != version && TextToSpeak.CHECK_UPDATE) {
+                prompt.alert(
+                    Prompt.Level.WARNING,
+                    "Version",
+                    String.format(NEW_VERSION_AVAILABLE, version, latestVersion)
+                )
+            }
+        }else{
+            val latestBeta = latestBetaVersion
+            if(latestBeta != null && compareVersions(version, latestBeta) == 0){
+                prompt.alert(Prompt.Level.INFO, "Beta Version", "最新のベータバージョンを使用中です。")
+            }else{
+                prompt.alert(
+                    Prompt.Level.WARNING,
+                    "Beta Version",
+                    String.format(NEW_BETA_VERSION_AVAILABLE, version, latestBetaVersion)
+                )
+            }
         }
 
         // Return the current version
@@ -185,4 +207,71 @@ object OtherUtil {
             }
             return null
         }
+
+    private val latestBetaVersion: String?
+        get() {
+            try {
+                val client = OkHttpClient()
+
+                val request = Request.Builder()
+                    .url("https://api.github.com/repos/Cosgy-Dev/TextToSpeakBot/releases")
+                    .build()
+
+                val response = client.newCall(request).execute()
+                val body = response.body?.string()
+                val releases = JSONArray(body)
+
+                var latestBetaTag: String? = null
+                for (i in 0 until releases.length()) {
+                    val release = releases.getJSONObject(i)
+                    val isPrerelease = release.getBoolean("prerelease")
+
+                    if (isPrerelease) {
+                        val tagName = release.getString("tag_name")
+                        if (latestBetaTag == null || compareVersions(tagName, latestBetaTag) > 0) {
+                            latestBetaTag = tagName
+                        }
+                    }
+                }
+
+                return latestBetaTag ?: "ベータリリースなし"
+            } catch (e: Exception) {
+                println("Failed to retrieve releases: ${e.message}")
+            }
+            return null
+        }
+
+    private fun isBetaVersion(version: String): Boolean {
+        val versionParts = version.split("-")
+        return versionParts.lastOrNull()?.startsWith("beta") ?: false
+    }
+
+
+    private fun compareVersions(version1: String, version2: String): Int {
+        val parts1 = version1.split("[.-]".toRegex()).toTypedArray()
+        val parts2 = version2.split("[.-]".toRegex()).toTypedArray()
+        val length = maxOf(parts1.size, parts2.size)
+
+        for (i in 0 until length) {
+            val part1 = if (i < parts1.size) parseVersionPart(parts1[i]) else 0
+            val part2 = if (i < parts2.size) parseVersionPart(parts2[i]) else 0
+
+            if (part1 < part2) {
+                return -1
+            } else if (part1 > part2) {
+                return 1
+            }
+        }
+
+        return 0
+    }
+
+    private fun parseVersionPart(part: String): Int {
+        return if (part.matches("\\d+".toRegex())) {
+            part.toInt()
+        } else {
+            0
+        }
+    }
+
 }
