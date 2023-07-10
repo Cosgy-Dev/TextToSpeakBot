@@ -58,7 +58,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
 
         toKatakanaIfEnglishExists(dicMsg)
 
-        val tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg)
+        val tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg.replace("\n", ""))
 
 
         // コマンドを生成して実行する
