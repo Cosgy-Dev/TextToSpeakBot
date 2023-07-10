@@ -57,6 +57,9 @@ class BotConfig(private val prompt: Prompt) {
     var isValid = false
         private set
 
+    var isForceUTF8 = false
+        private set
+
     fun load() {
         isValid = false
         try {
@@ -85,6 +88,7 @@ class BotConfig(private val prompt: Prompt) {
             maxMessageCount = config.getInt("maxmessagecount")
             winJTalkDir = config.getString("winjtalkdir")
             helpToDm = config.getBoolean("helptodm")
+            isForceUTF8 = config.getBoolean("forceutf-8")
             dBots = ownerId == 334091398263341056
             var write = false
 
