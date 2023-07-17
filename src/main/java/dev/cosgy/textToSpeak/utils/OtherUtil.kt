@@ -88,28 +88,6 @@ object OtherUtil {
     }
 
     /**
-     * URLから画像データをロード
-     *
-     * @param url 画像のURL
-     * @return URLのinputstream
-     */
-    fun imageFromUrl(url: String?): InputStream? {
-        if (url == null) return null
-        try {
-            val u = URL(url)
-            val urlConnection = u.openConnection()
-            urlConnection.setRequestProperty(
-                "user-agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
-            )
-            return urlConnection.getInputStream()
-        } catch (ignore: IOException) {
-        } catch (ignore: IllegalArgumentException) {
-        }
-        return null
-    }
-
-    /**
      * 文字列からアクティビティを解析
      *
      * @param game the game, including the action such as 'playing' or 'watching'
