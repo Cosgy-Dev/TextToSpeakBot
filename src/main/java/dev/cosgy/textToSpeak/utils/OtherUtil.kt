@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -29,11 +30,9 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.URISyntaxException
-import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
-import org.json.JSONArray
 
 object OtherUtil {
     const val NEW_VERSION_AVAILABLE = ("利用可能な新しいバージョンがあります!\n"
@@ -127,7 +126,7 @@ object OtherUtil {
         // Get current version number
         val version = currentVersion
 
-        if(!isBetaVersion(version)) {
+        if (!isBetaVersion(version)) {
             // Check for new version
             val latestVersion = latestVersion
             if (latestVersion != null && latestVersion != version && TextToSpeak.CHECK_UPDATE) {
@@ -137,11 +136,11 @@ object OtherUtil {
                     String.format(NEW_VERSION_AVAILABLE, version, latestVersion)
                 )
             }
-        }else{
+        } else {
             val latestBeta = latestBetaVersion
-            if(latestBeta != null && compareVersions(version, latestBeta) == 0){
+            if (latestBeta != null && compareVersions(version, latestBeta) == 0) {
                 prompt.alert(Prompt.Level.INFO, "Beta Version", "最新のベータバージョンを使用中です。")
-            }else{
+            } else {
                 prompt.alert(
                     Prompt.Level.WARNING,
                     "Beta Version",

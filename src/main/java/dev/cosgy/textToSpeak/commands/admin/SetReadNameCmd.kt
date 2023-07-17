@@ -43,13 +43,8 @@ class SetReadNameCmd(private val bot: Bot) : AdminCommand() {
         val settings = bot.settingsManager.getSettings(event.guild!!)
 
         if (event.getOption("value") == null) {
-            if (settings.isReadName()) {
-                settings.setReadName(false)
-                event.reply("ユーザー名の読み上げを無効にしました。").queue()
-            } else {
-                settings.setReadName(true)
-                event.reply("ユーザー名の読み上げを有効にしました。").queue()
-            }
+            settings.setReadName(!settings.isReadName())
+            event.reply("ユーザー名の読み上げを${if (settings.isReadName()) "有効" else "無効"}にしました。").queue()
         } else {
             val args = event.getOption("value")!!.asBoolean
 

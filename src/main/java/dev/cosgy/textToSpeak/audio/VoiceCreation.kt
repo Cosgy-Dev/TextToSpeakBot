@@ -121,10 +121,10 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
 
     private val characterCode: String
         // 文字コードを取得するメソッド
-        get(){
-            if(!IS_WINDOWS) return "UTF-8"
+        get() {
+            if (!IS_WINDOWS) return "UTF-8"
 
-            return if(bot.config.isForceUTF8) "UTF-8" else "Shift-JIS"
+            return if (bot.config.isForceUTF8) "UTF-8" else "Shift-JIS"
         }
 
     // コマンドを生成するメソッド

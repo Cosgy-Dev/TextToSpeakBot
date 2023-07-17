@@ -61,12 +61,7 @@ class JLReadCmd(private val bot: Bot) : AdminCommand() {
     override fun execute(event: CommandEvent) {
         val settings = bot.settingsManager.getSettings(event.guild)
 
-        if (settings.isJoinAndLeaveRead()) {
-            settings.setJoinAndLeaveRead(false)
-            event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを無効にしました。")
-        } else {
-            settings.setJoinAndLeaveRead(true)
-            event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを有効にしました。")
-        }
+        settings.setJoinAndLeaveRead(!settings.isJoinAndLeaveRead())
+        event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを${if (settings.isJoinAndLeaveRead()) "有効" else "無効"}にしました。")
     }
 }
