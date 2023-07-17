@@ -80,7 +80,7 @@ class SettcCmd(bot: Bot?) : AdminCommand() {
             val channelId = event.getOption("channel")!!.asLong
             val tc = event.guild!!.getTextChannelById(channelId)
             s.setTextChannel(tc)
-            event.reply( "${event.client.success}読み上げるチャンネルを<#${tc!!.id}>に設定しました。").queue()
+            event.reply("${event.client.success}読み上げるチャンネルを<#${tc!!.id}>に設定しました。").queue()
         }
     }
 
@@ -92,7 +92,7 @@ class SettcCmd(bot: Bot?) : AdminCommand() {
 
         override fun execute(event: SlashCommandEvent) {
             if (!checkAdminPermission(event.client, event)) {
-                event.reply(  "${event.client.warning}権限がないため実行できません。").queue()
+                event.reply("${event.client.warning}権限がないため実行できません。").queue()
                 return
             }
             val s = event.client.getSettingsFor<Settings>(event.guild)
