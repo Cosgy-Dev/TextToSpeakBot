@@ -43,7 +43,7 @@ object OtherUtil {
     const val NEW_BETA_VERSION_AVAILABLE = ("利用可能な新しいベータバージョンがあります!\n"
             + "現在のバージョン: %s\n"
             + "最新のバージョン: %s\n\n"
-            + " https://github.com/Cosgy-Dev/TextToSpeakBot/releases から最新バージョンをダウンロードして下さい。")
+            + " https://github.com/Cosgy-Dev/TextToSpeakBot/releases/tag/%s から最新バージョンをダウンロードして下さい。")
     private const val WINDOWS_INVALID_PATH = "c:\\windows\\system32\\"
     fun getPath(path: String): Path {
         // special logic to prevent trying to access system32
@@ -167,7 +167,7 @@ object OtherUtil {
                 prompt.alert(
                     Prompt.Level.WARNING,
                     "Beta Version",
-                    String.format(NEW_BETA_VERSION_AVAILABLE, version, latestBetaVersion)
+                    String.format(NEW_BETA_VERSION_AVAILABLE, version, latestBetaVersion, latestBetaVersion)
                 )
             }
         }
