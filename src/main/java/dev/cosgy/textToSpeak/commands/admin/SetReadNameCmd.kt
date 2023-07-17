@@ -36,7 +36,7 @@ class SetReadNameCmd(private val bot: Bot) : AdminCommand() {
 
     override fun execute(event: SlashCommandEvent) {
         if (!checkAdminPermission(event.client, event)) {
-            event.reply(event.client.warning + "権限がないため実行できません。").queue()
+            event.reply("${event.client.warning}権限がないため実行できません。").queue()
             return
         }
 
@@ -56,12 +56,8 @@ class SetReadNameCmd(private val bot: Bot) : AdminCommand() {
 
     override fun execute(event: CommandEvent) {
         val settings = bot.settingsManager.getSettings(event.guild)
-        if (settings.isReadName()) {
-            settings.setReadName(false)
-            event.reply("ユーザー名の読み上げを無効にしました。")
-        } else {
-            settings.setReadName(true)
-            event.reply("ユーザー名の読み上げを有効にしました。")
-        }
+
+        settings.setReadName(!settings.isReadName())
+        event.reply("ユーザー名の読み上げを${if (settings.isReadName()) "有効" else "無効"}にしました。")
     }
 }

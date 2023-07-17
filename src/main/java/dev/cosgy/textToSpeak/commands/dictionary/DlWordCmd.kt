@@ -38,12 +38,12 @@ class DlWordCmd(private val bot: Bot) : SlashCommand() {
         val words = bot.dictionary?.getWords(event.guild!!.idLong)
         val args = event.getOption("word")!!.asString
         if (!words!!.containsKey(args)) {
-            event.reply(args + "は、辞書に登録されていません。").queue()
+            event.reply("${args}は、辞書に登録されていません。").queue()
             return
         }
         val result = bot.dictionary?.deleteDictionary(event.guild!!.idLong, args)
         if (result == true) {
-            event.reply(String.format("単語(%s)を削除しました。", args)).queue()
+            event.reply("単語(${args})を削除しました。").queue()
         } else {
             event.reply("削除中に問題が発生しました。").setEphemeral(true).queue()
         }
@@ -61,12 +61,12 @@ class DlWordCmd(private val bot: Bot) : SlashCommand() {
         val words = bot.dictionary?.getWords(event.guild.idLong)
         val args = event.args
         if (!words!!.containsKey(args)) {
-            event.reply(args + "は、辞書に登録されていません。")
+            event.reply("${args}は、辞書に登録されていません。")
             return
         }
         val result = bot.dictionary?.deleteDictionary(event.guild.idLong, args)
         if (result == true) {
-            event.reply(String.format("単語(%s)を削除しました。", args))
+            event.reply("単語(${args})を削除しました。")
         } else {
             event.reply("削除中に問題が発生しました。")
         }

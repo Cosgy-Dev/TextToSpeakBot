@@ -78,8 +78,8 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
         val builder = EmbedBuilder()
             .setColor(SUCCESS_COLOR)
             .setTitle("単語を追加しました。")
-            .addField("単語", "```" + event.getOption("word")!!.asString + "```", false)
-            .addField("読み", "```" + event.getOption("reading")!!.asString + "```", false)
+            .addField("単語", "```${event.getOption("word")!!.asString}```", false)
+            .addField("読み", "```${event.getOption("reading")!!.asString}```", false)
         event.hook.sendMessageEmbeds(builder.build()).queue()
     }
 

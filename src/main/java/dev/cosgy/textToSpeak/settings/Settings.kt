@@ -76,7 +76,6 @@ class Settings : GuildSettingsProvider {
         return if (prefix == null) emptySet() else setOf(prefix)
     }
 
-
     fun isReadName(): Boolean {
         return readName
     }
