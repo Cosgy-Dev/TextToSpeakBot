@@ -58,7 +58,7 @@ class GUI(private val bot: Bot) : JFrame() {
 
 
         defaultCloseOperation = EXIT_ON_CLOSE
-        title = bot.getLang().getString("appName")
+        title = "TextToSpeak Bot by Cosgy Dev"
         val tabs = JTabbedPane()
         tabs.add("コンソール", console)
 

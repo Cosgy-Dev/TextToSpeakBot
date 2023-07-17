@@ -37,7 +37,6 @@ import kotlin.system.exitProcess
 
 class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: SettingsManager) {
     val threadpool: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-    private val lang: ResourceBundle = ResourceBundle.getBundle("lang.yomiage", Locale.JAPAN)
     val playerManager: PlayerManager = PlayerManager(this)
     val voiceCreation: VoiceCreation
     val userSettingsManager: UserSettingsManager
@@ -137,10 +136,6 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
 
     fun setGUI(gui: GUI?) {
         this.gui = gui
-    }
-
-    fun getLang(): ResourceBundle {
-        return lang
     }
 
     companion object {

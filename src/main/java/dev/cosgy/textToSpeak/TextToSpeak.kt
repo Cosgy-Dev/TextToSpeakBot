@@ -122,7 +122,7 @@ object TextToSpeak {
         Bot.INSTANCE = bot
         val aboutCommand = AboutCommand(
             Color.BLUE.brighter(),
-            bot.getLang().getString("appName") + "(v" + version + ")",
+            "TextToSpeak Bot by Cosgy Dev(V$version)",
             *RECOMMENDED_PERMS
         )
         aboutCommand.setIsAuthor(false)
@@ -208,7 +208,7 @@ object TextToSpeak {
                         Botトークンでのログインに失敗しました。
                         正しいBotトークンが設定されていることを確認してください。(CLIENT SECRET ではありません!)
                         設定ファイルの場所；${config.configLocation}
-                    """.trimIndent()
+                """.trimIndent()
             )
             exitProcess(1)
         } catch (ex: IllegalArgumentException) {
