@@ -46,14 +46,29 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                 val owner = bot.jda?.getUserById(bot.config.ownerId)
                 if (owner != null) {
                     val currentVersion = OtherUtil.currentVersion
-                    val latestVersion = OtherUtil.latestVersion
-                    if (latestVersion != null && !currentVersion.equals(
-                            latestVersion,
-                            ignoreCase = true
-                        ) && TextToSpeak.CHECK_UPDATE
-                    ) {
-                        val msg = String.format(OtherUtil.NEW_VERSION_AVAILABLE, currentVersion, latestVersion)
-                        owner.openPrivateChannel().queue { pc: PrivateChannel -> pc.sendMessage(msg).queue() }
+                    // 現在のバージョンがリリース版かを確認
+                    if (!OtherUtil.isBetaVersion(currentVersion)) {
+                        // リリースバージョンの場合
+                        val latestVersion = OtherUtil.latestVersion
+                        if (latestVersion != null && !currentVersion.equals(
+                                latestVersion,
+                                ignoreCase = true
+                            ) && TextToSpeak.CHECK_UPDATE
+                        ) {
+                            val msg = String.format(OtherUtil.NEW_VERSION_AVAILABLE, currentVersion, latestVersion)
+                            owner.openPrivateChannel().queue { pc: PrivateChannel -> pc.sendMessage(msg).queue() }
+                        }
+                    }else{
+                        // ベータバージョンの場合
+                        val latestBeta = OtherUtil.latestBetaVersion
+                        if(latestBeta != null && OtherUtil.compareVersions(currentVersion, latestBeta) != 0){
+                            val msg = String.format(
+                                OtherUtil.NEW_BETA_VERSION_AVAILABLE, currentVersion,
+                                OtherUtil.latestBetaVersion,
+                                OtherUtil.latestBetaVersion
+                            )
+                            owner.openPrivateChannel().queue { pc: PrivateChannel -> pc.sendMessage(msg).queue() }
+                        }
                     }
                 }
             }, 0, 24, TimeUnit.HOURS)

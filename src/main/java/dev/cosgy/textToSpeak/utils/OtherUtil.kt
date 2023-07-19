@@ -35,6 +35,7 @@ import java.nio.file.Paths
 import java.util.*
 
 object OtherUtil {
+    //TODO: ベータバージョンよりリリースバージョンの方が新しいバージョンだった場合はNEW_VERSION_AVAILABLEのメッセージは出す。
     const val NEW_VERSION_AVAILABLE = ("利用可能な新しいバージョンがあります!\n"
             + "現在のバージョン: %s\n"
             + "最新のバージョン: %s\n\n"
@@ -138,14 +139,16 @@ object OtherUtil {
             }
         } else {
             val latestBeta = latestBetaVersion
-            if (latestBeta != null && compareVersions(version, latestBeta) == 0) {
-                prompt.alert(Prompt.Level.INFO, "Beta Version", "最新のベータバージョンを使用中です。")
-            } else {
-                prompt.alert(
-                    Prompt.Level.WARNING,
-                    "Beta Version",
-                    String.format(NEW_BETA_VERSION_AVAILABLE, version, latestBetaVersion, latestBetaVersion)
-                )
+            if(latestBeta != null) {
+                if (compareVersions(version, latestBeta) == 0) {
+                    prompt.alert(Prompt.Level.INFO, "Beta Version", "最新のベータバージョンを使用中です。")
+                } else {
+                    prompt.alert(
+                        Prompt.Level.WARNING,
+                        "Beta Version",
+                        String.format(NEW_BETA_VERSION_AVAILABLE, version, latestBetaVersion, latestBetaVersion)
+                    )
+                }
             }
         }
 
@@ -185,7 +188,7 @@ object OtherUtil {
             return null
         }
 
-    private val latestBetaVersion: String?
+    val latestBetaVersion: String?
         get() {
             try {
                 val client = OkHttpClient()
@@ -218,13 +221,13 @@ object OtherUtil {
             return null
         }
 
-    private fun isBetaVersion(version: String): Boolean {
+    fun isBetaVersion(version: String): Boolean {
         val versionParts = version.split("-")
         return versionParts.lastOrNull()?.startsWith("beta") ?: false
     }
 
 
-    private fun compareVersions(version1: String, version2: String): Int {
+    fun compareVersions(version1: String, version2: String): Int {
         val parts1 = version1.split("[.-]".toRegex()).toTypedArray()
         val parts2 = version2.split("[.-]".toRegex()).toTypedArray()
         val length = maxOf(parts1.size, parts2.size)
