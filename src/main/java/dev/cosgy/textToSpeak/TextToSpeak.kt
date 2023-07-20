@@ -81,12 +81,7 @@ object TextToSpeak {
     fun main(args: Array<String>) {
         val log = LoggerFactory.getLogger("Startup")
         try {
-            println(
-                """
-                    ${FigletFont.convertOneLine("TextToSpeak Bot v" + OtherUtil.currentVersion)}
-                    by Cosgy Dev
-                    """.trimIndent()
-            )
+            println("${FigletFont.convertOneLine("TextToSpeak Bot v" + OtherUtil.currentVersion)}\nby Cosgy Dev")
         } catch (ignored: IOException) {
         }
         val prompt = Prompt(
