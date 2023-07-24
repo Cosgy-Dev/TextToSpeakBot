@@ -96,17 +96,18 @@ class BotConfig(private val prompt: Prompt) {
             if (token == null || token!!.isEmpty() || token!!.matches("(BOT_TOKEN_HERE|Botトークンをここに貼り付け)".toRegex())) {
                 token = prompt.prompt(
                     """
-    BOTトークンを入力してください。
-    BOTトークン: 
-    """.trimIndent()
+                    BOTトークンを入力してください。
+                    BOTトークン: 
+                    """.trimIndent()
                 )
                 write = if (token == null) {
                     prompt.alert(
-                        Prompt.Level.WARNING, CONTEXT, """
-     トークンが入力されていません！終了します。
+                        Prompt.Level.WARNING, CONTEXT,
+                        """
+                        トークンが入力されていません！終了します。
      
-     設定ファイルの場所: ${path!!.toAbsolutePath()}
-     """.trimIndent()
+                        設定ファイルの場所: ${path!!.toAbsolutePath()}
+                        """.trimIndent()
                     )
                     return
                 } else {
@@ -150,8 +151,8 @@ class BotConfig(private val prompt: Prompt) {
                         ?.replace("0 // OWNER ID", ownerId.toString())
                         ?.replace("所有者IDをここに貼り付け", ownerId.toString())?.trim { it <= ' ' }
                         ?: """
-                            token = $token
-                            owner = $ownerId
+                        token = $token
+                        owner = $ownerId
                         """.trimIndent()
                 FileUtils.writeStringToFile(path!!.toFile(), mod, StandardCharsets.UTF_8)
             }
@@ -160,19 +161,21 @@ class BotConfig(private val prompt: Prompt) {
             isValid = true
         } catch (ex: ConfigException) {
             prompt.alert(
-                Prompt.Level.ERROR, CONTEXT, """
+                Prompt.Level.ERROR, CONTEXT,
+                """
                 $ex: ${ex.message}
      
                 設定ファイルの場所: ${path!!.toAbsolutePath()}
-            """.trimIndent()
+                """.trimIndent()
             )
         } catch (ex: IOException) {
             prompt.alert(
-                Prompt.Level.ERROR, CONTEXT, """
+                Prompt.Level.ERROR, CONTEXT,
+                """
                 $ex: ${ex.message}
      
                 設定ファイルの場所: ${path!!.toAbsolutePath()}
-            """.trimIndent()
+                """.trimIndent()
             )
         }
     }

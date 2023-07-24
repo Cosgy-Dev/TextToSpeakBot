@@ -81,7 +81,7 @@ object TextToSpeak {
     fun main(args: Array<String>) {
         val log = LoggerFactory.getLogger("Startup")
         try {
-            println("${FigletFont.convertOneLine("TextToSpeak Bot v" + OtherUtil.currentVersion)}\nby Cosgy Dev")
+            println("${FigletFont.convertOneLine("TextToSpeak Bot v${OtherUtil.currentVersion}")}\nby Cosgy Dev")
         } catch (ignored: IOException) {
         }
         val prompt = Prompt(
@@ -117,7 +117,7 @@ object TextToSpeak {
         Bot.INSTANCE = bot
         val aboutCommand = AboutCommand(
             Color.BLUE.brighter(),
-            "TextToSpeak Bot by Cosgy Dev(V$version)",
+            "TextToSpeak Bot by Cosgy Dev(V${version})",
             *RECOMMENDED_PERMS
         )
         aboutCommand.setIsAuthor(false)
@@ -125,7 +125,7 @@ object TextToSpeak {
         val cb = CommandClientBuilder()
             .setPrefix(config.prefix)
             .setAlternativePrefix(config.altPrefix)
-            .setOwnerId(config.ownerId.toString()) //.setEmojis(config.getSuccess(), config.getWarning(), config.getError())
+            .setOwnerId(config.ownerId.toString())
             .setHelpWord("help")
             .setLinkedCacheSize(200)
             .setGuildSettingsManager(settings)
@@ -179,7 +179,7 @@ object TextToSpeak {
                 )
             }
         }
-        log.info(config.configLocation + " から設定を読み込みました")
+        log.info("${config.configLocation}から設定を読み込みました")
         try {
             val jda = JDABuilder.create(config.token, listOf(*INTENTS))
                 .enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
@@ -200,9 +200,9 @@ object TextToSpeak {
             prompt.alert(
                 Prompt.Level.ERROR, "TextToSpeak Bot",
                 """
-                        Botトークンでのログインに失敗しました。
-                        正しいBotトークンが設定されていることを確認してください。(CLIENT SECRET ではありません!)
-                        設定ファイルの場所；${config.configLocation}
+                Botトークンでのログインに失敗しました。
+                正しいBotトークンが設定されていることを確認してください。(CLIENT SECRET ではありません!)
+                設定ファイルの場所；${config.configLocation}
                 """.trimIndent()
             )
             exitProcess(1)
@@ -210,8 +210,8 @@ object TextToSpeak {
             prompt.alert(
                 Prompt.Level.ERROR, "TextToSpeak Bot",
                 """
-                    設定の一部が無効です:$ex
-                    設定ファイルの場所: ${config.configLocation}
+                設定の一部が無効です:$ex
+                設定ファイルの場所: ${config.configLocation}
                 """.trimIndent()
             )
             exitProcess(1)

@@ -84,7 +84,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                     bot.voiceCreation.createVoice(
                         event.guild,
                         event.member.user,
-                        event.member.user.name + "がボイスチャンネルから退出しました。"
+                        "${event.member.user.name}がボイスチャンネルから退出しました。"
                     )
                 } catch (e: IOException) {
                     throw RuntimeException(e)
@@ -109,7 +109,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                     bot.voiceCreation.createVoice(
                         event.guild,
                         event.member.user,
-                        event.member.user.name + "がボイスチャンネルに参加しました。"
+                        "${event.member.user.name}がボイスチャンネルに参加しました。"
                     )
                 } catch (e: IOException) {
                     throw RuntimeException(e)

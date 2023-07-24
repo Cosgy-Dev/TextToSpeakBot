@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 
 object FormatUtil {
     fun listOfTChannels(list: List<TextChannel>, query: String): String {
-        val out = StringBuilder(" 複数のテキストチャンネルで\"$query\"が一致しました。:")
+        val out = StringBuilder(" 複数のテキストチャンネルで${query}が一致しました。:")
         var i = 0
         while (i < 6 && i < list.size) {
             out.append("\n - ").append(list[i].name).append(" (<#").append(list[i].id).append(">)")
