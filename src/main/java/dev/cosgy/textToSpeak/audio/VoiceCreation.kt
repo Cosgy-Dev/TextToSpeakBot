@@ -27,6 +27,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.BreakIterator
 import java.util.*
+import java.util.regex.Pattern
 
 class VoiceCreation( // 各種設定の値を保持するためのフィールド
     private val bot: Bot
@@ -53,7 +54,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         val words = bot.dictionary?.getWords(guild.idLong)
         var dicMsg = sanitizeMessage(message)
         for ((key, value) in words!!) {
-            dicMsg = dicMsg.replace(key!!.toRegex(), value!!)
+            dicMsg = dicMsg.replace(Regex.escape(key!!), value!!)
         }
 
         toKatakanaIfEnglishExists(dicMsg)
