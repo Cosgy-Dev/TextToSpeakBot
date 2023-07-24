@@ -27,13 +27,13 @@ class CommandAudit : CommandListener {
         if (TextToSpeak.COMMAND_AUDIT_ENABLED) {
             val logger = LoggerFactory.getLogger("CommandAudit")
             val textFormat =
-                if (event.isFromType(ChannelType.PRIVATE)) "%s%s で %s#%s (%s) がコマンド %s を実行しました" else "%s の #%s で %s#%s (%s) がコマンド %s を実行しました"
+                if (event.isFromType(ChannelType.PRIVATE)) "%s%s で %s (%s) がコマンド %s を実行しました" else "%s の #%s で %s (%s) がコマンド %s を実行しました"
             logger.info(
                 String.format(
                     textFormat,
                     if (event.isFromType(ChannelType.PRIVATE)) "DM" else event.guild.name,
                     if (event.isFromType(ChannelType.PRIVATE)) "" else event.textChannel.name,
-                    event.author.name, event.author.discriminator, event.author.id,
+                    event.author.name, event.author.id,
                     event.message.contentDisplay
                 )
             )
