@@ -27,7 +27,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.BreakIterator
 import java.util.*
-import java.util.regex.Pattern
 
 class VoiceCreation( // 各種設定の値を保持するためのフィールド
     private val bot: Bot

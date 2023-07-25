@@ -60,6 +60,9 @@ class BotConfig(private val prompt: Prompt) {
     var isForceUTF8 = false
         private set
 
+    var deeplApiKey: String? = null
+        private set
+
     fun load() {
         isValid = false
         try {
@@ -89,6 +92,7 @@ class BotConfig(private val prompt: Prompt) {
             winJTalkDir = config.getString("winjtalkdir")
             helpToDm = config.getBoolean("helptodm")
             isForceUTF8 = config.getBoolean("forceutf-8")
+            deeplApiKey = config.getString("deeplapikey")
             dBots = ownerId == 334091398263341056
             var write = false
 

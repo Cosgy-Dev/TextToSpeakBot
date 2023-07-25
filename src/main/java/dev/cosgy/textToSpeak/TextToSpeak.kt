@@ -146,6 +146,7 @@ object TextToSpeak {
                 add(WordListCmd(bot))
                 add(DlWordCmd(bot))
                 add(SettcCmd(bot))
+                add(TranslateCmd(bot))
                 add(SetReadNameCmd(bot))
                 add(JLReadCmd(bot))
                 add(GuildSettings(bot))
