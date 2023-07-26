@@ -106,9 +106,9 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
             return Pattern.matches(KATAKANA_REGEX, str)
         }
 
-        private const val EMOJI_REGEX = """<(:[a-z0-9_]+:)\d+>"""
+        private val EMOJI_REGEX = """<(:[a-z0-9_]+:)\d+>""".toRegex()
         private fun replaceEmoji(str: String): String {
-            return Regex(EMOJI_REGEX).replace(str, "$1")
+            return EMOJI_REGEX.replace(str, "$1")
         }
     }
 }

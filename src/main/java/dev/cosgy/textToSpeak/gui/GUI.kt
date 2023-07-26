@@ -47,7 +47,6 @@ class GUI(private val bot: Bot) : JFrame() {
     private var garbageCollectors: Collection<GarbageCollectorMXBean>? = null
 
     fun init() {
-
         runtimeMx = ManagementFactory.getRuntimeMXBean()
         compilationMx = ManagementFactory.getCompilationMXBean()
         sunThreadMx = ManagementFactory.getThreadMXBean() as com.sun.management.ThreadMXBean
@@ -55,7 +54,6 @@ class GUI(private val bot: Bot) : JFrame() {
         classLoadingMx = ManagementFactory.getClassLoadingMXBean()
         sunOsMx = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
         garbageCollectors = ManagementFactory.getGarbageCollectorMXBeans().filterIsInstance<GarbageCollectorMXBean>()
-
 
         defaultCloseOperation = EXIT_ON_CLOSE
         title = "TextToSpeak Bot by Cosgy Dev"
@@ -70,18 +68,12 @@ class GUI(private val bot: Bot) : JFrame() {
 
         // Add bot info label to bot info panel
         val botInfoLabel = JLabel()
-
         val osName = sunOsMx?.name
         val osVersion = sunOsMx?.version
         val osArch = sunOsMx?.arch
         val processors = sunOsMx?.availableProcessors
-
-        //val vmName = runtimeMx?.name
-        //val vmVersion = runtimeMx?.vmVersion
-        //val vmVendor = runtimeMx?.vmVendor
         val vmArguments = runtimeMx?.inputArguments?.joinToString(" ")
 
-        //botInfoPanel.add(systemInfoLabel)
         botInfoLabel.font = Font("monospaced", Font.PLAIN, 12)
         botInfoPanel.add(botInfoLabel)
 
