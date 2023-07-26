@@ -173,8 +173,8 @@ object TextToSpeak {
                 log.error(
                     """
                     GUIを開くことができませんでした。次の要因が考えられます:
-                    サーバー上で実行している
-                    画面がない環境下で実行している
+                    ・サーバー上で実行している。
+                    ・GUIがない環境下で実行している。
                     このエラーを非表示にするには、 -Dnogui=true フラグを使用してGUIなしモードで実行してください。
                     """.trimIndent()
                 )
@@ -201,9 +201,9 @@ object TextToSpeak {
             prompt.alert(
                 Prompt.Level.ERROR, "TextToSpeak Bot",
                 """
-                Botトークンでのログインに失敗しました。
-                正しいBotトークンが設定されていることを確認してください。(CLIENT SECRET ではありません!)
-                設定ファイルの場所；${config.configLocation}
+                ボットトークンでのログインに失敗しました。
+                正しいボットトークンが設定されていることを確認してください。(CLIENT SECRET ではありません!)
+                設定ファイルの場所：${config.configLocation}
                 """.trimIndent()
             )
             exitProcess(1)
@@ -211,8 +211,8 @@ object TextToSpeak {
             prompt.alert(
                 Prompt.Level.ERROR, "TextToSpeak Bot",
                 """
-                設定の一部が無効です:$ex
-                設定ファイルの場所: ${config.configLocation}
+                設定の一部が無効です：$ex
+                設定ファイルの場所：${config.configLocation}
                 """.trimIndent()
             )
             exitProcess(1)

@@ -42,18 +42,11 @@ class JLReadCmd(private val bot: Bot) : AdminCommand() {
         val settings = bot.settingsManager.getSettings(event.guild!!)
 
         if (event.getOption("value") == null) {
-            if (settings.isJoinAndLeaveRead()) {
-                settings.setJoinAndLeaveRead(false)
-                event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを無効にしました。").queue()
-            } else {
-                settings.setJoinAndLeaveRead(true)
-                event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを有効にしました。").queue()
-            }
+            settings.setJoinAndLeaveRead(!settings.isJoinAndLeaveRead())
+            event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを${if (settings.isJoinAndLeaveRead()) "有効" else "無効"}にしました。").queue()
         } else {
             val args = event.getOption("value")!!.asBoolean
-
             settings.setReadName(args)
-
             event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを${if (args) "有効" else "無効"}にしました。").queue()
         }
     }

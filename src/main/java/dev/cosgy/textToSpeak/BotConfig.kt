@@ -97,11 +97,11 @@ class BotConfig(private val prompt: Prompt) {
             var write = false
 
             // validate bot token
-            if (token == null || token!!.isEmpty() || token!!.matches("(BOT_TOKEN_HERE|Botトークンをここに貼り付け)".toRegex())) {
+            if (token == null || token!!.isEmpty() || token!!.matches("(BOT_TOKEN_HERE|ボットトークンをここに貼り付け)".toRegex())) {
                 token = prompt.prompt(
                     """
-                    BOTトークンを入力してください。
-                    BOTトークン: 
+                    ボットトークンを入力してください。
+                    ボットトークン: 
                     """.trimIndent()
                 )
                 write = if (token == null) {
@@ -125,7 +125,7 @@ class BotConfig(private val prompt: Prompt) {
                     prompt.prompt(
                         """
                         所有者のユーザーIDが設定されていない、または有効なIDではありません。
-                        BOTの所有者のユーザーIDを入力してください。
+                        ボットの所有者のユーザーIDを入力してください。
                         所有者のユーザーID: 
                         """.trimIndent()
                     )!!.toLong()
@@ -151,7 +151,7 @@ class BotConfig(private val prompt: Prompt) {
                 val original = OtherUtil.loadResource(this, "/reference.conf")
                 val mod: String =
                     original?.substring(original.indexOf(START_TOKEN) + START_TOKEN.length, original.indexOf(END_TOKEN))
-                        ?.replace("BOT_TOKEN_HERE", token!!)?.replace("Botトークンをここに貼り付け", token!!)
+                        ?.replace("BOT_TOKEN_HERE", token!!)?.replace("ボットトークンをここに貼り付け", token!!)
                         ?.replace("0 // OWNER ID", ownerId.toString())
                         ?.replace("所有者IDをここに貼り付け", ownerId.toString())?.trim { it <= ' ' }
                         ?: """
@@ -195,7 +195,7 @@ class BotConfig(private val prompt: Prompt) {
 
     companion object {
         private const val CONTEXT = "Config"
-        private const val START_TOKEN = "/// START OF YOMIAGEBOT CONFIG ///"
-        private const val END_TOKEN = "/// END OF YOMIAGEBOT CONFIG ///"
+        private const val START_TOKEN = "/// START OF TEXT TO SPEAK BOT CONFIG ///"
+        private const val END_TOKEN = "/// END OF TEXT TO SPEAK BOT CONFIG ///"
     }
 }
