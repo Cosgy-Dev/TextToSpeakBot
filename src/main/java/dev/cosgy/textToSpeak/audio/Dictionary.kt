@@ -106,7 +106,7 @@ class Dictionary private constructor(bot: Bot) {
     }
 
     private fun getWordsFromDatabase(guildId: Long): Optional<HashMap<String?, String?>> {
-        val sql = "SELECT * FROM Dictionary WHERE guild_id = ? ORDER BY LENGTH(word) DESC"
+        val sql = "SELECT * FROM Dictionary WHERE guild_id = ?"
         try {
             connection.prepareStatement(sql).use { ps ->
                 ps.setLong(1, guildId)
