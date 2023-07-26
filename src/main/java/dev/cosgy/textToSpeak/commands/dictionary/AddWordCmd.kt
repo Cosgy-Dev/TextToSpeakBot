@@ -75,11 +75,13 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
     }
 
     private fun sendSuccessMessage(event: SlashCommandEvent) {
+        val word = event.getOption("word")!!.asString
+        val reading = event.getOption("reading")!!.asString
         val builder = EmbedBuilder()
             .setColor(SUCCESS_COLOR)
             .setTitle("単語を追加しました。")
-            .addField("単語", "```${event.getOption("word")!!.asString}```", false)
-            .addField("読み", "```${event.getOption("reading")!!.asString}```", false)
+            .addField("単語", "```${replaceEmoji(word)}```", false)
+            .addField("読み", "```${reading}```", false)
         event.hook.sendMessageEmbeds(builder.build()).queue()
     }
 
@@ -90,7 +92,7 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
             event.reply("読み方はすべてカタカナで入力して下さい。").setEphemeral(true).queue()
             return
         }
-        handleCommand(event, word, reading)
+        handleCommand(event, replaceEmoji(word), reading)
     }
 
     companion object {
@@ -102,6 +104,11 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
         private const val KATAKANA_REGEX = "^[ァ-ヶー]*$"
         private fun isKatakana(str: String): Boolean {
             return Pattern.matches(KATAKANA_REGEX, str)
+        }
+
+        private const val EMOJI_REGEX = """<(:[a-z0-9_]+:)\d+>"""
+        private fun replaceEmoji(str: String): String {
+            return Regex(EMOJI_REGEX).replace(str, "$1")
         }
     }
 }
