@@ -46,7 +46,7 @@ class JLReadCmd(private val bot: Bot) : AdminCommand() {
             event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを${if (settings.isJoinAndLeaveRead()) "有効" else "無効"}にしました。").queue()
         } else {
             val args = event.getOption("value")!!.asBoolean
-            settings.setReadName(args)
+            settings.setJoinAndLeaveRead(args)
             event.reply("ボイスチャンネルにユーザーが参加、退出した際の読み上げを${if (args) "有効" else "無効"}にしました。").queue()
         }
     }
