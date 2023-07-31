@@ -1,8 +1,0 @@
-# デフォルトの無視ファイル
-/shelf/
-/workspace.xml
-# データソースのローカルストレージがファイルを無視しました
-/../../../../../../:\Users\kosug\IdeaProjects\TextToSpeak\.idea/dataSources/
-/dataSources.local.xml
-# エディターベースの HTTP クライアントリクエスト
-/httpRequests/

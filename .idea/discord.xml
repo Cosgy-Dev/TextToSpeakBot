@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="DiscordProjectSettings">
-    <option name="show" value="PROJECT_FILES" />
-    <option name="nameOverrideEnabled" value="true" />
-    <option name="nameOverrideText" value="読み上げボット" />
-    <option name="description" value="指定したテキストチャットに送信されたテキストをボイスチャンネルで読み上げます。" />
-  </component>
-</project>
