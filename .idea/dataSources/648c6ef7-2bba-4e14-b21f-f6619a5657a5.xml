@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="UserData">
-  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.48">
+  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.49">
     <root id="1"/>
     <collation id="2" parent="1" name="BINARY"/>
     <collation id="3" parent="1" name="NOCASE"/>

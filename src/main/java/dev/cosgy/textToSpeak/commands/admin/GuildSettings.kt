@@ -70,7 +70,7 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
                 "参加、退出時の読み上げ：",
                 if (settings.isJoinAndLeaveRead()) "有効" else "無効",
                 false
-            ) //.addField("接頭語：", settings.getPrefix(), false)
+            )
             .addField("読み上げるチャンネル：", text, false)
             .addField("読み上げの主音量：", settings.volume.toString(), false)
         event.reply(builder.build())

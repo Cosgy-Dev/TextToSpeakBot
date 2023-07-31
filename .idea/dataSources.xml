@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="UserData" uuid="648c6ef7-2bba-4e14-b21f-f6619a5657a5">
-      <driver-ref>sqlite.xerial</driver-ref>
+      <driver-ref>5f8deff0-3970-4ed7-8bc2-c6d0f0800d86</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\Users\kosug\IdeaProjects\TextToSpeakBot\src\main\resources\UserData.sqlite</jdbc-url>

@@ -1,2 +1,4 @@
 # プロジェクトの除外パス
 /target/
+/.idea/
+/.vscode/
