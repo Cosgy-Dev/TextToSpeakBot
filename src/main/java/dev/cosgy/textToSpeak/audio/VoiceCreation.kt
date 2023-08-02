@@ -53,7 +53,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         val words = bot.dictionary?.getWords(guild.idLong)
         var dicMsg = sanitizeMessage(message)
         for ((key, value) in words!!) {
-            dicMsg = dicMsg.replace(Regex.escape(key!!), value!!)
+            dicMsg = dicMsg.replace(key!!, value!!)
         }
 
         toKatakanaIfEnglishExists(dicMsg)
