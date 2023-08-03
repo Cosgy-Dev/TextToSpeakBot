@@ -48,6 +48,7 @@ class PlayerManager(val bot: Bot) : DefaultAudioPlayerManager() {
             handler = AudioHandler(guild, player)
             player.addListener(handler)
             guild.audioManager.sendingHandler = handler
+            guild.audioManager.isSelfMuted = true
         } else handler = guild.audioManager.sendingHandler as AudioHandler?
         return handler
     }

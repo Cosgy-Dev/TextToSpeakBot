@@ -33,7 +33,13 @@ class ByeCmd(private val bot: Bot) : SlashCommand() {
 
     override fun execute(event: SlashCommandEvent) {
         val handler = event.guild!!.audioManager.sendingHandler as AudioHandler?
-        handler!!.stopAndClear()
+
+        if(handler == null){
+            event.reply("ボイスチャンネルに接続していません。").setEphemeral(true).queue()
+            return
+        }
+
+        handler.stopAndClear()
         try {
             bot.voiceCreation.clearGuildFolder(event.guild!!)
         } catch (e: IOException) {
