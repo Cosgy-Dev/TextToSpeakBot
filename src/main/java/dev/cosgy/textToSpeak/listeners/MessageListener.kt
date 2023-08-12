@@ -64,8 +64,9 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             // URLを置き換え
             msg = msg.replace("(http://|https://)[\\w.\\-/:#?=&;%~+]+".toRegex(), "ゆーあーるえる")
             if (textChannel === settingText) {
-                if (bot.settingsManager.getSettings(guild).isReadName()) {
-                    msg = author.name + "  " + msg
+                val settings = bot.settingsManager.getSettings(guild)
+                if (settings.isReadName()) {
+                    msg = if(settings.isReadNic()) author.effectiveName else author.name + "  " + msg
                 }
                 val vc = bot.voiceCreation
                 val file: String? = try {
