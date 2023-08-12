@@ -5,7 +5,7 @@ pipeline {
               -v "${WORKSPACE}":/data/project
               --entrypoint=""
               '''
-      image 'jetbrains/qodana-jvm'
+      image 'jetbrains/qodana-jvm:2023.2'
     }
 
   }
