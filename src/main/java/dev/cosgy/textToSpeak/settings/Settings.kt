@@ -26,6 +26,7 @@ class Settings : GuildSettingsProvider {
     var volume: Int
     private var readName: Boolean
     private var joinAndLeaveRead: Boolean
+    private var readNic: Boolean
 
     constructor(
         manager: SettingsManager,
@@ -33,7 +34,8 @@ class Settings : GuildSettingsProvider {
         prefix: String?,
         volume: Int,
         readName: Boolean,
-        joinAndLeaveRead: Boolean
+        joinAndLeaveRead: Boolean,
+        readNic: Boolean,
     ) {
         this.manager = manager
         try {
@@ -45,6 +47,7 @@ class Settings : GuildSettingsProvider {
         this.volume = volume
         this.readName = readName
         this.joinAndLeaveRead = joinAndLeaveRead
+        this.readNic = readNic
     }
 
     constructor(
@@ -53,7 +56,8 @@ class Settings : GuildSettingsProvider {
         prefix: String?,
         volume: Int,
         readName: Boolean,
-        joinAndLeaveRead: Boolean
+        joinAndLeaveRead: Boolean,
+        readNic: Boolean
     ) {
         this.manager = manager
         this.textId = textId
@@ -61,6 +65,7 @@ class Settings : GuildSettingsProvider {
         this.volume = volume
         this.readName = readName
         this.joinAndLeaveRead = joinAndLeaveRead
+        this.readNic = readNic
     }
 
     fun getTextChannel(guild: Guild?): TextChannel? {
@@ -91,6 +96,15 @@ class Settings : GuildSettingsProvider {
 
     fun setJoinAndLeaveRead(joinAndLeaveRead: Boolean) {
         this.joinAndLeaveRead = joinAndLeaveRead
+        manager.writeSettings()
+    }
+
+    fun isReadNic(): Boolean {
+        return readNic
+    }
+
+    fun setReadNic(readNic: Boolean) {
+        this.readNic = readNic
         manager.writeSettings()
     }
 }

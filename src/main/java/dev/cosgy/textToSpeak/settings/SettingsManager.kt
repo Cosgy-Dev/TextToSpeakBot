@@ -39,7 +39,8 @@ class SettingsManager : GuildSettingsManager<Any?> {
                     if (value.has("prefix")) value.getString("prefix") else null,
                     if (value.has("volume")) value.getInt("volume") else 50,
                     value.has("read_name") && value.getBoolean("read_name"),
-                    value.has("join_and_leave_read") && value.getBoolean("join_and_leave_read")
+                    value.has("join_and_leave_read") && value.getBoolean("join_and_leave_read"),
+                    value.has("read_nic") && value.getBoolean("read_nic")
                 )
             }
         } catch (e: IOException) {
@@ -63,7 +64,7 @@ class SettingsManager : GuildSettingsManager<Any?> {
      * @return 作成されたデフォルト設定
      */
     private fun createDefaultSettings(): Settings {
-        return Settings(this, 0, null, 50, readName = false, joinAndLeaveRead = false)
+        return Settings(this, 0, null, 50, readName = false, joinAndLeaveRead = false, readNic = false)
     }
 
     /**
@@ -79,6 +80,7 @@ class SettingsManager : GuildSettingsManager<Any?> {
             if (s.volume != 50) o.put("volume", s.volume)
             if (s.isReadName()) o.put("read_name", s.isReadName())
             if (s.isJoinAndLeaveRead()) o.put("join_and_leave_read", s.isJoinAndLeaveRead())
+            if (s.isReadNic()) o.put("read_nic", s.isReadNic())
             obj.put(key.toString(), o)
         })
         try {

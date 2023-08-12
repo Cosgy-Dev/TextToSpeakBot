@@ -19,10 +19,7 @@ import com.github.lalyos.jfiglet.FigletFont
 import com.jagrosh.jdautilities.command.CommandClientBuilder
 import com.jagrosh.jdautilities.command.SlashCommand
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter
-import dev.cosgy.textToSpeak.commands.admin.GuildSettings
-import dev.cosgy.textToSpeak.commands.admin.JLReadCmd
-import dev.cosgy.textToSpeak.commands.admin.SetReadNameCmd
-import dev.cosgy.textToSpeak.commands.admin.SettcCmd
+import dev.cosgy.textToSpeak.commands.admin.*
 import dev.cosgy.textToSpeak.commands.dictionary.AddWordCmd
 import dev.cosgy.textToSpeak.commands.dictionary.DlWordCmd
 import dev.cosgy.textToSpeak.commands.dictionary.WordListCmd
@@ -148,6 +145,7 @@ object TextToSpeak {
                 add(SettcCmd(bot))
                 add(TranslateCmd(bot))
                 add(SetReadNameCmd(bot))
+                add(NicReadCmd(bot))
                 add(JLReadCmd(bot))
                 add(GuildSettings(bot))
                 add(ShutdownCmd(bot))
