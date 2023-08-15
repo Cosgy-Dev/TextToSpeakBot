@@ -40,7 +40,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     val playerManager: PlayerManager = PlayerManager(this)
     val voiceCreation: VoiceCreation
     val userSettingsManager: UserSettingsManager
-    private val aloneInVoiceHandler: AloneInVoiceHandler
+    val aloneInVoiceHandler: AloneInVoiceHandler
     var log: Logger = LoggerFactory.getLogger(this.javaClass)
     var dictionary: Dictionary? = null
         private set

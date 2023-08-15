@@ -76,6 +76,8 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
     }
 
     override fun onGuildVoiceUpdate(event: GuildVoiceUpdateEvent) {
+        bot.aloneInVoiceHandler.onVoiceUpdate(event)
+
         val botMember = event.guild.selfMember
         val settings = bot.settingsManager.getSettings(event.guild)
         if (event.channelLeft != null) {
