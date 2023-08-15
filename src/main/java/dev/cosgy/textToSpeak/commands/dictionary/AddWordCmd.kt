@@ -15,6 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands.dictionary
 
+import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jdautilities.command.SlashCommand
 import com.jagrosh.jdautilities.command.SlashCommandEvent
 import com.jagrosh.jdautilities.menu.ButtonMenu
@@ -48,6 +49,7 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
         if (isWordExist) {
             val no = "❌"
             val ok = "✔"
+
             ButtonMenu.Builder()
                 .setText("単語が既に存在します。上書きしますか？")
                 .addChoices(no, ok)
@@ -90,6 +92,70 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
         val reading = event.getOption("reading")!!.asString
         if (!isKatakana(reading)) {
             event.reply("読み方はすべてカタカナで入力して下さい。").setEphemeral(true).queue()
+            return
+        }
+        handleCommand(event, replaceEmoji(word), reading)
+    }
+
+    /***
+     * テキストコマンド用
+     */
+    private fun handleCommand(event: CommandEvent, word: String, reading: String) {
+        val guildId = event.guild!!.idLong
+        val dictionary = bot.dictionary
+        val isWordExist = dictionary!!.getWords(guildId).containsKey(word)
+        if (isWordExist) {
+            val no = "❌"
+            val ok = "✔"
+
+            ButtonMenu.Builder()
+                .setText("単語が既に存在します。上書きしますか？")
+                .addChoices(no, ok)
+                .setEventWaiter(bot.waiter)
+                .setTimeout(30, TimeUnit.SECONDS)
+                .setAction { re: Emoji ->
+                    if (re.name == ok) {
+                        dictionary.updateDictionary(guildId, word, reading)
+                        sendSuccessMessage(event)
+                    } else {
+
+                        event.reply("辞書登録をキャンセルしました。")
+                    }
+                }.setFinalAction { m: Message ->
+                    try {
+                        m.clearReactions().queue()
+                        m.delete().queue()
+                    } catch (ignore: PermissionException) {
+                    }
+                }.build().display(event.channel)
+        } else {
+            dictionary.updateDictionary(guildId, word, reading)
+            sendSuccessMessage(event)
+        }
+    }
+
+    private fun sendSuccessMessage(event: CommandEvent) {
+        val args = event.args.split("\\s+".toRegex(), 2).toTypedArray()
+        val word = args[0]
+        val reading = args[1]
+        val builder = EmbedBuilder()
+            .setColor(SUCCESS_COLOR)
+            .setTitle("単語を追加しました。")
+            .addField("単語", "```${replaceEmoji(word)}```", false)
+            .addField("読み", "```${reading}```", false)
+        event.reply(builder.build())
+    }
+
+    override fun execute(event: CommandEvent) {
+        val args = event.args.split("\\s+".toRegex(), 2).toTypedArray()
+        if (args.size < 2) {
+            event.reply("コマンドが無効です。単語と読み方の２つを入力して実行して下さい。")
+            return
+        }
+        val word = args[0]
+        val reading = args[1]
+        if (!isKatakana(reading)) {
+            event.reply("読み方はすべてカタカナで入力して下さい。")
             return
         }
         handleCommand(event, replaceEmoji(word), reading)

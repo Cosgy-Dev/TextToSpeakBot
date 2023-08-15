@@ -124,6 +124,7 @@ object TextToSpeak {
             .setAlternativePrefix(config.altPrefix)
             .setOwnerId(config.ownerId.toString())
             .setHelpWord("help")
+            .useHelpBuilder(false)
             .setLinkedCacheSize(200)
             .setGuildSettingsManager(settings)
             .setListener(CommandAudit())
