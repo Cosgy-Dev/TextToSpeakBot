@@ -98,7 +98,9 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         return inputText
     }
 
-    // 英単語をカタカナに変換するメソッド
+    /**
+     * 英単語をカタカナに変換するメソッド
+     */
     private fun toKatakanaIfEnglishExists(message: String): String {
         var englishExists = false
         for (c in message) {
