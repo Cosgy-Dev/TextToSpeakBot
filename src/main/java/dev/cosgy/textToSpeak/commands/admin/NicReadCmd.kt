@@ -14,9 +14,9 @@ class NicReadCmd(private val bot: Bot) : AdminCommand() {
 
     init {
         name = "readnic"
-        help = "ユーザー名読み上げが有効の際にサーバーのニックネームを読み上げるかを設定します。"
+        help = "ニックネーム読み上げを優先するかを設定します。。"
 
-        options = listOf(OptionData(OptionType.BOOLEAN, "value", "機能を有効にするか否か", false))
+        options = listOf(OptionData(OptionType.BOOLEAN, "value", "ニックネームを優先するか", false))
     }
 
     override fun execute(event: SlashCommandEvent) {
@@ -29,13 +29,13 @@ class NicReadCmd(private val bot: Bot) : AdminCommand() {
 
         if (event.getOption("value") == null) {
             settings.setReadNic(!settings.isReadNic())
-            event.reply("ユーザー名読み上げの際、ニックネームの読み上げを${if (settings.isReadNic()) "有効" else "無効"}にしました。").queue()
+            event.reply("ニックネーム読み上げの優先を${if (settings.isReadNic()) "有効" else "無効"}にしました。").queue()
         } else {
             val args = event.getOption("value")!!.asBoolean
 
             settings.setReadNic(args)
 
-            event.reply("ユーザー名読み上げの際、ニックネームの読み上げを${if (args) "有効" else "無効"}にしました。").queue()
+            event.reply("ニックネーム読み上げの優先を${if (args) "有効" else "無効"}にしました。").queue()
         }
     }
 
@@ -43,6 +43,6 @@ class NicReadCmd(private val bot: Bot) : AdminCommand() {
         val settings = bot.settingsManager.getSettings(event.guild)
 
         settings.setReadNic(!settings.isReadNic())
-        event.reply("ユーザー名読み上げの際、ニックネームの読み上げを${if (settings.isReadNic()) "有効" else "無効"}にしました。")
+        event.reply("ニックネーム読み上げの優先を${if (settings.isReadNic()) "有効" else "無効"}にしました。")
     }
 }

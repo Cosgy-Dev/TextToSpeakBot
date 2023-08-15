@@ -57,9 +57,9 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         }
 
         // スポイラーを処理する
-        processSpoilers(dicMsg)
+        dicMsg = processSpoilers(dicMsg)
         // 英語をカタカナに変換する
-        toKatakanaIfEnglishExists(dicMsg)
+        dicMsg = toKatakanaIfEnglishExists(dicMsg)
 
         val tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg.replace("\n", ""))
 
@@ -78,24 +78,11 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
      * メッセージ内のスポイラーを処理するメソッド
      */
     private fun processSpoilers(input:String): String {
-        var inputText:String = input
-        val spoilerTag = "||"
 
-        var startIndex: Int = inputText.indexOf(spoilerTag)
-        var endIndex: Int = inputText.indexOf(spoilerTag, startIndex + spoilerTag.length)
-
-        while (startIndex != -1 && endIndex != -1) {
-            val spoilerContent: String = inputText.substring(startIndex + spoilerTag.length, endIndex)
-            val replacedSpoiler = "スポイラー"
-            inputText = inputText.substring(
-                0,
-                startIndex
-            ) + replacedSpoiler + inputText.substring(endIndex + spoilerTag.length)
-            startIndex = inputText.indexOf(spoilerTag)
-            endIndex = inputText.indexOf(spoilerTag, startIndex + spoilerTag.length)
+        val regex = Regex("""\|\|([^|]+)\|\|""")
+        return regex.replace(input) {
+            "スポイラー"
         }
-
-        return inputText
     }
 
     /**
@@ -120,7 +107,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
     // メッセージをサニタイズするメソッド
     private fun sanitizeMessage(message: String): String {
         var sanitizedMsg = message.replace("[\\uD800-\\uDFFF]".toRegex(), " ")
-        sanitizedMsg = sanitizedMsg.replace("Kosugi_kun".toRegex(), "コスギクン")
+        sanitizedMsg = sanitizedMsg.replace("Kosugi_kun", "コスギクン")
         val sentences = BreakIterator.getSentenceInstance(Locale.JAPANESE)
         sentences.setText(sanitizedMsg)
         var messageCount = 0

@@ -81,10 +81,12 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
         if (event.channelLeft != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelLeft && event.channelLeft!!.members.size > 1) {
                 val file: String? = try {
+                    var nic = event.member.nickname
+                    nic = nic ?: event.member.effectiveName
                     bot.voiceCreation.createVoice(
                         event.guild,
                         event.member.user,
-                        "${if(settings.isReadNic()) event.member.user.effectiveName else event.member.user.name}がボイスチャンネルから退出しました。"
+                        "${if(settings.isReadNic()) nic else event.member.effectiveName}がボイスチャンネルから退出しました。"
                     )
                 } catch (e: IOException) {
                     throw RuntimeException(e)
@@ -106,10 +108,13 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
         if (event.channelJoined != null) {
             if (settings.isJoinAndLeaveRead() && Objects.requireNonNull(event.guild.selfMember.voiceState)?.channel === event.channelJoined) {
                 val file: String? = try {
+                    var nic = event.member.nickname
+                    nic = nic ?: event.member.effectiveName
+
                     bot.voiceCreation.createVoice(
                         event.guild,
                         event.member.user,
-                        "${if(settings.isReadNic()) event.member.user.effectiveName else event.member.user.name}がボイスチャンネルに参加しました。"
+                        "${if(settings.isReadNic()) nic else event.member.effectiveName}がボイスチャンネルに参加しました。"
                     )
                 } catch (e: IOException) {
                     throw RuntimeException(e)

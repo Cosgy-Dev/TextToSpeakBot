@@ -66,7 +66,12 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             if (textChannel === settingText) {
                 val settings = bot.settingsManager.getSettings(guild)
                 if (settings.isReadName()) {
-                    msg = if(settings.isReadNic()) author.effectiveName else author.name + "  " + msg
+
+                    var nic = event.member?.nickname
+
+                    nic = nic ?: author.effectiveName
+
+                    msg = "${if(settings.isReadNic()) nic else author.effectiveName}  " + msg
                 }
                 val vc = bot.voiceCreation
                 val file: String? = try {
