@@ -51,6 +51,11 @@ class GuildSettings(private val bot: Bot) : AdminCommand() {
                 if (settings.isJoinAndLeaveRead()) "有効" else "無効",
                 false
             )
+            .addField(
+                "ニックネーム優先：",
+                if (settings.isReadNic()) "有効" else "無効",
+                false
+            )
             .addField("読み上げるチャンネル：", text, false)
             .addField("読み上げの主音量：", settings.volume.toString(), false)
         event.replyEmbeds(builder.build()).queue()

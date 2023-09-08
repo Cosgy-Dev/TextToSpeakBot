@@ -79,7 +79,7 @@ class Dictionary private constructor(bot: Bot) {
      *
      * @param guildId サーバーID
      * @param word    単語
-     * @return 正常に削除できた場合は `true`、削除時に問題が発生した場合は`false`を返します。
+     * @return        正常に削除できた場合は `true`、削除時に問題が発生した場合は`false`を返します。
      */
     @Synchronized
     fun deleteDictionary(guildId: Long, word: String?): Boolean {
