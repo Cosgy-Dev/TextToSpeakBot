@@ -59,10 +59,10 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         // スポイラーを処理する
         dicMsg = processSpoilers(dicMsg)
         // 英語をカタカナに変換する
-        dicMsg = toKatakanaIfEnglishExists(dicMsg)
+        //dicMsg = toKatakanaIfEnglishExists(dicMsg)
+        dicMsg = bot.englishKanaConversion.convert(dicMsg)
 
         val tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg.replace("\n", ""))
-
 
         // コマンドを生成して実行する
         val command = getCommand(settings, tmpFilePath, fileName)

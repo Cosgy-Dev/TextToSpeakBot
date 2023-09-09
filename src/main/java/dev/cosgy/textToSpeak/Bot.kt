@@ -41,6 +41,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     val voiceCreation: VoiceCreation
     val userSettingsManager: UserSettingsManager
     val aloneInVoiceHandler: AloneInVoiceHandler
+    val englishKanaConversion: EnglishToKatakana
     var log: Logger = LoggerFactory.getLogger(this.javaClass)
     var dictionary: Dictionary? = null
         private set
@@ -54,6 +55,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
         userSettingsManager = UserSettingsManager()
         aloneInVoiceHandler = AloneInVoiceHandler(this)
         aloneInVoiceHandler.init()
+        englishKanaConversion = EnglishToKatakana(this)
     }
 
     fun readyJDA() {
