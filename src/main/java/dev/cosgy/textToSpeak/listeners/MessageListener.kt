@@ -63,6 +63,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
 
             // URLを置き換え
             msg = msg.replace("(http://|https://)[\\w.\\-/:#?=&;%~+]+".toRegex(), "ゆーあーるえる")
+            message.getStickers().forEach { sticker -> msg += " " + sticker.getName() }
             if (textChannel === settingText) {
                 val settings = bot.settingsManager.getSettings(guild)
                 if (settings.isReadName()) {
