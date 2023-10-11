@@ -31,6 +31,7 @@ import java.io.IOException
 
 class MessageListener(private val bot: Bot) : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
+        val startTime = System.currentTimeMillis()
         event.jda
         event.responseNumber
 
@@ -86,6 +87,12 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
                 //textChannel.sendMessage(author.getName() + "が、「"+ msg +"」と送信しました。").queue();
             }
         }
+
+        // 終了時刻を記録
+        val endTime = System.currentTimeMillis()
+
+        // 実行時間を計算
+        val executionTime = endTime - startTime
     }
 
     override fun onReady(e: ReadyEvent) {

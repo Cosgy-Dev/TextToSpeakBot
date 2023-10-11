@@ -38,6 +38,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
 
     @Throws(IOException::class, InterruptedException::class)
     fun createVoice(guild: Guild, user: User, message: String): String {
+        val startTime = System.currentTimeMillis()
         // ファイル名やパスの生成に使用するIDを生成する
         val guildId = guild.id
         val fileId = UUID.randomUUID().toString()
@@ -59,8 +60,9 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         // スポイラーを処理する
         dicMsg = processSpoilers(dicMsg)
         // 英語をカタカナに変換する
-        //dicMsg = toKatakanaIfEnglishExists(dicMsg)
         dicMsg = bot.englishKanaConversion.convert(dicMsg)
+        dicMsg = toKatakanaIfEnglishExists(dicMsg)
+
 
         val tmpFilePath = createTmpTextFile(guildId, fileId, dicMsg.replace("\n", ""))
 
@@ -71,6 +73,11 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         logger.debug("Command: " + java.lang.String.join(" ", *command))
         val process = builder.start()
         process.waitFor()
+
+        val endTime = System.currentTimeMillis()
+        val executionTime = endTime - startTime
+        logger.debug("読み上げ処理時間: $executionTime ミリ秒")
+
         return fileName
     }
 

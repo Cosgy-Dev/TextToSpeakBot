@@ -20,14 +20,13 @@ import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
-import kotlin.collections.HashMap
 
 class EnglishToKatakana(bot: Bot) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     // 辞書ファイルの名前
     private val fileName = "bep-eng.dic"
-    private val map = HashMap<String, String>()
+    private val map = TreeMap<String, String>()
 
     init {
         logger.info("英語->カタカナ変換辞書を読み込みます。")
@@ -49,10 +48,30 @@ class EnglishToKatakana(bot: Bot) {
     }
 
     fun convert(text: String): String {
-        var result = text.lowercase()
-        for ((key, value) in map) {
-            result = result.replace(key, value)
+        val startTime = System.currentTimeMillis()
+        val words = text.split("\\s+".toRegex()) // 空白文字で単語を区切る
+
+        val result = StringBuilder()
+
+        for (word in words) {
+            val replacement = searchWord(word.uppercase())
+            if (replacement != null) {
+                result.append(replacement)
+            } else {
+                result.append(word)
+            }
+            result.append(" ")
         }
-        return result
+
+        val endTime = System.currentTimeMillis()
+        val executionTime = endTime - startTime
+        logger.debug("探索処理時間: $executionTime ミリ秒")
+
+
+        return result.toString().trim()
+    }
+
+    private fun searchWord(word: String): String? {
+        return map[word]
     }
 }
