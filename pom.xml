@@ -69,9 +69,9 @@
             <version>5.0.0-beta.18</version>
         </dependency>
         <dependency>
-            <groupId>com.github.walkyst</groupId>
-            <artifactId>lavaplayer-fork</artifactId>
-            <version>1.4.2</version>
+            <groupId>dev.arbjerg</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>pw.chew</groupId>
@@ -277,7 +277,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <kotlin.version>1.9.20</kotlin.version>
+        <kotlin.version>1.9.22</kotlin.version>
         <kotlin.compiler.languageVersion>2.0</kotlin.compiler.languageVersion>
     </properties>
 
