@@ -29,7 +29,8 @@ class NicReadCmd(private val bot: Bot) : AdminCommand() {
 
         if (event.getOption("value") == null) {
             settings.setReadNic(!settings.isReadNic())
-            event.reply("ニックネーム読み上げの優先を${if (settings.isReadNic()) "有効" else "無効"}にしました。").queue()
+            event.reply("ニックネーム読み上げの優先を${if (settings.isReadNic()) "有効" else "無効"}にしました。")
+                .queue()
         } else {
             val args = event.getOption("value")!!.asBoolean
 

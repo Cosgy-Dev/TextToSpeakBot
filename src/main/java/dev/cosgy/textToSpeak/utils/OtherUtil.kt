@@ -139,7 +139,7 @@ object OtherUtil {
             }
         } else {
             val latestBeta = latestBetaVersion
-            if(latestBeta != null) {
+            if (latestBeta != null) {
                 if (compareVersions(version, latestBeta) == 0) {
                     prompt.alert(Prompt.Level.INFO, "Beta Version", "最新のベータバージョンを使用中です。")
                 } else {

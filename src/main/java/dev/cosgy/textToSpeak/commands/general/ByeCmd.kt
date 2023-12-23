@@ -34,7 +34,7 @@ class ByeCmd(private val bot: Bot) : SlashCommand() {
     override fun execute(event: SlashCommandEvent) {
         val handler = event.guild!!.audioManager.sendingHandler as AudioHandler?
 
-        if(handler == null){
+        if (handler == null) {
             event.reply("ボイスチャンネルに接続していません。").setEphemeral(true).queue()
             return
         }

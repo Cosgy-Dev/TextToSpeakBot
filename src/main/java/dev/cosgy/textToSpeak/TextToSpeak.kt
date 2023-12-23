@@ -82,7 +82,8 @@ object TextToSpeak {
         } catch (ignored: IOException) {
         }
         val prompt = Prompt(
-            "TextToSpeak Bot", "noguiモードに切り替えます。  -Dnogui=trueフラグを含めると、手動でnoguiモードで起動できます。",
+            "TextToSpeak Bot",
+            "noguiモードに切り替えます。  -Dnogui=trueフラグを含めると、手動でnoguiモードで起動できます。",
             "true".equals(System.getProperty("nogui", "false"), ignoreCase = true)
         )
 

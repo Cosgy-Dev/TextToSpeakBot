@@ -43,7 +43,12 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
         builder.setColor(Color(76, 108, 179))
         builder.setTitle("VCに接続")
         if (!userState!!.inAudioChannel() || userState.isDeafened) {
-            builder.setDescription(String.format("このコマンドを使用するには、%sに参加している必要があります。", "音声チャンネル"))
+            builder.setDescription(
+                String.format(
+                    "このコマンドを使用するには、%sに参加している必要があります。",
+                    "音声チャンネル"
+                )
+            )
             event.replyEmbeds(builder.build()).queue()
             return
         }
@@ -60,13 +65,18 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
             builder.addField(
                 "設定",
                 "ユーザー名読み上げ:${if (settings.isReadName()) "有効" else "無効"}\n" +
-                "参加、退出読み上げ:${if (settings.isJoinAndLeaveRead()) "有効" else "無効"}\n" +
-                "ニックネーム優先:${if (settings.isReadNic()) "有効" else "無効"}", true
+                        "参加、退出読み上げ:${if (settings.isJoinAndLeaveRead()) "有効" else "無効"}\n" +
+                        "ニックネーム優先:${if (settings.isReadNic()) "有効" else "無効"}", true
             )
             event.hook.sendMessageEmbeds(builder.build()).queue()
             ReadChannel.setChannel(event.guild!!.idLong, event.textChannel.idLong)
         } catch (ex: PermissionException) {
-            builder.appendDescription(event.client.error + String.format("**%s**に接続できません!", userState.channel!!.name))
+            builder.appendDescription(
+                event.client.error + String.format(
+                    "**%s**に接続できません!",
+                    userState.channel!!.name
+                )
+            )
             builder.addField(
                 "ボイスチャンネル", event.client.error + String.format(
                     "**%s**に接続できません!",

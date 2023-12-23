@@ -58,10 +58,10 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                             val msg = String.format(OtherUtil.NEW_VERSION_AVAILABLE, currentVersion, latestVersion)
                             owner.openPrivateChannel().queue { pc: PrivateChannel -> pc.sendMessage(msg).queue() }
                         }
-                    }else{
+                    } else {
                         // ベータバージョンの場合
                         val latestBeta = OtherUtil.latestBetaVersion
-                        if(latestBeta != null && OtherUtil.compareVersions(currentVersion, latestBeta) != 0){
+                        if (latestBeta != null && OtherUtil.compareVersions(currentVersion, latestBeta) != 0) {
                             val msg = String.format(
                                 OtherUtil.NEW_BETA_VERSION_AVAILABLE, currentVersion,
                                 OtherUtil.latestBetaVersion,
@@ -88,7 +88,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                     bot.voiceCreation.createVoice(
                         event.guild,
                         event.member.user,
-                        "${if(settings.isReadNic()) nic else event.member.effectiveName}がボイスチャンネルから退出しました。"
+                        "${if (settings.isReadNic()) nic else event.member.effectiveName}がボイスチャンネルから退出しました。"
                     )
                 } catch (e: IOException) {
                     throw RuntimeException(e)
@@ -116,7 +116,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                     bot.voiceCreation.createVoice(
                         event.guild,
                         event.member.user,
-                        "${if(settings.isReadNic()) nic else event.member.effectiveName}がボイスチャンネルに参加しました。"
+                        "${if (settings.isReadNic()) nic else event.member.effectiveName}がボイスチャンネルに参加しました。"
                     )
                 } catch (e: IOException) {
                     throw RuntimeException(e)

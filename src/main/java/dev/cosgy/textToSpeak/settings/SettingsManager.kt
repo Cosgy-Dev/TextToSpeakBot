@@ -44,9 +44,11 @@ class SettingsManager : GuildSettingsManager<Any?> {
                 )
             }
         } catch (e: IOException) {
-            LoggerFactory.getLogger("Settings").warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): $e")
+            LoggerFactory.getLogger("Settings")
+                .warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): $e")
         } catch (e: JSONException) {
-            LoggerFactory.getLogger("Settings").warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): $e")
+            LoggerFactory.getLogger("Settings")
+                .warn("サーバー設定を読み込めませんでした(まだ設定がない場合は正常です): $e")
         }
     }
 

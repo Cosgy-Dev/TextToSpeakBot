@@ -32,9 +32,11 @@ import java.nio.charset.StandardCharsets
 
 class TranslateCmd(bot: Bot) : SlashCommand() {
     override fun execute(event: SlashCommandEvent) {
-        if(deeplApiKey.isNullOrEmpty()){
-            event.reply("翻訳機能が有効になっていません。\n" +
-                    "この機能を利用する場合はボット管理者が翻訳機能を有効にする必要があります。").setEphemeral(true)
+        if (deeplApiKey.isNullOrEmpty()) {
+            event.reply(
+                "翻訳機能が有効になっていません。\n" +
+                        "この機能を利用する場合はボット管理者が翻訳機能を有効にする必要があります。"
+            ).setEphemeral(true)
 
             return
         }
@@ -67,7 +69,8 @@ class TranslateCmd(bot: Bot) : SlashCommand() {
         deeplApiKey = bot.config.deeplApiKey
         this.category = Category("便利機能")
         val options: MutableList<OptionData> = ArrayList()
-        val sourceLanguageOption = OptionData(OptionType.STRING, "source_language", "翻訳前の言語を選択してください。", true)
+        val sourceLanguageOption =
+            OptionData(OptionType.STRING, "source_language", "翻訳前の言語を選択してください。", true)
         sourceLanguageOption.addChoice("自動検出", "auto")
         sourceLanguageOption.addChoice("英語", "en")
         sourceLanguageOption.addChoice("日本語", "ja")
@@ -82,7 +85,8 @@ class TranslateCmd(bot: Bot) : SlashCommand() {
         sourceLanguageOption.addChoice("ロシア語", "ru")
         options.add(sourceLanguageOption)
         // 翻訳後の言語を選択するオプション
-        val targetLanguageOption = OptionData(OptionType.STRING, "target_language", "翻訳後の言語を選択してください。", true)
+        val targetLanguageOption =
+            OptionData(OptionType.STRING, "target_language", "翻訳後の言語を選択してください。", true)
         targetLanguageOption.addChoice("英語", "en")
         targetLanguageOption.addChoice("日本語", "ja")
         targetLanguageOption.addChoice("中国語", "zh")
@@ -101,7 +105,8 @@ class TranslateCmd(bot: Bot) : SlashCommand() {
     }
 
     companion object {
-        var deeplApiKey:String? = ""
+        var deeplApiKey: String? = ""
+
         @Throws(IOException::class, InterruptedException::class)
         private fun translateText(text: String, sourceLang: String, targetLang: String): String {
             val url = "https://api-free.deepl.com/v2/translate"
@@ -131,17 +136,17 @@ class TranslateCmd(bot: Bot) : SlashCommand() {
 
         private val LANGUAGES = mapOf(
             "auto" to "自動検出",
-            "de"   to "ドイツ語",
-            "en"   to "英語",
-            "es"   to "スペイン語",
-            "fr"   to "フランス語",
-            "it"   to "イタリア語",
-            "ja"   to "日本語",
-            "nl"   to "オランダ語",
-            "pl"   to "ポーランド後",
-            "pt"   to "ポルトガル語",
-            "ru"   to "ロシア語",
-            "zh"   to "中国語"
+            "de" to "ドイツ語",
+            "en" to "英語",
+            "es" to "スペイン語",
+            "fr" to "フランス語",
+            "it" to "イタリア語",
+            "ja" to "日本語",
+            "nl" to "オランダ語",
+            "pl" to "ポーランド後",
+            "pt" to "ポルトガル語",
+            "ru" to "ロシア語",
+            "zh" to "中国語"
         )
     }
 }

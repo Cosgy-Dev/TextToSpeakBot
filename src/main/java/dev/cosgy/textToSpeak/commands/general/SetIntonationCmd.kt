@@ -51,7 +51,11 @@ class SetIntonationCmd(private val bot: Bot) : SlashCommand() {
             val builder = EmbedBuilder()
                 .setTitle("setintoコマンド")
                 .addField("使用方法:", "$name <数値(0.0~)>", false)
-                .addField("説明:", "F0系列内変動の重みを変更します。F0系列内変動の重みは、0.0以上の数値で設定して下さい。", false)
+                .addField(
+                    "説明:",
+                    "F0系列内変動の重みを変更します。F0系列内変動の重みは、0.0以上の数値で設定して下さい。",
+                    false
+                )
             event.reply(builder.build())
             return
         }

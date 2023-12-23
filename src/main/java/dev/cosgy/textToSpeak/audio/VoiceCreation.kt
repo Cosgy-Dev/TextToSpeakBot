@@ -84,7 +84,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
     /**
      * メッセージ内のスポイラーを処理するメソッド
      */
-    private fun processSpoilers(input:String): String {
+    private fun processSpoilers(input: String): String {
 
         val regex = Regex("""\|\|([^|]+)\|\|""")
         return regex.replace(input) {

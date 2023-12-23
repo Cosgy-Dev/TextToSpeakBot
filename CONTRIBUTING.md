@@ -34,7 +34,8 @@ Pull Requestはいつでも歓迎しています。
 - テストの改善
 
 :memo: **Note:** Pull
-Requestが受け入れられるとあなたの貢献が[Contributorsリスト](https://github.com/Cosgy-Dev/TextToSpeakBot/graphs/contributors)に追加されます。
+Requestが受け入れられるとあなたの貢献が[Contributorsリスト](https://github.com/Cosgy-Dev/TextToSpeakBot/graphs/contributors)
+に追加されます。
 
 **受け入れていないPull Request**
 

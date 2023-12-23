@@ -21,8 +21,6 @@ import com.jagrosh.jdautilities.command.SlashCommandEvent
 import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.audio.VoiceCreation
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import org.slf4j.LoggerFactory
 import java.awt.Color
@@ -45,7 +43,8 @@ class HelpCmd(var bot: Bot) : SlashCommand() {
             if (!command.isHidden && (!command.isOwnerCommand || event.member!!.isOwner)) {
                 if (category != command.category) {
                     category = command.category
-                    builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name).append("__:\n")
+                    builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name)
+                        .append("__:\n")
                 }
                 builder.append("\n`").append("/").append(command.name)
                     .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
@@ -74,7 +73,8 @@ class HelpCmd(var bot: Bot) : SlashCommand() {
             if (!command.isHidden && (!command.isOwnerCommand || event.isOwner)) {
                 if (category != command.category) {
                     category = command.category
-                    builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name).append("__:\n")
+                    builder.append("\n\n  __").append(if (category == null) "カテゴリなし" else category.name)
+                        .append("__:\n")
                 }
                 builder.append("\n`").append("/").append(command.name)
                     .append(if (command.arguments == null) "`" else " " + command.arguments + "`")
@@ -92,7 +92,7 @@ class HelpCmd(var bot: Bot) : SlashCommand() {
         }
     }
 
-    companion object{
+    companion object {
         private val logger = LoggerFactory.getLogger(VoiceCreation::class.java)
     }
 }

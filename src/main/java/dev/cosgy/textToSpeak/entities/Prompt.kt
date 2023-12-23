@@ -31,7 +31,8 @@ class Prompt @JvmOverloads constructor(
     private var scanner: Scanner? = null
 
     init {
-        this.noguiMessage = noguiMessage ?: "noguiモードに切り替えます。 -nogui=trueフラグを含めることで、手動でnoguiモードで起動できます。"
+        this.noguiMessage = noguiMessage
+            ?: "noguiモードに切り替えます。 -nogui=trueフラグを含めることで、手動でnoguiモードで起動できます。"
     }
 
     fun alert(level: Level?, context: String?, message: String) {

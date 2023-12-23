@@ -35,7 +35,8 @@ class SettcCmd(bot: Bot?) : AdminCommand() {
 
     init {
         name = "settc"
-        help = "読み上げをするチャンネルを設定します。読み上げするチャンネルを設定していない場合は、joinコマンドを最後に実行したチャンネルが読み上げ対象になります。"
+        help =
+            "読み上げをするチャンネルを設定します。読み上げするチャンネルを設定していない場合は、joinコマンドを最後に実行したチャンネルが読み上げ対象になります。"
         arguments = "<チャンネル名|NONE|なし>"
         children = arrayOf<SlashCommand>(Set(), None())
     }

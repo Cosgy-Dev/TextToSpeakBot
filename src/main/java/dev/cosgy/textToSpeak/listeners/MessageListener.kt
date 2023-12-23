@@ -73,7 +73,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
 
                     nic = nic ?: author.effectiveName
 
-                    msg = "${if(settings.isReadNic()) nic else author.effectiveName}  " + msg
+                    msg = "${if (settings.isReadNic()) nic else author.effectiveName}  " + msg
                 }
                 val vc = bot.voiceCreation
                 val file: String? = try {

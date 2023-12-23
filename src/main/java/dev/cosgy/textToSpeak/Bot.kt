@@ -17,7 +17,6 @@ package dev.cosgy.textToSpeak
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import dev.cosgy.textToSpeak.audio.*
-import dev.cosgy.textToSpeak.audio.Dictionary
 import dev.cosgy.textToSpeak.gui.GUI
 import dev.cosgy.textToSpeak.settings.SettingsManager
 import dev.cosgy.textToSpeak.settings.UserSettingsManager
