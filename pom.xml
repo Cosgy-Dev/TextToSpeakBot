@@ -82,7 +82,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.11</version>
+            <version>1.4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe</groupId>
@@ -140,7 +145,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-script-runtime</artifactId>
-            <version>1.8.20-RC2</version>
+            <version>${kotlin.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -272,7 +277,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <kotlin.version>1.8.20-RC2</kotlin.version>
+        <kotlin.version>1.9.20</kotlin.version>
+        <kotlin.compiler.languageVersion>2.0</kotlin.compiler.languageVersion>
     </properties>
 
 </project>
