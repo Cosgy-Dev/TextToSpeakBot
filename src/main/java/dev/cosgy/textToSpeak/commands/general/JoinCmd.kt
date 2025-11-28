@@ -59,7 +59,7 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
         }
         try {
             // ボイスチャンネル接続完了のメッセージに現在の設定を表示
-            event.guild!!.audioManager.openAudioConnection(userState.channel)
+            event.guild!!.audioManager.openAudioConnection(userState.channel!!)
             builder.addField("ボイスチャンネル", String.format("**%s**", userState.channel!!.name), false)
             builder.setDescription("ボイスチャンネルへの接続に成功しました。")
             builder.addField(
@@ -106,7 +106,7 @@ class JoinCmd(private var bot: Bot) : SlashCommand() {
             builder.addField("読み上げ対象", channel.name, true)
         }
         try {
-            event.guild.audioManager.openAudioConnection(userState.channel)
+            event.guild.audioManager.openAudioConnection(userState.channel!!)
             builder.addField("ボイスチャンネル", String.format("**%s**", userState.channel!!.name), false)
             builder.setDescription("ボイスチャンネルへの接続に成功しました。")
             event.reply(builder.build())
