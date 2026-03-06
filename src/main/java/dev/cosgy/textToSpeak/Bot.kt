@@ -15,10 +15,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter
+import dev.cosgy.textToSpeak.framework.command.commons.waiter.EventWaiter
 import dev.cosgy.textToSpeak.audio.*
 import dev.cosgy.textToSpeak.audio.Dictionary
 import dev.cosgy.textToSpeak.gui.GUI
+import dev.cosgy.textToSpeak.interactions.ButtonRouter
 import dev.cosgy.textToSpeak.settings.SettingsManager
 import dev.cosgy.textToSpeak.settings.UserSettingsManager
 import net.dv8tion.jda.api.JDA
@@ -39,6 +40,7 @@ class Bot(val waiter: EventWaiter, val config: BotConfig, val settingsManager: S
     val threadpool: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     val playerManager: PlayerManager = PlayerManager(this)
     val voiceCreation: VoiceCreation
+    val buttonRouter: ButtonRouter = ButtonRouter()
     val userSettingsManager: UserSettingsManager
     val aloneInVoiceHandler: AloneInVoiceHandler
     val englishKanaConversion: EnglishToKatakana

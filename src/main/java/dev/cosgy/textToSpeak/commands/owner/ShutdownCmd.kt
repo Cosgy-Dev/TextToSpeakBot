@@ -15,8 +15,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands.owner
 
-import com.jagrosh.jdautilities.command.CommandEvent
-import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
 import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.commands.OwnerCommand
 

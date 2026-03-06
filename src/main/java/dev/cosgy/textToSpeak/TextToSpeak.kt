@@ -16,10 +16,11 @@
 package dev.cosgy.textToSpeak
 
 import com.github.lalyos.jfiglet.FigletFont
-import com.jagrosh.jdautilities.command.CommandClientBuilder
-import com.jagrosh.jdautilities.command.SlashCommand
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter
+import dev.cosgy.textToSpeak.framework.command.command.CommandClientBuilder
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
+import dev.cosgy.textToSpeak.framework.command.commons.waiter.EventWaiter
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
+import club.minnced.discord.jdave.interop.JDaveSessionFactory
 import dev.cosgy.textToSpeak.commands.admin.*
 import dev.cosgy.textToSpeak.commands.dictionary.AddWordCmd
 import dev.cosgy.textToSpeak.commands.dictionary.DlWordCmd
@@ -32,8 +33,6 @@ import dev.cosgy.textToSpeak.listeners.CommandAudit
 import dev.cosgy.textToSpeak.listeners.MessageListener
 import dev.cosgy.textToSpeak.settings.SettingsManager
 import dev.cosgy.textToSpeak.utils.OtherUtil
-import moe.kyokobot.libdave.NativeDaveFactory
-import moe.kyokobot.libdave.jda.LDJDADaveSessionFactory
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.Permission
@@ -186,19 +185,6 @@ object TextToSpeak {
         }
         log.info("${config.configLocation}から設定を読み込みました")
         try {
-            NativeDaveFactory.ensureAvailable()
-        } catch (ex: RuntimeException) {
-            prompt.alert(
-                Prompt.Level.ERROR, "TextToSpeak Bot",
-                """
-                DAVE/音声ネイティブライブラリの初期化に失敗しました。
-                実行環境に対応する libdave/udpqueue ネイティブが依存関係に含まれているか確認してください。
-                詳細: ${ex.message}
-                """.trimIndent()
-            )
-            exitProcess(1)
-        }
-        try {
             val jda = JDABuilder.create(config.token, listOf(*INTENTS))
                 .enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
                 .disableCache(
@@ -210,11 +196,11 @@ object TextToSpeak {
                 )
                 .setActivity(if (nogame) null else Activity.playing("準備中..."))
                 .setStatus(if (config.status == OnlineStatus.INVISIBLE || config.status == OnlineStatus.OFFLINE) OnlineStatus.INVISIBLE else OnlineStatus.DO_NOT_DISTURB)
-                .addEventListeners(cb.build(), waiter, Listener(bot), MessageListener(bot))
+                .addEventListeners(cb.build(), waiter, bot.buttonRouter, Listener(bot), MessageListener(bot))
                 .setBulkDeleteSplittingEnabled(true)
                 .setAudioModuleConfig(
                     AudioModuleConfig()
-                        .withDaveSessionFactory(LDJDADaveSessionFactory(NativeDaveFactory()))
+                        .withDaveSessionFactory(JDaveSessionFactory())
                         .withAudioSendFactory(NativeAudioSendFactory())
                 )
                 .build()

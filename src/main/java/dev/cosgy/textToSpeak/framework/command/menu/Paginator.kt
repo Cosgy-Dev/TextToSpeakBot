@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.menu
+package dev.cosgy.textToSpeak.framework.command.menu
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message

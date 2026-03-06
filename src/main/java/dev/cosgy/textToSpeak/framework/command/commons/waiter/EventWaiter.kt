@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.commons.waiter
+package dev.cosgy.textToSpeak.framework.command.commons.waiter
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 

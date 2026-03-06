@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.settings
 
-import com.jagrosh.jdautilities.command.GuildSettingsProvider
+import dev.cosgy.textToSpeak.framework.command.command.GuildSettingsProvider
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 

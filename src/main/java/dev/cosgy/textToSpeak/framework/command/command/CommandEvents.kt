@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.command
+package dev.cosgy.textToSpeak.framework.command.command
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Member
@@ -28,7 +28,7 @@ class CommandEvent(
     val textChannel: TextChannel get() = event.channel.asTextChannel()
     val isOwner: Boolean get() = author.id == client.ownerId
 
-    fun isFromType(type: ChannelType): Boolean = event.isFromType(type)
+    fun isFromType(type: ChannelType): Boolean = event.channelType == type
 
     fun reply(content: String) {
         channel.sendMessage(content).queue()
@@ -54,7 +54,7 @@ class SlashCommandEvent(
 
     fun getOption(name: String): OptionMapping? = event.getOption(name)
 
-    fun isFromType(type: ChannelType): Boolean = event.isFromType(type)
+    fun isFromType(type: ChannelType): Boolean = event.channelType == type
 
     fun deferReply() = event.deferReply()
 

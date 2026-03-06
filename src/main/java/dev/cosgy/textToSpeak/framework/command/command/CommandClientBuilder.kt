@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.command
+package dev.cosgy.textToSpeak.framework.command.command
 
 class CommandClientBuilder {
     private var prefix: String = "/"
@@ -10,9 +10,9 @@ class CommandClientBuilder {
     private var commandListener: CommandListener? = null
     private val slashCommands: MutableList<SlashCommand> = mutableListOf()
 
-    fun setPrefix(prefix: String) = apply { this.prefix = prefix }
+    fun setPrefix(prefix: String?) = apply { this.prefix = prefix ?: this.prefix }
 
-    fun setAlternativePrefix(altPrefix: String) = apply { this.altPrefix = altPrefix }
+    fun setAlternativePrefix(altPrefix: String?) = apply { this.altPrefix = altPrefix ?: this.altPrefix }
 
     fun setOwnerId(ownerId: String) = apply { this.ownerId = ownerId }
 
@@ -24,7 +24,9 @@ class CommandClientBuilder {
 
     fun setLinkedCacheSize(ignore: Int) = apply { }
 
-    fun setStatus(ignore: net.dv8tion.jda.api.OnlineStatus) = apply { }
+    fun setStatus(ignore: net.dv8tion.jda.api.OnlineStatus?) = apply { }
+
+    fun setActivity(ignore: net.dv8tion.jda.api.entities.Activity?) = apply { }
 
     fun setGuildSettingsManager(settingsManager: GuildSettingsManager<*>) = apply {
         this.settingsManager = settingsManager

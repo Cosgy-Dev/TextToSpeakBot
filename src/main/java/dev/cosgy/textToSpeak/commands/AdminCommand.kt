@@ -15,10 +15,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands
 
-import com.jagrosh.jdautilities.command.CommandClient
-import com.jagrosh.jdautilities.command.CommandEvent
-import com.jagrosh.jdautilities.command.SlashCommand
-import com.jagrosh.jdautilities.command.SlashCommandEvent
+import dev.cosgy.textToSpeak.framework.command.command.CommandClient
+import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
 import net.dv8tion.jda.api.Permission
 import java.util.function.Predicate
 

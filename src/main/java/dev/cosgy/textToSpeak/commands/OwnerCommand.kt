@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands
 
-import com.jagrosh.jdautilities.command.SlashCommand
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
 
 abstract class OwnerCommand : SlashCommand() {
     init {

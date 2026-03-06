@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.commons
+package dev.cosgy.textToSpeak.framework.command.commons
 
 object JDAUtilitiesInfo {
     const val AUTHOR = "TextToSpeak"

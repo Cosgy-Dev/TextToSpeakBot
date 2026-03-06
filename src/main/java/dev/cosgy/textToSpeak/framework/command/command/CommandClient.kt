@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.command
+package dev.cosgy.textToSpeak.framework.command.command
 
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.slf4j.LoggerFactory
@@ -29,6 +30,8 @@ class CommandClient internal constructor(
     val commands: List<SlashCommand> = commandList
     val slashCommands: List<SlashCommand> = commandList
     val startTime: OffsetDateTime = OffsetDateTime.now()
+    private val slashIndex: Map<String, SlashCommand> =
+        commandList.associateBy { it.name.lowercase(Locale.getDefault()) }
     private val commandIndex: Map<String, SlashCommand> = buildMap {
         commandList.forEach { cmd ->
             put(cmd.name.lowercase(Locale.getDefault()), cmd)
@@ -52,7 +55,7 @@ class CommandClient internal constructor(
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        val command = slashCommands.firstOrNull { it.name.equals(event.name, ignoreCase = true) } ?: return
+        val command = slashIndex[event.name.lowercase(Locale.getDefault())] ?: return
         val target = resolveSlashTarget(command, event)
         val guildChannel = event.channel as? GuildMessageChannel
         if (!canExecute(target, event.member, event.user, guildChannel)) {
@@ -77,7 +80,7 @@ class CommandClient internal constructor(
     }
 
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
-        val command = slashCommands.firstOrNull { it.name.equals(event.name, ignoreCase = true) } ?: return
+        val command = slashIndex[event.name.lowercase(Locale.getDefault())] ?: return
         val target = if (event.subcommandName != null) {
             command.children.firstOrNull { it.name.equals(event.subcommandName, ignoreCase = true) } ?: command
         } else {
@@ -177,6 +180,9 @@ class CommandClient internal constructor(
         val commandData = slashCommands.map { top ->
             val description = top.help.ifBlank { "No description" }.take(100)
             val slash = Commands.slash(top.name, description)
+            if (top.userPermissions.isNotEmpty()) {
+                slash.setDefaultPermissions(DefaultMemberPermissions.enabledFor(*top.userPermissions))
+            }
             if (top.children.isEmpty()) {
                 top.options.forEach { slash.addOptions(it) }
             } else {

@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.doc.standard
+package dev.cosgy.textToSpeak.framework.command.doc.standard
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

@@ -15,19 +15,17 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands.dictionary
 
-import com.jagrosh.jdautilities.command.CommandEvent
-import com.jagrosh.jdautilities.command.SlashCommand
-import com.jagrosh.jdautilities.command.SlashCommandEvent
-import com.jagrosh.jdautilities.menu.ButtonMenu
+import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
 import dev.cosgy.textToSpeak.Bot
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.exceptions.PermissionException
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import java.awt.Color
-import java.util.concurrent.TimeUnit
+import java.util.UUID
 import java.util.regex.Pattern
 
 class AddWordCmd(private val bot: Bot) : SlashCommand() {
@@ -41,50 +39,58 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
         this.options = options
     }
 
-    private fun handleCommand(event: SlashCommandEvent, word: String, reading: String) {
+    private fun handleSlashConfirm(event: SlashCommandEvent, word: String, reading: String) {
         val guildId = event.guild!!.idLong
-        val dictionary = bot.dictionary
-        val isWordExist = dictionary!!.getWords(guildId).containsKey(word)
-        event.deferReply().queue()
-        if (isWordExist) {
-            val no = "❌"
-            val ok = "✔"
+        val dictionary = bot.dictionary ?: return
+        val token = UUID.randomUUID().toString().substring(0, 8)
+        val confirmId = "wdad:$token:ok"
+        val cancelId = "wdad:$token:cancel"
 
-            ButtonMenu.Builder()
-                .setText("単語が既に存在します。上書きしますか？")
-                .addChoices(no, ok)
-                .setEventWaiter(bot.waiter)
-                .setTimeout(30, TimeUnit.SECONDS)
-                .setAction { re: Emoji ->
-                    if (re.name == ok) {
-                        dictionary.updateDictionary(guildId, word, reading)
-                        sendSuccessMessage(event)
-                    } else {
+        event.reply("単語が既に存在します。上書きしますか？")
+            .addComponents(ActionRow.of(Button.success(confirmId, "上書き"), Button.danger(cancelId, "キャンセル")))
+            .queue()
 
-                        event.hook.sendMessage("辞書登録をキャンセルしました。").queue()
-                    }
-                }.setFinalAction { m: Message ->
-                    try {
-                        m.clearReactions().queue()
-                        m.delete().queue()
-                    } catch (ignore: PermissionException) {
-                    }
-                }.build().display(event.messageChannel)
-        } else {
+        bot.buttonRouter.register(confirmId, event.user.idLong, 30_000L) { interaction ->
             dictionary.updateDictionary(guildId, word, reading)
-            sendSuccessMessage(event)
+            val builder = successEmbed(word, reading)
+            interaction.editMessageEmbeds(builder.build()).setComponents().queue()
+        }
+        bot.buttonRouter.register(cancelId, event.user.idLong, 30_000L) { interaction ->
+            interaction.editMessage("辞書登録をキャンセルしました。")
+                .setComponents()
+                .queue()
         }
     }
 
-    private fun sendSuccessMessage(event: SlashCommandEvent) {
-        val word = event.getOption("word")!!.asString
-        val reading = event.getOption("reading")!!.asString
-        val builder = EmbedBuilder()
+    private fun handleTextConfirm(event: CommandEvent, word: String, reading: String) {
+        val guildId = event.guild.idLong
+        val dictionary = bot.dictionary ?: return
+        val token = UUID.randomUUID().toString().substring(0, 8)
+        val confirmId = "wdad:$token:ok"
+        val cancelId = "wdad:$token:cancel"
+
+        event.channel.sendMessage("単語が既に存在します。上書きしますか？")
+            .setComponents(ActionRow.of(Button.success(confirmId, "上書き"), Button.danger(cancelId, "キャンセル")))
+            .queue()
+
+        bot.buttonRouter.register(confirmId, event.author.idLong, 30_000L) { interaction ->
+            dictionary.updateDictionary(guildId, word, reading)
+            val builder = successEmbed(word, reading)
+            interaction.editMessageEmbeds(builder.build()).setComponents().queue()
+        }
+        bot.buttonRouter.register(cancelId, event.author.idLong, 30_000L) { interaction ->
+            interaction.editMessage("辞書登録をキャンセルしました。")
+                .setComponents()
+                .queue()
+        }
+    }
+
+    private fun successEmbed(word: String, reading: String): EmbedBuilder {
+        return EmbedBuilder()
             .setColor(SUCCESS_COLOR)
             .setTitle("単語を追加しました。")
             .addField("単語", "```${replaceEmoji(word)}```", false)
             .addField("読み", "```${reading}```", false)
-        event.hook.sendMessageEmbeds(builder.build()).queue()
     }
 
     override fun execute(event: SlashCommandEvent) {
@@ -94,56 +100,18 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
             event.reply("読み方はすべてカタカナで入力して下さい。").setEphemeral(true).queue()
             return
         }
-        handleCommand(event, replaceEmoji(word), reading)
-    }
 
-    /***
-     * テキストコマンド用
-     */
-    private fun handleCommand(event: CommandEvent, word: String, reading: String) {
+        val normalizedWord = replaceEmoji(word)
         val guildId = event.guild!!.idLong
-        val dictionary = bot.dictionary
-        val isWordExist = dictionary!!.getWords(guildId).containsKey(word)
+        val dictionary = bot.dictionary ?: return
+        val isWordExist = dictionary.getWords(guildId).containsKey(normalizedWord)
+
         if (isWordExist) {
-            val no = "❌"
-            val ok = "✔"
-
-            ButtonMenu.Builder()
-                .setText("単語が既に存在します。上書きしますか？")
-                .addChoices(no, ok)
-                .setEventWaiter(bot.waiter)
-                .setTimeout(30, TimeUnit.SECONDS)
-                .setAction { re: Emoji ->
-                    if (re.name == ok) {
-                        dictionary.updateDictionary(guildId, word, reading)
-                        sendSuccessMessage(event)
-                    } else {
-
-                        event.reply("辞書登録をキャンセルしました。")
-                    }
-                }.setFinalAction { m: Message ->
-                    try {
-                        m.clearReactions().queue()
-                        m.delete().queue()
-                    } catch (ignore: PermissionException) {
-                    }
-                }.build().display(event.channel)
+            handleSlashConfirm(event, normalizedWord, reading)
         } else {
-            dictionary.updateDictionary(guildId, word, reading)
-            sendSuccessMessage(event)
+            dictionary.updateDictionary(guildId, normalizedWord, reading)
+            event.replyEmbeds(successEmbed(normalizedWord, reading).build()).queue()
         }
-    }
-
-    private fun sendSuccessMessage(event: CommandEvent) {
-        val args = event.args.split("\\s+".toRegex(), 2).toTypedArray()
-        val word = args[0]
-        val reading = args[1]
-        val builder = EmbedBuilder()
-            .setColor(SUCCESS_COLOR)
-            .setTitle("単語を追加しました。")
-            .addField("単語", "```${replaceEmoji(word)}```", false)
-            .addField("読み", "```${reading}```", false)
-        event.reply(builder.build())
     }
 
     override fun execute(event: CommandEvent) {
@@ -152,27 +120,36 @@ class AddWordCmd(private val bot: Bot) : SlashCommand() {
             event.reply("コマンドが無効です。単語と読み方の２つを入力して実行して下さい。")
             return
         }
+
         val word = args[0]
         val reading = args[1]
         if (!isKatakana(reading)) {
             event.reply("読み方はすべてカタカナで入力して下さい。")
             return
         }
-        handleCommand(event, replaceEmoji(word), reading)
+
+        val normalizedWord = replaceEmoji(word)
+        val guildId = event.guild.idLong
+        val dictionary = bot.dictionary ?: return
+        val isWordExist = dictionary.getWords(guildId).containsKey(normalizedWord)
+
+        if (isWordExist) {
+            handleTextConfirm(event, normalizedWord, reading)
+        } else {
+            dictionary.updateDictionary(guildId, normalizedWord, reading)
+            event.reply(successEmbed(normalizedWord, reading).build())
+        }
     }
 
     companion object {
         private val SUCCESS_COLOR = Color(0, 163, 129)
-
-        //private val ERROR_COLOR = Color.RED
-        //private const val INVALID_ARGS_MESSAGE = "コマンドが無効です。単語と読み方の２つを入力して実行して下さい。"
-        //private const val USAGE_MESSAGE = "使用方法: /addword <単語> <読み方>"
         private const val KATAKANA_REGEX = "^[ァ-ヶー]*$"
+
         private fun isKatakana(str: String): Boolean {
             return Pattern.matches(KATAKANA_REGEX, str)
         }
 
-        private val EMOJI_REGEX = """<(:[a-z0-9_]+:)\d+>""".toRegex()
+        private val EMOJI_REGEX = """<(:[a-z0-9_]+:)\\d+>""".toRegex()
         private fun replaceEmoji(str: String): String {
             return EMOJI_REGEX.replace(str, "$1")
         }

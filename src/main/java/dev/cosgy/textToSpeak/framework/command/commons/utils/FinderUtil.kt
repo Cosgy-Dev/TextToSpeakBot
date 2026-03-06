@@ -1,4 +1,4 @@
-package com.jagrosh.jdautilities.commons.utils
+package dev.cosgy.textToSpeak.framework.command.commons.utils
 
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
