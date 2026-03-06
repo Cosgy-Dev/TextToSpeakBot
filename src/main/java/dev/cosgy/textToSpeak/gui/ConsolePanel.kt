@@ -15,26 +15,50 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.gui
 
+import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.Dimension
-import java.awt.GridLayout
+import java.awt.Font
 import java.io.PrintStream
+import javax.swing.BorderFactory
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
+import javax.swing.text.DefaultCaret
 
 class ConsolePanel : JPanel() {
+    private val textArea = JTextArea()
+    private val scrollPane = JScrollPane()
+    private val caret = textArea.caret as DefaultCaret
+
     init {
-        val text = JTextArea()
-        text.lineWrap = true
-        text.wrapStyleWord = true
-        text.isEditable = false
-        val con = PrintStream(TextAreaOutputStream(text))
+        textArea.lineWrap = true
+        textArea.wrapStyleWord = true
+        textArea.isEditable = false
+        textArea.font = Font(Font.MONOSPACED, Font.PLAIN, 13)
+        textArea.background = Color(18, 20, 27)
+        textArea.foreground = Color(221, 226, 237)
+        textArea.caretColor = Color(140, 153, 255)
+        textArea.border = BorderFactory.createEmptyBorder(10, 12, 10, 12)
+
+        caret.updatePolicy = DefaultCaret.ALWAYS_UPDATE
+        val con = PrintStream(TextAreaOutputStream(textArea))
         System.setOut(con)
         System.setErr(con)
-        val pane = JScrollPane()
-        pane.setViewportView(text)
-        super.setLayout(GridLayout(1, 1))
-        super.add(pane)
+
+        scrollPane.setViewportView(textArea)
+        scrollPane.border = BorderFactory.createEmptyBorder()
+
+        super.setLayout(BorderLayout())
+        super.add(scrollPane, BorderLayout.CENTER)
         super.setPreferredSize(Dimension(400, 300))
+    }
+
+    fun clear() {
+        textArea.text = ""
+    }
+
+    fun setAutoScroll(enabled: Boolean) {
+        caret.updatePolicy = if (enabled) DefaultCaret.ALWAYS_UPDATE else DefaultCaret.NEVER_UPDATE
     }
 }

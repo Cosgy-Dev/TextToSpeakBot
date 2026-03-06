@@ -17,26 +17,49 @@ package dev.cosgy.textToSpeak.gui
 
 import com.sun.management.OperatingSystemMXBean
 import dev.cosgy.textToSpeak.Bot
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.Dimension
 import java.awt.Font
+import java.awt.GridLayout
+import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.awt.event.WindowListener
-import java.lang.management.*
+import java.lang.management.ClassLoadingMXBean
+import java.lang.management.CompilationMXBean
+import java.lang.management.GarbageCollectorMXBean
+import java.lang.management.ManagementFactory
+import java.lang.management.MemoryMXBean
+import java.lang.management.RuntimeMXBean
+import java.lang.management.ThreadMXBean
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JButton
+import javax.swing.JEditorPane
+import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JProgressBar
+import javax.swing.JScrollPane
+import javax.swing.JSplitPane
+import javax.swing.JTabbedPane
+import javax.swing.JToggleButton
+import javax.swing.Timer
+import javax.swing.UIManager
 import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.system.exitProcess
-
 
 /**
  * @author Kosugi_kun
  */
 class GUI(private val bot: Bot) : JFrame() {
-    private val console: ConsolePanel = ConsolePanel()
+    private val console = ConsolePanel()
 
     private var runtimeMx: RuntimeMXBean? = null
     private var compilationMx: CompilationMXBean? = null
@@ -46,7 +69,20 @@ class GUI(private val bot: Bot) : JFrame() {
     private var sunOsMx: OperatingSystemMXBean? = null
     private var garbageCollectors: Collection<GarbageCollectorMXBean>? = null
 
+    private lateinit var statusValueLabel: JLabel
+    private lateinit var guildsValueLabel: JLabel
+    private lateinit var pingValueLabel: JLabel
+    private lateinit var uptimeValueLabel: JLabel
+    private lateinit var cpuProgress: JProgressBar
+    private lateinit var memoryProgress: JProgressBar
+    private lateinit var runtimeInfoPane: JEditorPane
+    private lateinit var jvmInfoPane: JEditorPane
+
+    private var infoRefreshTimer: Timer? = null
+
     fun init() {
+        installLookAndFeel()
+
         runtimeMx = ManagementFactory.getRuntimeMXBean()
         compilationMx = ManagementFactory.getCompilationMXBean()
         sunThreadMx = ManagementFactory.getThreadMXBean() as com.sun.management.ThreadMXBean
@@ -55,181 +91,286 @@ class GUI(private val bot: Bot) : JFrame() {
         sunOsMx = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
         garbageCollectors = ManagementFactory.getGarbageCollectorMXBeans().filterIsInstance<GarbageCollectorMXBean>()
 
-        defaultCloseOperation = EXIT_ON_CLOSE
-        title = "TextToSpeak Bot by Cosgy Dev"
-        val tabs = JTabbedPane()
-        tabs.add("コンソール", console)
+        title = "TextToSpeak Bot"
+        defaultCloseOperation = DO_NOTHING_ON_CLOSE
+        contentPane.layout = BorderLayout()
+        contentPane.background = Color(246, 247, 251)
 
-        val botInfoPanel = JPanel()
+        val shell = JPanel(BorderLayout(0, 12))
+        shell.border = BorderFactory.createEmptyBorder(14, 14, 14, 14)
+        shell.background = Color(246, 247, 251)
 
-        botInfoPanel.layout = BoxLayout(botInfoPanel, BoxLayout.Y_AXIS)
-        val scrollPane =
-            JScrollPane(botInfoPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
+        shell.add(createTopSection(), BorderLayout.NORTH)
+        shell.add(createBody(), BorderLayout.CENTER)
 
-        // Add bot info label to bot info panel
-        val botInfoLabel = JLabel()
-        val osName = sunOsMx?.name
-        val osVersion = sunOsMx?.version
-        val osArch = sunOsMx?.arch
-        val processors = sunOsMx?.availableProcessors
-        val vmArguments = runtimeMx?.inputArguments?.joinToString(" ")
+        contentPane.add(shell, BorderLayout.CENTER)
 
-        botInfoLabel.font = Font("monospaced", Font.PLAIN, 12)
-        botInfoPanel.add(botInfoLabel)
-
-        tabs.add("システム情報", scrollPane)
-
-        contentPane.add(tabs)
-        pack()
+        minimumSize = Dimension(960, 640)
+        setSize(1120, 760)
         setLocationRelativeTo(null)
         isVisible = true
-        addWindowListener(object : WindowListener {
-            override fun windowOpened(e: WindowEvent) {
-                /* unused */
-            }
 
+        addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent) {
+                infoRefreshTimer?.stop()
                 try {
                     bot.shutdown()
                 } catch (ex: Exception) {
                     exitProcess(0)
                 }
             }
-
-            override fun windowClosed(e: WindowEvent) { /* unused */
-            }
-
-            override fun windowIconified(e: WindowEvent) { /* unused */
-            }
-
-            override fun windowDeiconified(e: WindowEvent) { /* unused */
-            }
-
-            override fun windowActivated(e: WindowEvent) { /* unused */
-            }
-
-            override fun windowDeactivated(e: WindowEvent) { /* unused */
-            }
         })
 
-        // ボット情報を定期的に更新する
-        Timer(1000) {
-            val uptime = Duration.ofMillis(runtimeMx!!.uptime).toMinutes()
+        infoRefreshTimer = Timer(1000) {
+            refreshDashboard()
+        }
+        infoRefreshTimer?.start()
+        refreshDashboard()
+    }
 
-            // Convert start time to LocalDateTime
-            val start = LocalDateTime.ofInstant(Instant.ofEpochMilli(runtimeMx!!.startTime), ZoneId.systemDefault())
-            val vmName = runtimeMx!!.name
-            val vmVendor = runtimeMx!!.vmVendor
-            val vmVersion = runtimeMx!!.vmVersion
-            //val gcCount = garbageCollectors!!.sumOf { it.collectionCount }
+    private fun createTopSection(): JPanel {
+        val panel = JPanel(BorderLayout(12, 0))
+        panel.background = Color(246, 247, 251)
 
-            val cpuUsage = sunOsMx!!.processCpuLoad * 100
-            val systemCpuUsage = sunOsMx!!.cpuLoad * 100
-            val loadAverage = sunOsMx!!.systemLoadAverage
+        val titleBlock = JPanel()
+        titleBlock.layout = BoxLayout(titleBlock, BoxLayout.Y_AXIS)
+        titleBlock.background = Color(246, 247, 251)
 
-            val physicalMemory = sunOsMx!!.totalMemorySize / 1024 / 1024
-            val freePhysicalMemory = sunOsMx!!.freeMemorySize / 1024 / 1024
-            val usedPhysicalMemory = physicalMemory - freePhysicalMemory
+        val titleLabel = JLabel("TextToSpeak Bot")
+        titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 26)
 
-            val swapSpace = sunOsMx!!.totalSwapSpaceSize / 1024 / 1024
-            val freeSwapSpace = sunOsMx!!.freeSwapSpaceSize / 1024 / 1024
+        val subtitleLabel = JLabel("リアルタイムモニター / コンソール")
+        subtitleLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 13)
+        subtitleLabel.foreground = Color(84, 95, 113)
 
-            val heapMemory = memoryMx!!.heapMemoryUsage
-            val heapInit = heapMemory.init / 1024 / 1024
-            val heapMax = heapMemory.max / 1024 / 1024
-            val heapCommitted = heapMemory.committed / 1024 / 1024
-            val heapUsed = heapMemory.used / 1024 / 1024
+        titleBlock.add(titleLabel)
+        titleBlock.add(Box.createVerticalStrut(4))
+        titleBlock.add(subtitleLabel)
 
-            val nonHeapMemory = memoryMx!!.nonHeapMemoryUsage
-            val nonHeapInit = nonHeapMemory.init / 1024 / 1024
-            val nonHeapMax = nonHeapMemory.max / 1024 / 1024
-            val nonHeapCommitted = nonHeapMemory.committed / 1024 / 1024
-            val nonHeapUsed = nonHeapMemory.used / 1024 / 1024
+        val actionPanel = JPanel()
+        actionPanel.background = Color(246, 247, 251)
 
-            val threadCount = sunThreadMx!!.threadCount
-            val daemonThreadCount = sunThreadMx!!.daemonThreadCount
-            val peakThreadCount = sunThreadMx!!.peakThreadCount
-            val totalStartedThreadCount = sunThreadMx!!.totalStartedThreadCount
+        val autoScroll = JToggleButton("自動スクロール")
+        autoScroll.isSelected = true
+        autoScroll.addActionListener {
+            console.setAutoScroll(autoScroll.isSelected)
+        }
 
-            val loadedClassCount = classLoadingMx!!.loadedClassCount
-            val totalLoadedClassCount = classLoadingMx!!.totalLoadedClassCount
-            val unloadedClassCount = classLoadingMx!!.unloadedClassCount
+        val clearConsole = JButton("コンソールをクリア")
+        clearConsole.addActionListener {
+            console.clear()
+        }
 
-            val gcStats = garbageCollectors!!.joinToString("\n") { gc ->
-                val name = gc.name
-                val count = gc.collectionCount
-                val time = gc.collectionTime / 1000
-                "$name: Count=$count, Time=$time sec"
-            }
+        val shutdown = JButton("シャットダウン")
+        shutdown.background = Color(214, 76, 76)
+        shutdown.foreground = Color.WHITE
+        shutdown.addActionListener {
+            dispatchEvent(WindowEvent(this, WindowEvent.WINDOW_CLOSING))
+        }
 
-            val botInfoText = """
-                :: System<br>
-                    CPU usage: %.2f, Load average (last minute): %.5f<br>
-                    Physical memory: %s, Free: %s, Used: %s<br>
-                    Swap space: %s, Free: %s<br><br>
-                :: VM Process<br>
-                    Uptime: %s minutes, Started: %s<br>
-                    CPU usage: %.2f, CPU time: %s ms, JIT compile time: %s ms<br><br>
-                :: Heap<br>
-                    Current: %s, Committed: %s, Init: %s, Max: %s<br><br>
-                :: Non-Heap Memory<br>
-                    Current: %d MB, Committed: %d MB, Init: %d MB, Max: %d MB<br><br>
-                :: Thread Usage<br>
-                    Live: %d, Peak: %d, Daemon: %d, Total Started: %d<br><br>
-                :: Class Loading<br>
-                    Current loaded: %d, Loaded (total): %d, Unloaded (total): %d<br><br>
-                :: Garbage Collector<br>
-                    $gcStats
-            """.trimIndent()
+        actionPanel.add(autoScroll)
+        actionPanel.add(clearConsole)
+        actionPanel.add(shutdown)
 
-            val sysInfoText = """
-            :: System Information<br>
-                Operating system: %s, Version: %s, Arch: %s<br>
-                Number of processors: %d, Physical memory: %s, Virtual memory: %s<br><br>
-            :: VM Information<br>
-                VM: %s, Version: %s, Vendor: %s, JIT compiler: %s<br>
-                Arguments: %s<br><br><br>
-            """.trimIndent()
+        panel.add(titleBlock, BorderLayout.WEST)
+        panel.add(actionPanel, BorderLayout.EAST)
+        return panel
+    }
 
-            val systemInfo = sysInfoText.format(
-                osName, osVersion, osArch, processors,
-                prettyBytes(sunOsMx!!.totalMemorySize), prettyBytes(sunOsMx!!.committedVirtualMemorySize),
-                vmName, vmVersion, vmVendor, compilationMx?.name,
-                vmArguments
-            )
+    private fun createBody(): JPanel {
+        val panel = JPanel(BorderLayout(0, 12))
+        panel.background = Color(246, 247, 251)
 
-            botInfoLabel.text = "<html>$systemInfo" + botInfoText.format(
-                cpuUsage,
-                loadAverage,
-                physicalMemory,
-                freePhysicalMemory,
-                usedPhysicalMemory,
-                swapSpace,
-                freeSwapSpace,
-                uptime,
-                start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                systemCpuUsage,
-                sunOsMx!!.processCpuTime / 1000000,
-                compilationMx!!.totalCompilationTime,
-                heapUsed,
-                heapCommitted,
-                heapInit,
-                heapMax,
-                nonHeapUsed,
-                nonHeapCommitted,
-                nonHeapInit,
-                nonHeapMax,
-                threadCount,
-                peakThreadCount,
-                daemonThreadCount,
-                totalStartedThreadCount,
-                loadedClassCount,
-                totalLoadedClassCount,
-                unloadedClassCount
-            ) + "</html>"
+        panel.add(createSummaryCards(), BorderLayout.NORTH)
 
-        }.start()
+        val tabs = JTabbedPane()
+        tabs.add("ダッシュボード", createDashboardPanel())
+        tabs.add("コンソール", console)
 
+        panel.add(tabs, BorderLayout.CENTER)
+        return panel
+    }
+
+    private fun createSummaryCards(): JPanel {
+        val panel = JPanel(GridLayout(1, 4, 12, 0))
+        panel.background = Color(246, 247, 251)
+
+        statusValueLabel = JLabel("-", JLabel.CENTER)
+        guildsValueLabel = JLabel("-", JLabel.CENTER)
+        pingValueLabel = JLabel("-", JLabel.CENTER)
+        uptimeValueLabel = JLabel("-", JLabel.CENTER)
+
+        panel.add(createMetricCard("接続状態", statusValueLabel))
+        panel.add(createMetricCard("サーバー数", guildsValueLabel))
+        panel.add(createMetricCard("Gateway Ping", pingValueLabel))
+        panel.add(createMetricCard("稼働時間", uptimeValueLabel))
+
+        return panel
+    }
+
+    private fun createMetricCard(title: String, value: JLabel): JPanel {
+        val panel = JPanel()
+        panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
+        panel.background = Color.WHITE
+        panel.border = BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color(224, 229, 238), 1, true),
+            BorderFactory.createEmptyBorder(10, 12, 10, 12)
+        )
+
+        val titleLabel = JLabel(title, JLabel.CENTER)
+        titleLabel.alignmentX = CENTER_ALIGNMENT
+        titleLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 12)
+        titleLabel.foreground = Color(84, 95, 113)
+
+        value.alignmentX = CENTER_ALIGNMENT
+        value.font = Font(Font.SANS_SERIF, Font.BOLD, 18)
+        value.foreground = Color(33, 43, 59)
+
+        panel.add(titleLabel)
+        panel.add(Box.createVerticalStrut(6))
+        panel.add(value)
+
+        return panel
+    }
+
+    private fun createDashboardPanel(): JPanel {
+        val panel = JPanel(BorderLayout(0, 12))
+        panel.background = Color(246, 247, 251)
+
+        val meterPanel = JPanel(GridLayout(2, 1, 0, 8))
+        meterPanel.background = Color(246, 247, 251)
+
+        cpuProgress = JProgressBar(0, 100)
+        cpuProgress.isStringPainted = true
+        cpuProgress.border = BorderFactory.createTitledBorder("CPU使用率")
+
+        memoryProgress = JProgressBar(0, 100)
+        memoryProgress.isStringPainted = true
+        memoryProgress.border = BorderFactory.createTitledBorder("ヒープ使用率")
+
+        meterPanel.add(cpuProgress)
+        meterPanel.add(memoryProgress)
+
+        runtimeInfoPane = createInfoPane()
+        jvmInfoPane = createInfoPane()
+
+        val splitPane = JSplitPane(
+            JSplitPane.HORIZONTAL_SPLIT,
+            JScrollPane(runtimeInfoPane),
+            JScrollPane(jvmInfoPane)
+        )
+        splitPane.resizeWeight = 0.52
+        splitPane.border = BorderFactory.createEmptyBorder()
+
+        panel.add(meterPanel, BorderLayout.NORTH)
+        panel.add(splitPane, BorderLayout.CENTER)
+
+        return panel
+    }
+
+    private fun createInfoPane(): JEditorPane {
+        val pane = JEditorPane()
+        pane.contentType = "text/html"
+        pane.isEditable = false
+        pane.background = Color.WHITE
+        pane.border = BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        return pane
+    }
+
+    private fun refreshDashboard() {
+        val runtime = runtimeMx ?: return
+        val os = sunOsMx ?: return
+        val memory = memoryMx ?: return
+        val threads = sunThreadMx ?: return
+        val classes = classLoadingMx ?: return
+
+        val jda = bot.jda
+        statusValueLabel.text = jda?.status?.name ?: "起動中"
+        guildsValueLabel.text = (jda?.guilds?.size ?: 0).toString()
+        pingValueLabel.text = if (jda == null) "-" else "${jda.gatewayPing}ms"
+
+        val uptimeMin = Duration.ofMillis(runtime.uptime).toMinutes()
+        uptimeValueLabel.text = "${uptimeMin}分"
+
+        val processCpuUsage = normalizePercent(os.processCpuLoad * 100)
+        val heapUsage = memory.heapMemoryUsage
+        val heapPercent = if (heapUsage.max > 0) (heapUsage.used * 100 / heapUsage.max).toInt() else 0
+
+        cpuProgress.value = processCpuUsage.toInt()
+        cpuProgress.string = String.format("%.1f%%", processCpuUsage)
+
+        memoryProgress.value = heapPercent
+        memoryProgress.string = "${prettyBytes(heapUsage.used)} / ${prettyBytes(heapUsage.max)}"
+
+        val start = LocalDateTime.ofInstant(Instant.ofEpochMilli(runtime.startTime), ZoneId.systemDefault())
+
+        val gcStats = garbageCollectors
+            ?.joinToString("<br>") { gc -> "${gc.name}: ${gc.collectionCount}回 / ${gc.collectionTime}ms" }
+            ?: "取得不可"
+
+        val runtimeHtml = """
+            <html>
+            <body style='font-family:sans-serif; font-size:12px; color:#243041;'>
+            <h3 style='margin:0 0 10px 0;'>システム</h3>
+            <b>OS:</b> ${os.name} (${os.version}, ${os.arch})<br>
+            <b>CPU論理コア:</b> ${os.availableProcessors}<br>
+            <b>システムCPU:</b> ${formatPercent(os.cpuLoad * 100)}<br>
+            <b>ロードアベレージ:</b> ${String.format("%.3f", os.systemLoadAverage)}<br><br>
+
+            <h3 style='margin:0 0 10px 0;'>メモリ</h3>
+            <b>物理メモリ:</b> ${prettyBytes(os.totalMemorySize)}<br>
+            <b>使用中(物理):</b> ${prettyBytes(os.totalMemorySize - os.freeMemorySize)}<br>
+            <b>空き(物理):</b> ${prettyBytes(os.freeMemorySize)}<br>
+            <b>スワップ:</b> ${prettyBytes(os.totalSwapSpaceSize - os.freeSwapSpaceSize)} / ${prettyBytes(os.totalSwapSpaceSize)}<br>
+
+            </body>
+            </html>
+        """.trimIndent()
+
+        val jvmHtml = """
+            <html>
+            <body style='font-family:sans-serif; font-size:12px; color:#243041;'>
+            <h3 style='margin:0 0 10px 0;'>JVM / Bot</h3>
+            <b>起動時刻:</b> ${start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}<br>
+            <b>稼働時間:</b> ${uptimeMin}分<br>
+            <b>JVM:</b> ${runtime.name}<br>
+            <b>ベンダー:</b> ${runtime.vmVendor} (${runtime.vmVersion})<br>
+            <b>JIT:</b> ${compilationMx?.name ?: "N/A"}<br>
+            <b>JIT時間:</b> ${compilationMx?.totalCompilationTime ?: -1}ms<br><br>
+
+            <h3 style='margin:0 0 10px 0;'>スレッド / クラス</h3>
+            <b>スレッド:</b> ${threads.threadCount} (Daemon: ${threads.daemonThreadCount}, Peak: ${threads.peakThreadCount})<br>
+            <b>クラスロード:</b> ${classes.loadedClassCount} (累計: ${classes.totalLoadedClassCount}, Unload: ${classes.unloadedClassCount})<br><br>
+
+            <h3 style='margin:0 0 10px 0;'>GC統計</h3>
+            $gcStats
+            </body>
+            </html>
+        """.trimIndent()
+
+        runtimeInfoPane.text = runtimeHtml
+        runtimeInfoPane.caretPosition = 0
+
+        jvmInfoPane.text = jvmHtml
+        jvmInfoPane.caretPosition = 0
+    }
+
+    private fun installLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+        } catch (_: Exception) {
+            // fallback to default L&F
+        }
+    }
+
+    private fun normalizePercent(value: Double): Double {
+        if (value.isNaN() || value < 0.0) return 0.0
+        return value.coerceIn(0.0, 100.0)
+    }
+
+    private fun formatPercent(value: Double): String {
+        val normalized = normalizePercent(value)
+        return String.format("%.2f%%", normalized)
     }
 
     private fun prettyBytes(bytes: Long): String {
@@ -237,11 +378,11 @@ class GUI(private val bot: Bot) : JFrame() {
     }
 
     private fun prettyBytes(bytes: Long, si: Boolean): String {
+        if (bytes < 0) return "N/A"
         val unit = if (si) 1000 else 1024
         if (bytes < unit) return "$bytes B"
         val exp = (ln(bytes.toDouble()) / ln(unit.toDouble())).toInt()
         val pre = (if (si) "kMGTPE" else "KMGTPE")[exp - 1].toString() + if (si) "" else "i"
         return String.format("%.1f %sB", bytes / unit.toDouble().pow(exp.toDouble()), pre)
     }
-
 }
