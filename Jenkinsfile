@@ -9,6 +9,8 @@ pipeline {
 
     environment {
         MAVEN_OPTS = '-Xmx3200m'
+        QODANA_TOKEN = credentials('qodana-token')
+        QODANA_ENDPOINT = 'https://qodana.cloud'
     }
 
     stages {
@@ -75,6 +77,21 @@ pipeline {
                     "$MVN_CMD" --version
                     "$MVN_CMD" --batch-mode --update-snapshots clean verify
                 '''
+            }
+        }
+
+        stage('Qodana') {
+            agent {
+                docker {
+                    image 'jetbrains/qodana-jvm-community:2025.3'
+                    args '''
+                      -v "${WORKSPACE}":/data/project
+                      --entrypoint=""
+                      '''
+                }
+            }
+            steps {
+                sh '''qodana'''
             }
         }
 
