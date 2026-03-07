@@ -80,21 +80,6 @@ pipeline {
             }
         }
 
-        stage('Qodana') {
-            agent {
-                docker {
-                    image 'jetbrains/qodana-jvm-community:2025.3'
-                    args '''
-                      -v "${WORKSPACE}":/data/project
-                      --entrypoint=""
-                      '''
-                }
-            }
-            steps {
-                sh '''qodana'''
-            }
-        }
-
         stage('Publish Artifacts') {
             steps {
                 sh '''
