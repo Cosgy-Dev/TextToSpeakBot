@@ -16,9 +16,9 @@
 package dev.cosgy.textToSpeak.commands.general
 
 import com.google.gson.JsonParser
+import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
 import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
-import dev.cosgy.textToSpeak.Bot
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData

@@ -1,6 +1,5 @@
 package dev.cosgy.textToSpeak.framework.command.command
 
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -10,12 +9,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.slf4j.LoggerFactory
 import java.time.OffsetDateTime
-import java.util.Locale
-import net.dv8tion.jda.api.interactions.commands.OptionType
+import java.util.*
 
 class CommandClient internal constructor(
     var prefix: String,
@@ -59,7 +58,7 @@ class CommandClient internal constructor(
         val target = resolveSlashTarget(command, event)
         val guildChannel = event.channel as? GuildMessageChannel
         if (!canExecute(target, event.member, event.user, guildChannel)) {
-            event.reply("${warning}権限がないため実行できません。" ).setEphemeral(true).queue()
+            event.reply("${warning}権限がないため実行できません。").setEphemeral(true).queue()
             return
         }
 

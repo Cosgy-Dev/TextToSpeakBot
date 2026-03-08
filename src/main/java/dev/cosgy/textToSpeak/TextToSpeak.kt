@@ -15,12 +15,9 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak
 
-import com.github.lalyos.jfiglet.FigletFont
-import dev.cosgy.textToSpeak.framework.command.command.CommandClientBuilder
-import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
-import dev.cosgy.textToSpeak.framework.command.commons.waiter.EventWaiter
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
 import club.minnced.discord.jdave.interop.JDaveSessionFactory
+import com.github.lalyos.jfiglet.FigletFont
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
 import dev.cosgy.textToSpeak.commands.admin.*
 import dev.cosgy.textToSpeak.commands.dictionary.AddWordCmd
 import dev.cosgy.textToSpeak.commands.dictionary.DlWordCmd
@@ -28,6 +25,9 @@ import dev.cosgy.textToSpeak.commands.dictionary.WordListCmd
 import dev.cosgy.textToSpeak.commands.general.*
 import dev.cosgy.textToSpeak.commands.owner.ShutdownCmd
 import dev.cosgy.textToSpeak.entities.Prompt
+import dev.cosgy.textToSpeak.framework.command.command.CommandClientBuilder
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
+import dev.cosgy.textToSpeak.framework.command.commons.waiter.EventWaiter
 import dev.cosgy.textToSpeak.gui.GUI
 import dev.cosgy.textToSpeak.listeners.CommandAudit
 import dev.cosgy.textToSpeak.listeners.MessageListener

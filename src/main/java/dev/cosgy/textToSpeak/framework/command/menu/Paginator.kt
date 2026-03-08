@@ -17,7 +17,7 @@ class Paginator private constructor(
 ) {
     fun paginate(channel: MessageChannel, page: Int) {
         if (items.isEmpty()) {
-            channel.sendMessage("単語が登録されていません。" ).queue()
+            channel.sendMessage("単語が登録されていません。").queue()
             return
         }
 

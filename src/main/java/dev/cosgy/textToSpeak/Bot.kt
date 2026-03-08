@@ -15,9 +15,9 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak
 
-import dev.cosgy.textToSpeak.framework.command.commons.waiter.EventWaiter
 import dev.cosgy.textToSpeak.audio.*
 import dev.cosgy.textToSpeak.audio.Dictionary
+import dev.cosgy.textToSpeak.framework.command.commons.waiter.EventWaiter
 import dev.cosgy.textToSpeak.gui.GUI
 import dev.cosgy.textToSpeak.interactions.ButtonRouter
 import dev.cosgy.textToSpeak.settings.SettingsManager

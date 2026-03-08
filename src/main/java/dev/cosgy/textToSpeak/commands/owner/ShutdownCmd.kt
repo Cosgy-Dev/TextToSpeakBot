@@ -15,10 +15,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands.owner
 
-import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
-import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
 import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.commands.OwnerCommand
+import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
 
 class ShutdownCmd(private val bot: Bot) : OwnerCommand() {
     init {

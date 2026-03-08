@@ -15,10 +15,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands.general
 
+import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
 import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
 import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
-import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.settings.Settings
 import dev.cosgy.textToSpeak.utils.ReadChannel
 import net.dv8tion.jda.api.EmbedBuilder

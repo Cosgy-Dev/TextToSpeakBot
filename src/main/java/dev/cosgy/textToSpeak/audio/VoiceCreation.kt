@@ -18,7 +18,8 @@ package dev.cosgy.textToSpeak.audio
 import com.ibm.icu.text.Transliterator
 import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.settings.UserSettings
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
 import java.io.*

@@ -15,10 +15,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.listeners
 
+import dev.cosgy.textToSpeak.TextToSpeak
 import dev.cosgy.textToSpeak.framework.command.command.Command
 import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
 import dev.cosgy.textToSpeak.framework.command.command.CommandListener
-import dev.cosgy.textToSpeak.TextToSpeak
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import org.slf4j.LoggerFactory
 

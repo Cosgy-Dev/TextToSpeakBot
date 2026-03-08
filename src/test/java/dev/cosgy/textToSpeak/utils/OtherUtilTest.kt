@@ -1,10 +1,10 @@
 package dev.cosgy.textToSpeak.utils
 
+import net.dv8tion.jda.api.OnlineStatus
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import net.dv8tion.jda.api.OnlineStatus
-import org.junit.Test
 
 class OtherUtilTest {
     @Test

@@ -15,16 +15,16 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 package dev.cosgy.textToSpeak.commands.dictionary
 
+import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
 import dev.cosgy.textToSpeak.framework.command.command.SlashCommand
 import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
-import dev.cosgy.textToSpeak.Bot
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import java.awt.Color
-import java.util.UUID
+import java.util.*
 import java.util.stream.Collectors
 
 class WordListCmd(private val bot: Bot) : SlashCommand() {

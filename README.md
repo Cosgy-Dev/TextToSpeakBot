@@ -28,19 +28,23 @@ Java言語を使用しており動作が高速で比較的簡単にホストす�
 # インストール方法
 
 ## セルフホスト
+
 Cosgy Dev公式ページで読み上げボットのインストール方法を紹介しています。
 ある程度のスキルを必要としますが、自力で読み上げボットをホストしたい方は[こちら](https://www.cosgy.dev/2021/09/09/post-476/)
 でインストール方法を御覧ください。
 
 ## Docker
+
 有志の方がDockerイメージを作成してくれています。
 Dockerを使用して簡単にホストしたい方は[こちら](https://github.com/masebb/docker-TextToSpeakBot)でインストール方法を御覧ください。
 
 # 注意事項
+
 - 必ずDiscordの利用規約を守ってください。
 - このボットは、自己責任で使用してください。
 
 # Developer Portalでの設定
+
 - [Developer Portal](https://discord.com/developers/applications)でアプリケーションを作成します。
 - Botを作成し、TOKENを取得します。
 - config.ymlにTOKENを設定します。
@@ -55,9 +59,11 @@ Dockerを使用して簡単にホストしたい方は[こちら](https://github
 Message Content Intentを有効にしないと、ボットがメッセージを読み取れないため、読み上げ機能が正常に動作しません。
 
 # コントリビューション
+
 このプロジェクトに貢献する方法については、[CONTRIBUTING](CONTRIBUTING.md)を参照してください。
 
 # サポート
+
 サポートについては、[Cosgy Dev公式サーバー](https://discord.gg/RBpkHxf)で行っています。
 
 <!--# 開発支援
@@ -65,5 +71,7 @@ Message Content Intentを有効にしないと、ボットがメッセージを�
 
 [![JetBrains](https://www.jetbrains.com/company/brand/img/jetbrains_logo.png)](https://www.jetbrains.com/)
 -->
+
 # ライセンス
+
 このプロジェクトは、Apache License 2.0ライセンスの下でライセンスされています。詳細については、[LICENSE](LICENSE)を参照してください。

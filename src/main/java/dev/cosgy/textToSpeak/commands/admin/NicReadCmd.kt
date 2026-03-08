@@ -1,9 +1,9 @@
 package dev.cosgy.textToSpeak.commands.admin
 
-import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
-import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
 import dev.cosgy.textToSpeak.Bot
 import dev.cosgy.textToSpeak.commands.AdminCommand
+import dev.cosgy.textToSpeak.framework.command.command.CommandEvent
+import dev.cosgy.textToSpeak.framework.command.command.SlashCommandEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import org.slf4j.Logger
