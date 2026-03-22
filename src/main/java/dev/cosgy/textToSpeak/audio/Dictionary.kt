@@ -159,12 +159,13 @@ class Dictionary private constructor(bot: Bot) {
     }
 
     companion object {
+        @Volatile
         private var instance: Dictionary? = null
-        fun getInstance(bot: Bot): Dictionary? {
-            if (instance == null) {
-                instance = Dictionary(bot)
+
+        fun getInstance(bot: Bot): Dictionary {
+            return instance ?: synchronized(this) {
+                instance ?: Dictionary(bot).also { instance = it }
             }
-            return instance
         }
     }
 }

@@ -20,11 +20,11 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 
 class AloneInVoiceHandler(private val bot: Bot) {
-    private val aloneSince = HashMap<Long, Instant>()
+    private val aloneSince = ConcurrentHashMap<Long, Instant>()
     private var aloneTimeUntilStop: Long = 0
     fun init() {
         aloneTimeUntilStop = bot.config.aloneTimeUntilStop
@@ -32,19 +32,16 @@ class AloneInVoiceHandler(private val bot: Bot) {
     }
 
     private fun check() {
-        val toRemove: MutableSet<Long> = HashSet()
-        for ((key, value) in aloneSince) {
-            if (value.epochSecond > Instant.now().epochSecond - aloneTimeUntilStop) continue
+        val now = Instant.now().epochSecond
+        aloneSince.entries.removeAll { (key, value) ->
+            if (value.epochSecond > now - aloneTimeUntilStop) return@removeAll false
             val guild = bot.jda?.getGuildById(key)
-            if (guild == null) {
-                toRemove.add(key)
-                continue
+            if (guild != null) {
+                (guild.audioManager.sendingHandler as? AudioHandler)?.stopAndClear()
+                guild.audioManager.closeAudioConnection()
             }
-            (guild.audioManager.sendingHandler as AudioHandler?)!!.stopAndClear()
-            guild.audioManager.closeAudioConnection()
-            toRemove.add(key)
+            true
         }
-        toRemove.forEach(Consumer { key: Long -> aloneSince.remove(key) })
     }
 
     fun onVoiceUpdate(event: GuildVoiceUpdateEvent) {
@@ -58,10 +55,9 @@ class AloneInVoiceHandler(private val bot: Bot) {
     }
 
     private fun isAlone(guild: Guild): Boolean {
-        return if (guild.audioManager.connectedChannel == null) false else guild.audioManager.connectedChannel!!.members.stream()
-            .noneMatch { x: Member ->
-                (!x.voiceState!!.isDeafened
-                        && !x.user.isBot)
-            }
+        val channel = guild.audioManager.connectedChannel ?: return false
+        return channel.members.none { member ->
+            member.voiceState?.isDeafened == false && !member.user.isBot
+        }
     }
 }

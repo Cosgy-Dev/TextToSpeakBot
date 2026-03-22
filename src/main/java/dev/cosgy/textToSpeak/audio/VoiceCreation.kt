@@ -54,8 +54,8 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
         // 辞書データを取得し、メッセージを変換する
         val words = bot.dictionary?.getWords(guild.idLong)
         var dicMsg = sanitizeMessage(message)
-        for ((key, value) in words!!) {
-            dicMsg = dicMsg.replace(key!!, value!!)
+        words?.forEach { (key, value) ->
+            if (key != null && value != null) dicMsg = dicMsg.replace(key, value)
         }
 
         // スポイラーを処理する
@@ -86,11 +86,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
      * メッセージ内のスポイラーを処理するメソッド
      */
     private fun processSpoilers(input: String): String {
-
-        val regex = Regex("""\|\|([^|]+)\|\|""")
-        return regex.replace(input) {
-            "スポイラー"
-        }
+        return SPOILER_REGEX.replace(input) { "スポイラー" }
     }
 
     /**
@@ -114,7 +110,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
 
     // メッセージをサニタイズするメソッド
     private fun sanitizeMessage(message: String): String {
-        var sanitizedMsg = message.replace("[\\uD800-\\uDFFF]".toRegex(), " ")
+        var sanitizedMsg = message.replace(SURROGATE_PAIR_REGEX, " ")
         sanitizedMsg = sanitizedMsg.replace("Kosugi_kun", "コスギクン")
         val sentences = BreakIterator.getSentenceInstance(Locale.JAPANESE)
         sentences.setText(sanitizedMsg)
@@ -224,5 +220,7 @@ class VoiceCreation( // 各種設定の値を保持するためのフィール�
     companion object {
         private val logger = LoggerFactory.getLogger(VoiceCreation::class.java)
         private val IS_WINDOWS = System.getProperty("os.name").lowercase(Locale.getDefault()).startsWith("win")
+        private val SURROGATE_PAIR_REGEX = Regex("[\\uD800-\\uDFFF]")
+        private val SPOILER_REGEX = Regex("""\|\|([^|]+)\|\|""")
     }
 }

@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
+import java.util.concurrent.ConcurrentHashMap
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Copyright 2023 Cosgy Dev                                                             /
@@ -25,7 +26,7 @@ import java.sql.SQLException
 //     limitations under the License.                                                    /
 //////////////////////////////////////////////////////////////////////////////////////////
 class UserSettingsManager {
-    private val settings: HashMap<Long, UserSettings> = HashMap()
+    private val settings: ConcurrentHashMap<Long, UserSettings> = ConcurrentHashMap()
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private var connection: Connection? = null
 
@@ -42,21 +43,23 @@ class UserSettingsManager {
         }
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:UserData.sqlite")
-            val statement = connection!!.createStatement()
-            val sql =
-                "create table if not exists settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)"
-            statement.execute(sql)
-            val rs = statement.executeQuery("select * from settings")
-            while (rs.next()) {
-                settings[rs.getLong(1)] = UserSettings(
-                    this,
-                    rs.getLong(1),
-                    rs.getString(2),
-                    rs.getFloat(3),
-                    rs.getFloat(4),
-                    rs.getFloat(5),
-                    rs.getFloat(6)
-                )
+            connection?.createStatement()?.use { statement ->
+                val sql =
+                    "create table if not exists settings ( id integer not null constraint settings_pk primary key, voice TEXT, speed real, intonation real, voiceQualityA  real, voiceQualityFm real)"
+                statement.execute(sql)
+                statement.executeQuery("select * from settings").use { rs ->
+                    while (rs.next()) {
+                        settings[rs.getLong(1)] = UserSettings(
+                            this,
+                            rs.getLong(1),
+                            rs.getString(2),
+                            rs.getFloat(3),
+                            rs.getFloat(4),
+                            rs.getFloat(5),
+                            rs.getFloat(6)
+                        )
+                    }
+                }
             }
         } catch (throwables: SQLException) {
             logger.error("データベースに接続できませんでした。", throwables)
@@ -72,17 +75,18 @@ class UserSettingsManager {
     }
 
     fun saveSetting(userId: Long) {
+        val userSettings = settings[userId] ?: return
+        val conn = connection ?: return
         val sql =
             "REPLACE INTO settings (id, voice, speed, intonation, voiceQualityA, voiceQualityFm) VALUES (?,?,?,?,?,?)"
-        val settings = settings[userId]
         try {
-            connection!!.prepareStatement(sql).use { ps ->
+            conn.prepareStatement(sql).use { ps ->
                 ps.setLong(1, userId)
-                ps.setString(2, settings!!.voiceSetting)
-                ps.setFloat(3, settings.speedSetting)
-                ps.setFloat(4, settings.intonationSetting)
-                ps.setFloat(5, settings.voiceQualityASetting)
-                ps.setFloat(6, settings.voiceQualityFmSetting)
+                ps.setString(2, userSettings.voiceSetting)
+                ps.setFloat(3, userSettings.speedSetting)
+                ps.setFloat(4, userSettings.intonationSetting)
+                ps.setFloat(5, userSettings.voiceQualityASetting)
+                ps.setFloat(6, userSettings.voiceQualityFmSetting)
                 logger.debug(ps.toString())
                 ps.executeUpdate()
             }
@@ -93,7 +97,7 @@ class UserSettingsManager {
 
     fun closeConnection() {
         try {
-            connection!!.close()
+            connection?.close()
             logger.info("データベース接続を終了しました。")
         } catch (e: SQLException) {
             logger.error("データベース接続を終了できませんでした。", e)

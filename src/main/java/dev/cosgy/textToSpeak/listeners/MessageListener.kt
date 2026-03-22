@@ -31,14 +31,8 @@ import java.io.IOException
 
 class MessageListener(private val bot: Bot) : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        val startTime = System.currentTimeMillis()
-        event.jda
-        event.responseNumber
-
-        //イベント固有の情報
-        val author = event.author //メッセージを送信したユーザー
-        val message = event.message //受信したメッセージ。
-        event.channel //メッセージが送信されたMessageChannel
+        val author = event.author
+        val message = event.message
         var msg = message.contentDisplay
         //人間が読める形式のメッセージが返されます。 クライアントに表示されるものと同様。
         val isBot = author.isBot
@@ -63,7 +57,7 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
             }
 
             // URLを置き換え
-            msg = msg.replace("(http://|https://)[\\w.\\-/:#?=&;%~+]+".toRegex(), "ゆーあーるえる")
+            msg = msg.replace(URL_REGEX, "ゆーあーるえる")
             message.getStickers().forEach { sticker -> msg += " " + sticker.getName() }
             if (textChannel === settingText) {
                 val settings = bot.settingsManager.getSettings(guild)
@@ -84,20 +78,16 @@ class MessageListener(private val bot: Bot) : ListenerAdapter() {
                     throw RuntimeException(e)
                 }
                 bot.playerManager.loadItemOrdered(event.guild, file, ResultHandler(event))
-
-                //textChannel.sendMessage(author.getName() + "が、「"+ msg +"」と送信しました。").queue();
             }
         }
-
-        // 終了時刻を記録
-        val endTime = System.currentTimeMillis()
-
-        // 実行時間を計算
-        val executionTime = endTime - startTime
     }
 
     override fun onReady(e: ReadyEvent) {
         bot.readyJDA()
+    }
+
+    companion object {
+        private val URL_REGEX = Regex("(http://|https://)[\\w.\\-/:#?=&;%~+]+")
     }
 
     private class ResultHandler(private val event: MessageReceivedEvent) : AudioLoadResultHandler {
