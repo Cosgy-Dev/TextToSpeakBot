@@ -9,8 +9,6 @@ pipeline {
 
     environment {
         MAVEN_OPTS = '-Xmx3200m'
-        QODANA_TOKEN = credentials('qodana-token')
-        QODANA_ENDPOINT = 'https://qodana.cloud'
     }
 
     stages {
